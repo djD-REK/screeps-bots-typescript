@@ -28,6 +28,9 @@ export const roleUpgrader = {
           })
         }
       }
+      if (creep.store.getUsedCapacity() === 0) {
+        creep.memory.state = "FILL UP"
+      }
     }
   },
 }
