@@ -1,5 +1,6 @@
 import { ErrorMapper } from "utils/ErrorMapper"
 import { roleHarvester } from "roleHarvester"
+import { roleUpgrader } from "roleUpgrader"
 
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
@@ -25,14 +26,39 @@ export const loop = ErrorMapper.wrapLoop(() => {
     )
     console.log("Harvesters: " + harvesters.length)
 
-    const newName = Game.time + "_" + "Harvester" + harvesters.length
-    console.log("Spawning new harvester: " + newName)
+    if (harvesters.length < 5) {
+      const harvesterName = Game.time + "_" + "Harvester" + harvesters.length
+      console.log("Spawning new harvester: " + harvesterName)
+      Game.spawns.Spawn1.spawnCreep(
+        [MOVE, MOVE, WORK, CARRY], // 250
+        harvesterName,
+        {
+          memory: {
+            role: "harvester",
+            room: Game.spawns.Spawn1.room.name,
+            working: false,
+            state: "THINK",
+            destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
+            sourceNumber: -1,
+          },
+        }
+      )
+    }
+
+    const upgraders = _.filter(
+      Game.creeps,
+      (creep) => creep.memory.role === "upgrader"
+    )
+    console.log("Upgraders: " + upgraders.length)
+
+    const upgraderName = Game.time + "_" + "Upgrader" + upgraders.length
+    console.log("Spawning new upgrader: " + upgraderName)
     Game.spawns.Spawn1.spawnCreep(
-      [MOVE, MOVE, WORK, CARRY], // 250
-      newName,
+      [WORK, WORK, MOVE, CARRY], // 300
+      upgraderName,
       {
         memory: {
-          role: "harvester",
+          role: "upgrader",
           room: Game.spawns.Spawn1.room.name,
           working: false,
           state: "THINK",
@@ -50,6 +76,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
       if (creep.spawning === false) {
         if (creep.memory.role === "harvester") {
           roleHarvester.run(creep)
+        }
+        if (creep.memory.role === "upgrader") {
+          roleUpgrader.run(creep)
         }
       }
     } catch (e) {
