@@ -47,8 +47,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
   for (const creepName in Game.creeps) {
     try {
       const creep = Game.creeps[creepName]
-      if (creep.memory.role === "harvester") {
-        roleHarvester.run(creep)
+      if (creep.spawning === false) {
+        if (creep.memory.role === "harvester") {
+          roleHarvester.run(creep)
+        }
       }
     } catch (e) {
       console.log(`${creepName} threw a ${e}`)

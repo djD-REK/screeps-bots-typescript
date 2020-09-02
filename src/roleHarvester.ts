@@ -4,9 +4,11 @@ import { actionDeposit } from "actionDeposit"
 export const roleHarvester = {
   run(creep: Creep) {
     if (creep.memory.state === "THINK") {
+      creep.say("🚶 THINK")
       creep.memory.state = "HARVEST"
     }
     if (creep.memory.state === "HARVEST") {
+      creep.say("🚶 HARVEST")
       // Go harvest active resources
       actionHarvest(creep)
       if (creep.store.getFreeCapacity() === 0) {
@@ -14,6 +16,7 @@ export const roleHarvester = {
       }
     }
     if (creep.memory.state === "DEPOSIT") {
+      creep.say("🚶 DEPOSIT")
       // Go deposit current load
       actionDeposit(creep)
       if (creep.store.getUsedCapacity() === 0) {
