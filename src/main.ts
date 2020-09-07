@@ -16,6 +16,34 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
   }
 
+  // Find the active sources in this room
+  // const sources = Game.spawns.Spawn1.room.find(FIND_SOURCES_ACTIVE)
+  // Find all potential sources in this room
+  const sources = Game.spawns.Spawn1.room.find(FIND_SOURCES)
+
+  // Plan some roads if we have a brand new Spawn
+  const constructionSiteCount = Game.spawns.Spawn1.room.find(
+    FIND_MY_CONSTRUCTION_SITES
+  ).length
+  const roadCount = Game.spawns.Spawn1.room.find(FIND_MY_STRUCTURES, {
+    filter: { structureType: STRUCTURE_ROAD },
+  }).length
+  if (constructionSiteCount + roadCount === 0) {
+    for (const source of sources) {
+      const pathToSource = Game.spawns.Spawn1.pos.findPathTo(source, {
+        ignoreCreeps: true,
+      })
+      for (const pathStep of pathToSource) {
+        Game.spawns.Spawn1.room.createConstructionSite(
+          pathStep.x,
+          pathStep.y,
+          STRUCTURE_ROAD
+        )
+      }
+    }
+    console.log(`We need some roads`)
+  }
+
   // Generate some creeps
   if (
     Game.spawns.Spawn1.room.energyAvailable >= 300 &&
@@ -39,7 +67,25 @@ export const loop = ErrorMapper.wrapLoop(() => {
     )
     console.log("Defenders: " + defenders.length)
 
-    if (harvesters.length <= 7) {
+    // Spawn a creep
+    if (defenders.length <= Math.floor(harvesters.length / 2)) {
+      const defenderName = Game.time + "_" + "Defender" + defenders.length
+      console.log("Spawning new upgrader: " + defenderName)
+      Game.spawns.Spawn1.spawnCreep(
+        [MOVE, MOVE, ATTACK, ATTACK], // 260
+        defenderName,
+        {
+          memory: {
+            role: "defender",
+            room: Game.spawns.Spawn1.room.name,
+            working: false,
+            state: "THINK",
+            destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
+            sourceNumber: -1,
+          },
+        }
+      )
+    } else if (harvesters.length <= 3 * sources.length) {
       const harvesterName = Game.time + "_" + "Harvester" + harvesters.length
       console.log("Spawning new harvester: " + harvesterName)
       Game.spawns.Spawn1.spawnCreep(
@@ -52,7 +98,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
             working: false,
             state: "THINK",
             destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
-            sourceNumber: -1,
+            sourceNumber: Math.floor(harvesters.length / 4),
           },
         }
       )
@@ -65,23 +111,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
         {
           memory: {
             role: "upgrader",
-            room: Game.spawns.Spawn1.room.name,
-            working: false,
-            state: "THINK",
-            destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
-            sourceNumber: -1,
-          },
-        }
-      )
-    } else if (defenders.length <= 10) {
-      const defenderName = Game.time + "_" + "Defender" + defenders.length
-      console.log("Spawning new upgrader: " + defenderName)
-      Game.spawns.Spawn1.spawnCreep(
-        [MOVE, MOVE, ATTACK, ATTACK], // 260
-        defenderName,
-        {
-          memory: {
-            role: "defender",
             room: Game.spawns.Spawn1.room.name,
             working: false,
             state: "THINK",

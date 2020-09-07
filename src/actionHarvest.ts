@@ -21,9 +21,26 @@ export const actionHarvest = (creep: Creep) => {
       creep.memory.destination = creep.pos
       break
     case ERR_NOT_IN_RANGE: // The target is too far away.
-      creep.moveTo(sources[creep.memory.sourceNumber], {
+      const moveResult = creep.moveTo(sources[creep.memory.sourceNumber], {
         visualizePathStyle: { stroke: "#ffaa00" },
       })
+      switch (moveResult) {
+        // Do nothing cases
+        case OK: // The operation has been scheduled successfully.
+        case ERR_TIRED: // The fatigue indicator of the creep is non-zero.
+          break // Do nothing
+        // Change source case (There are probably creeps in the way)
+        case ERR_NO_PATH: // No path to the target could be found.
+          changeSource(creep)
+          break
+        // Unhandled cases
+        case ERR_NOT_OWNER: // You are not the owner of this creep.
+        case ERR_BUSY: // The power creep is not spawned in the world.
+        case ERR_NOT_FOUND: // The creep has no memorized path to reuse.
+        case ERR_INVALID_TARGET: // The target provided is invalid.
+        default:
+          console.log(`Unexpected error in move routine: ${moveResult}`)
+      }
       break
     case ERR_NOT_ENOUGH_RESOURCES: // The target does not contain any harvestable energy or mineral.
       changeSource(creep)
