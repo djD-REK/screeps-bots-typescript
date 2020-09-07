@@ -77,7 +77,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       const defenderName = Game.time + "_" + "Defender" + defenders.length
       console.log("Spawning new upgrader: " + defenderName)
       Game.spawns.Spawn1.spawnCreep(
-        [WORK, WORK, MOVE, CARRY], // 300
+        [MOVE, MOVE, ATTACK, ATTACK], // 260
         defenderName,
         {
           memory: {

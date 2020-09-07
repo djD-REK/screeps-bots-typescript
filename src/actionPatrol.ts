@@ -1,14 +1,23 @@
+const changeDestination = (creep: Creep) => {
+  const x = Math.random() * 49 + 1
+  const y = Math.random() * 49 + 1
+  creep.memory.destination.x = x
+  creep.memory.destination.y = y
+  console.log(`${creep.name} assigned new destination: ${x} ${y}`)
+}
+
 export const actionPatrol = (creep: Creep) => {
   const terrain = new Room.Terrain(creep.room.name)
 
   switch (terrain.get(creep.memory.destination.x, creep.memory.destination.y)) {
+    case 0: // plain (valid destination)
+      break
     case TERRAIN_MASK_WALL:
-      break
+    // intentionally don't break
     case TERRAIN_MASK_SWAMP:
-      break
-    case 0: // plain
-      creep.memory.destination.x = Math.random() * 49
-      creep.memory.destination.y = Math.random() * 49
+    // intentionally don't break
+    default:
+      changeDestination(creep)
       break
   }
 
@@ -19,6 +28,7 @@ export const actionPatrol = (creep: Creep) => {
     console.log(
       `${creep.name} arrived at destination: {creep.pos.x} {creep.pos.y}`
     )
+    changeDestination(creep)
   } else {
     // Get to moving
     creep.moveTo(creep.memory.destination, {
