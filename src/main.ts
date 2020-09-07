@@ -32,11 +32,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
     )
     console.log("Upgraders: " + upgraders.length)
 
-    if (harvesters.length < 6) {
+    if (harvesters.length < 8) {
       const harvesterName = Game.time + "_" + "Harvester" + harvesters.length
       console.log("Spawning new harvester: " + harvesterName)
       Game.spawns.Spawn1.spawnCreep(
-        [MOVE, MOVE, WORK, CARRY], // 250?
+        [MOVE, MOVE, WORK, CARRY], // 250
         harvesterName,
         {
           memory: {
