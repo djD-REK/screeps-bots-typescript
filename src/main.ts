@@ -37,11 +37,14 @@ export const loop = ErrorMapper.wrapLoop(() => {
         ignoreCreeps: true,
       })
       for (const pathStep of pathToSource) {
-        Game.spawns.Spawn1.room.createConstructionSite(
-          pathStep.x,
-          pathStep.y,
-          STRUCTURE_ROAD
-        )
+        if (pathStep.x !== source.pos.x && pathStep.y !== source.pos.y) {
+          // Don't build construction sites directly on top of sources
+          Game.spawns.Spawn1.room.createConstructionSite(
+            pathStep.x,
+            pathStep.y,
+            STRUCTURE_ROAD
+          )
+        }
       }
     }
     // Plan roads from spawn to room controller
@@ -51,11 +54,17 @@ export const loop = ErrorMapper.wrapLoop(() => {
         ignoreCreeps: true,
       })
       for (const pathStep of pathToSource) {
-        Game.spawns.Spawn1.room.createConstructionSite(
-          pathStep.x,
-          pathStep.y,
-          STRUCTURE_ROAD
-        )
+        if (
+          pathStep.x !== controller.pos.x &&
+          pathStep.y !== controller.pos.y
+        ) {
+          // Don't build construction sites directly on top of controllers
+          Game.spawns.Spawn1.room.createConstructionSite(
+            pathStep.x,
+            pathStep.y,
+            STRUCTURE_ROAD
+          )
+        }
       }
     }
   }
