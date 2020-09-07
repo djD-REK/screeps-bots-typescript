@@ -20,17 +20,18 @@ export const roleUpgrader = {
         creep.say("THINK")
         creep.memory.state = "THINK"
       } else {
-        if (
-          creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE
-        ) {
-          creep.moveTo(creep.room.controller, {
-            visualizePathStyle: { stroke: "#ffffff" },
-          })
+        if (creep.store.getUsedCapacity() === 0) {
+          creep.say("🚶 FILL UP")
+          creep.memory.state = "FILL UP"
+        } else {
+          if (
+            creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE
+          ) {
+            creep.moveTo(creep.room.controller, {
+              visualizePathStyle: { stroke: "#ffffff" },
+            })
+          }
         }
-      }
-      if (creep.store.getUsedCapacity() === 0) {
-        creep.say("🚶 FILL UP")
-        creep.memory.state = "FILL UP"
       }
     }
   },

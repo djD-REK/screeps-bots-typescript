@@ -24,7 +24,9 @@ export const actionBuild = (creep: Creep) => {
       case ERR_INVALID_TARGET: // The target is not a valid construction site object or the structure cannot be built here (probably because of a creep at the same square).
       case ERR_NO_BODYPART: // There are no WORK body parts in this creep’s body.
       default:
-        console.log(`Unexpected error in build routine: ${buildResult}`)
+        console.log(
+          `Unexpected error in build routine: ${buildResult} by ${creep.name}`
+        )
     }
   }
 }
