@@ -26,11 +26,17 @@ export const loop = ErrorMapper.wrapLoop(() => {
     )
     console.log("Harvesters: " + harvesters.length)
 
-    if (harvesters.length < 5) {
+    const upgraders = _.filter(
+      Game.creeps,
+      (creep) => creep.memory.role === "upgrader"
+    )
+    console.log("Upgraders: " + upgraders.length)
+
+    if (harvesters.length < 6) {
       const harvesterName = Game.time + "_" + "Harvester" + harvesters.length
       console.log("Spawning new harvester: " + harvesterName)
       Game.spawns.Spawn1.spawnCreep(
-        [MOVE, MOVE, WORK, CARRY], // 250
+        [MOVE, MOVE, WORK, CARRY], // 250?
         harvesterName,
         {
           memory: {
@@ -43,30 +49,24 @@ export const loop = ErrorMapper.wrapLoop(() => {
           },
         }
       )
+    } else {
+      const upgraderName = Game.time + "_" + "Upgrader" + upgraders.length
+      console.log("Spawning new upgrader: " + upgraderName)
+      Game.spawns.Spawn1.spawnCreep(
+        [WORK, WORK, MOVE, CARRY], // 300
+        upgraderName,
+        {
+          memory: {
+            role: "upgrader",
+            room: Game.spawns.Spawn1.room.name,
+            working: false,
+            state: "THINK",
+            destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
+            sourceNumber: -1,
+          },
+        }
+      )
     }
-
-    const upgraders = _.filter(
-      Game.creeps,
-      (creep) => creep.memory.role === "upgrader"
-    )
-    console.log("Upgraders: " + upgraders.length)
-
-    const upgraderName = Game.time + "_" + "Upgrader" + upgraders.length
-    console.log("Spawning new upgrader: " + upgraderName)
-    Game.spawns.Spawn1.spawnCreep(
-      [WORK, WORK, MOVE, CARRY], // 300
-      upgraderName,
-      {
-        memory: {
-          role: "upgrader",
-          room: Game.spawns.Spawn1.room.name,
-          working: false,
-          state: "THINK",
-          destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
-          sourceNumber: -1,
-        },
-      }
-    )
   }
 
   // Run all creeps
