@@ -1,6 +1,7 @@
 import { ErrorMapper } from "utils/ErrorMapper"
 import { roleHarvester } from "roleHarvester"
 import { roleUpgrader } from "roleUpgrader"
+import { roleDefender } from "roleDefender"
 
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
@@ -32,7 +33,13 @@ export const loop = ErrorMapper.wrapLoop(() => {
     )
     console.log("Upgraders: " + upgraders.length)
 
-    if (harvesters.length < 8) {
+    const defenders = _.filter(
+      Game.creeps,
+      (creep) => creep.memory.role === "defender"
+    )
+    console.log("Defenders: " + defenders.length)
+
+    if (harvesters.length < 6) {
       const harvesterName = Game.time + "_" + "Harvester" + harvesters.length
       console.log("Spawning new harvester: " + harvesterName)
       Game.spawns.Spawn1.spawnCreep(
@@ -49,7 +56,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
           },
         }
       )
-    } else {
+    } else if (upgraders.length < 4) {
       const upgraderName = Game.time + "_" + "Upgrader" + upgraders.length
       console.log("Spawning new upgrader: " + upgraderName)
       Game.spawns.Spawn1.spawnCreep(
@@ -58,6 +65,23 @@ export const loop = ErrorMapper.wrapLoop(() => {
         {
           memory: {
             role: "upgrader",
+            room: Game.spawns.Spawn1.room.name,
+            working: false,
+            state: "THINK",
+            destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
+            sourceNumber: -1,
+          },
+        }
+      )
+    } else if (defenders.length < 3) {
+      const defenderName = Game.time + "_" + "Defender" + defenders.length
+      console.log("Spawning new upgrader: " + defenderName)
+      Game.spawns.Spawn1.spawnCreep(
+        [WORK, WORK, MOVE, CARRY], // 300
+        defenderName,
+        {
+          memory: {
+            role: "defender",
             room: Game.spawns.Spawn1.room.name,
             working: false,
             state: "THINK",
@@ -79,6 +103,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
         }
         if (creep.memory.role === "upgrader") {
           roleUpgrader.run(creep)
+        }
+        if (creep.memory.role === "defender") {
+          roleDefender.run(creep)
         }
       }
     } catch (e) {
