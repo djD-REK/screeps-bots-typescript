@@ -29,6 +29,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
     filter: { structureType: STRUCTURE_ROAD },
   }).length
   if (constructionSiteCount + roadCount === 0) {
+    console.log(`We need some roads`)
+    // Plan roads from spawn to sources
     for (const source of sources) {
       const pathToSource = Game.spawns.Spawn1.pos.findPathTo(source, {
         ignoreCreeps: true,
@@ -41,7 +43,20 @@ export const loop = ErrorMapper.wrapLoop(() => {
         )
       }
     }
-    console.log(`We need some roads`)
+    // Plan roads from spawn to room controller
+    const controller = Game.spawns.Spawn1.room.controller
+    if (controller) {
+      const pathToSource = Game.spawns.Spawn1.pos.findPathTo(controller, {
+        ignoreCreeps: true,
+      })
+      for (const pathStep of pathToSource) {
+        Game.spawns.Spawn1.room.createConstructionSite(
+          pathStep.x,
+          pathStep.y,
+          STRUCTURE_ROAD
+        )
+      }
+    }
   }
 
   // Generate some creeps
@@ -61,6 +76,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
     )
     console.log("Upgraders: " + upgraders.length)
 
+    const builders = _.filter(
+      Game.creeps,
+      (creep) => creep.memory.role === "builder"
+    )
+    console.log("Builders: " + builders.length)
+
     const defenders = _.filter(
       Game.creeps,
       (creep) => creep.memory.role === "defender"
@@ -68,24 +89,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     console.log("Defenders: " + defenders.length)
 
     // Spawn a creep
-    if (defenders.length <= Math.floor(harvesters.length / 2)) {
-      const defenderName = Game.time + "_" + "Defender" + defenders.length
-      console.log("Spawning new upgrader: " + defenderName)
-      Game.spawns.Spawn1.spawnCreep(
-        [MOVE, MOVE, ATTACK, ATTACK], // 260
-        defenderName,
-        {
-          memory: {
-            role: "defender",
-            room: Game.spawns.Spawn1.room.name,
-            working: false,
-            state: "THINK",
-            destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
-            sourceNumber: -1,
-          },
-        }
-      )
-    } else if (harvesters.length <= 3 * sources.length) {
+    if (harvesters.length <= 3 * sources.length) {
       const harvesterName = Game.time + "_" + "Harvester" + harvesters.length
       console.log("Spawning new harvester: " + harvesterName)
       Game.spawns.Spawn1.spawnCreep(
@@ -119,6 +123,40 @@ export const loop = ErrorMapper.wrapLoop(() => {
           },
         }
       )
+    } else if (builders.length <= 2) {
+      const builderName = Game.time + "_" + "Builder" + builders.length
+      console.log("Spawning new builder: " + builderName)
+      Game.spawns.Spawn1.spawnCreep(
+        [WORK, WORK, MOVE, CARRY], // 300
+        builderName,
+        {
+          memory: {
+            role: "builder",
+            room: Game.spawns.Spawn1.room.name,
+            working: false,
+            state: "THINK",
+            destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
+            sourceNumber: -1,
+          },
+        }
+      )
+    } else if (defenders.length <= 3) {
+      const defenderName = Game.time + "_" + "Defender" + defenders.length
+      console.log("Spawning new defender: " + defenderName)
+      Game.spawns.Spawn1.spawnCreep(
+        [MOVE, MOVE, ATTACK, ATTACK], // 260
+        defenderName,
+        {
+          memory: {
+            role: "defender",
+            room: Game.spawns.Spawn1.room.name,
+            working: false,
+            state: "THINK",
+            destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
+            sourceNumber: -1,
+          },
+        }
+      )
     }
   }
 
@@ -131,6 +169,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
           roleHarvester.run(creep)
         }
         if (creep.memory.role === "upgrader") {
+          roleUpgrader.run(creep)
+        }
+        if (creep.memory.role === "builder") {
           roleUpgrader.run(creep)
         }
         if (creep.memory.role === "defender") {

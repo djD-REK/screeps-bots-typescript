@@ -1,6 +1,6 @@
 const changeDestination = (creep: Creep) => {
-  const x = Math.random() * 49 + 1
-  const y = Math.random() * 49 + 1
+  const x = Math.floor(Math.random() * 49) + 1
+  const y = Math.floor(Math.random() * 49) + 1
   creep.memory.destination.x = x
   creep.memory.destination.y = y
   console.log(`${creep.name} assigned new destination: ${x} ${y}`)
