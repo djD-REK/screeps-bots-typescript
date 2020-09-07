@@ -89,7 +89,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
     console.log("Defenders: " + defenders.length)
 
     // Spawn a creep
-    if (harvesters.length <= 3 * sources.length) {
+    // if (harvesters.length <= 3 * sources.length) {
+    if (harvesters.length <= 7) {
       const harvesterName = Game.time + "_" + "Harvester" + harvesters.length
       console.log("Spawning new harvester: " + harvesterName)
       Game.spawns.Spawn1.spawnCreep(
