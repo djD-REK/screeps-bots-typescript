@@ -87,6 +87,10 @@ export const roleMiner = {
       creep.memory.state = "MINE"
       assessSources(creep)
     }
+    if (creep.memory.state === "EXPLORE") {
+      creep.memory.state = "THINK"
+      console.log("Uhhh, we tried to explore but it's a TODO")
+    }
     if (creep.memory.state === "MINE") {
       // Go harvest active resources
       actionMine(creep)
