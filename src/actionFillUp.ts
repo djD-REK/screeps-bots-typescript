@@ -21,11 +21,12 @@ export const actionFillUp = (creep: Creep) => {
   const sortedDroppedResources = _.sortBy(
     allDroppedResources,
     (resource) =>
-      0 - resource.amount / creep.pos.findPathTo(resource.pos).length
+      // 0 - resource.amount / creep.pos.findPathTo(resource.pos).length
+      0 - resource.amount ** 2 / creep.pos.getRangeTo(resource.pos)
     // zero minus is Ascending sort
   )
   for (const resource of sortedDroppedResources) {
-    console.log(resource.amount / creep.pos.findPathTo(resource.pos).length)
+    console.log(resource.amount ** 2 / creep.pos.getRangeTo(resource.pos))
   }
   //
   console.log("ddfdfdfdfdf")
