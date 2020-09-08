@@ -77,140 +77,98 @@ export const loop = ErrorMapper.wrapLoop(() => {
     Game.spawns.Spawn1.room.energyAvailable >= 300 &&
     Game.spawns.Spawn1.spawning === null
   ) {
-    const harvesters = _.filter(
-      Game.creeps,
-      (creep) => creep.memory.role === "harvester"
-    )
+    // Define roles
+    const creepRoles = ["Harvester", "Miner", "Upgrader", "Builder", "Defender"]
+    const creepTemplates: { [role: string]: BodyPartConstant[] } = {
+      Harvester: [WORK, WORK, MOVE, CARRY], // 300 energy
+      Miner: [WORK, WORK, MOVE], // 250
+      Upgrader: [WORK, WORK, MOVE, CARRY], // 300
+      Builder: [WORK, WORK, MOVE, CARRY], // 300
+      Defender: [MOVE, MOVE, ATTACK, ATTACK], // 260
+    }
+    const creepCounts: { [role: string]: number } = {}
 
-    const miners = _.filter(
-      Game.creeps,
-      (creep) => creep.memory.role === "miner"
-    )
     const mineablePositionsCount = getMineablePositions(Game.spawns.Spawn1.room)
       .length
-    console.log(
-      `Miners: ${miners.length} of ${mineablePositionsCount} mineable positions`
-    )
 
-    const upgraders = _.filter(
-      Game.creeps,
-      (creep) => creep.memory.role === "upgrader"
-    )
-    console.log("Upgraders: " + upgraders.length)
-
-    const builders = _.filter(
-      Game.creeps,
-      (creep) => creep.memory.role === "builder"
-    )
-    console.log("Builders: " + builders.length)
-
-    const defenders = _.filter(
-      Game.creeps,
-      (creep) => creep.memory.role === "defender"
-    )
-    console.log("Defenders: " + defenders.length)
+    // Log current counts to console
+    for (const role of creepRoles) {
+      creepCounts[role] = _.filter(
+        Game.creeps,
+        (creep) => creep.memory.role === role
+      ).length
+      const outputMessage = `${role}s: ${creepCounts[role]}`
+      if (role === "Miner") {
+        console.log(
+          `${outputMessage} of ${mineablePositionsCount} mineable positions`
+        )
+      } else {
+        console.log(outputMessage)
+      }
+    }
 
     // Evolutions
-    if (miners.length >= harvesters.length) {
-      harvesters.forEach((creep) => {
+    if (creepCounts.Miner >= creepCounts.Harvester) {
+      _.filter(
+        Game.creeps,
+        (creep) => creep.memory.role === "Harvester"
+      ).forEach((creep) => {
         // We've progressed to miners, so harvesters become builders
         creep.say("EVOLVE")
         console.log(`Harvester ${creep.name} has become a Builder`)
-        creep.memory.role = "builder"
+        creep.memory.role = "Builder"
         creep.memory.state = "THINK"
       })
     }
 
+    const generateCreepName = (role: string) => {
+      let randomNumber: number
+      let name: string
+      do {
+        randomNumber = Math.floor(Math.random() * 100)
+        name = `${role}_${randomNumber}`
+      } while (_.filter(Game.creeps, (creep) => creep.name === name).length > 0)
+      // Return a unique name for this creep
+      return name
+    }
+
+    const spawnCreep = (role: string) => {
+      const creepName = generateCreepName(role)
+      console.log(`Spawning new creep: ${creepName}`)
+      Game.spawns.Spawn1.spawnCreep(creepTemplates[role], creepName, {
+        memory: {
+          role,
+          room: Game.spawns.Spawn1.room.name,
+          state: "THINK",
+          destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
+          sourceNumber: 0,
+        },
+      })
+    }
+
     // Spawn a creep
-    if (harvesters.length < mineablePositionsCount && miners.length === 0) {
+    if (
+      creepCounts.Harvester < mineablePositionsCount &&
+      creepCounts.Miner === 0
+    ) {
       // Brand new room
-      const harvesterName = Game.time + "_" + "Harvester" + harvesters.length
-      console.log("Spawning new harvester: " + harvesterName)
-      Game.spawns.Spawn1.spawnCreep(
-        [WORK, WORK, MOVE, CARRY], // 300
-        harvesterName,
-        {
-          memory: {
-            role: "harvester",
-            room: Game.spawns.Spawn1.room.name,
-            state: "THINK",
-            destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
-            sourceNumber: 0,
-          },
-        }
-      )
-    } else if (miners.length < mineablePositionsCount) {
-      const minerName = Game.time + "_" + "Miner" + miners.length
-      console.log("Spawning new miner: " + minerName)
-      Game.spawns.Spawn1.spawnCreep(
-        [WORK, WORK, MOVE], // 250
-        minerName,
-        {
-          memory: {
-            role: "miner",
-            room: Game.spawns.Spawn1.room.name,
-            state: "THINK",
-            destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
-            sourceNumber: 0,
-          },
-        }
-      )
+      spawnCreep("Harvester")
+    } else if (creepCounts.Miner < mineablePositionsCount) {
+      spawnCreep("Miner")
     } else if (
-      upgraders.length < 3 &&
+      creepCounts.Upgrader < 3 &&
       constructionSiteCount === 0 &&
-      builders.length === 0
+      creepCounts.Builder === 0
     ) {
-      const upgraderName = Game.time + "_" + "Upgrader" + upgraders.length
-      console.log("Spawning new upgrader: " + upgraderName)
-      Game.spawns.Spawn1.spawnCreep(
-        [WORK, WORK, MOVE, CARRY], // 300
-        upgraderName,
-        {
-          memory: {
-            role: "upgrader",
-            room: Game.spawns.Spawn1.room.name,
-            state: "THINK",
-            destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
-            sourceNumber: 0,
-          },
-        }
-      )
+      spawnCreep("Upgrader")
     } else if (
-      builders.length < 3 &&
+      creepCounts.Builder < 3 &&
       constructionSiteCount > 0 &&
-      upgraders.length === 0
+      creepCounts.Upgrader === 0
     ) {
-      const builderName = Game.time + "_" + "Builder" + builders.length
-      console.log("Spawning new builder: " + builderName)
-      Game.spawns.Spawn1.spawnCreep(
-        [WORK, WORK, MOVE, CARRY], // 300
-        builderName,
-        {
-          memory: {
-            role: "builder",
-            room: Game.spawns.Spawn1.room.name,
-            state: "THINK",
-            destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
-            sourceNumber: 0,
-          },
-        }
-      )
-    } else if (defenders.length < 3) {
-      const defenderName = Game.time + "_" + "Defender" + defenders.length
-      console.log("Spawning new defender: " + defenderName)
-      Game.spawns.Spawn1.spawnCreep(
-        [MOVE, MOVE, ATTACK, ATTACK], // 260
-        defenderName,
-        {
-          memory: {
-            role: "defender",
-            room: Game.spawns.Spawn1.room.name,
-            state: "THINK",
-            destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
-            sourceNumber: 0,
-          },
-        }
-      )
+      spawnCreep("Builder")
+    } else if (creepCounts.Defender < 3) {
+      spawnCreep("Defender")
     }
   }
 
@@ -219,19 +177,19 @@ export const loop = ErrorMapper.wrapLoop(() => {
     try {
       const creep = Game.creeps[creepName]
       if (creep.spawning === false) {
-        if (creep.memory.role === "harvester") {
+        if (creep.memory.role === "Harvester") {
           roleHarvester.run(creep)
         }
-        if (creep.memory.role === "miner") {
+        if (creep.memory.role === "Miner") {
           roleMiner.run(creep)
         }
-        if (creep.memory.role === "upgrader") {
+        if (creep.memory.role === "Upgrader") {
           roleUpgrader.run(creep)
         }
-        if (creep.memory.role === "builder") {
+        if (creep.memory.role === "Builder") {
           roleBuilder.run(creep)
         }
-        if (creep.memory.role === "defender") {
+        if (creep.memory.role === "Defender") {
           roleDefender.run(creep)
         }
       }

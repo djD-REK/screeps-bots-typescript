@@ -1,6 +1,10 @@
-// example declaration file - remove these and add your own custom typings
+// Types declaration file - the place for custom typings
 
-// memory extension samples
+// interface creepTemplate {
+// [role: string]: { parts: string[] }
+// }
+
+// memory extension
 interface CreepMemory {
   role: string
   room: string
@@ -9,12 +13,13 @@ interface CreepMemory {
   sourceNumber: number
 }
 
+// memory extension (samples, cont.)
 interface Memory {
   uuid: number
   log: any
 }
 
-// `global` extension samples
+// `global` extension (samples)
 declare namespace NodeJS {
   interface Global {
     log: any
