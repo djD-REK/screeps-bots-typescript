@@ -32,7 +32,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
   const roadCount = Game.spawns.Spawn1.room.find(FIND_MY_STRUCTURES, {
     filter: { structureType: STRUCTURE_ROAD },
   }).length
-  if (constructionSiteCount === 0) {
+  // if (constructionSiteCount === 0) {
+  if (true) {
     console.log(`We might need some roads`)
     // Plan roads from spawn to all possible mining positions (i.e. all sources)
     const mineablePositions = getMineablePositions(Game.spawns.Spawn1.room)

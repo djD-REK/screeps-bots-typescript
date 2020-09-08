@@ -17,12 +17,20 @@ export const actionFillUp = (creep: Creep) => {
     },
   })
 
-  const droppedResources = creep.room.find(FIND_DROPPED_RESOURCES)
-  _.sortBy(droppedResources, (resource) =>
-    Math.floor(resource.amount / creep.pos.findPathTo(resource.pos).length ** 2)
+  const allDroppedResources = creep.room.find(FIND_DROPPED_RESOURCES)
+  const sortedDroppedResources = _.sortBy(
+    allDroppedResources,
+    (resource) =>
+      0 - resource.amount / creep.pos.findPathTo(resource.pos).length
+    // zero minus is Ascending sort
   )
+  for (const resource of sortedDroppedResources) {
+    console.log(resource.amount / creep.pos.findPathTo(resource.pos).length)
+  }
+  //
+  console.log("ddfdfdfdfdf")
 
-  const droppedResourceTarget = droppedResources[0]
+  const droppedResourceTarget = sortedDroppedResources[0]
 
   // Maybe there are some dropped resources we can go grab
 
