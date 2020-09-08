@@ -16,39 +16,22 @@ export const actionFillUp = (creep: Creep) => {
       )
     },
   })
-  if (targetFillUpSite != null) {
-    // There is somewhere to fill up in the current room
-    /*    console.log(
-      `${creep.name} attempting withdraw with result ${creep.withdraw(
-        targetFillUpSite,
-        RESOURCE_ENERGY
-      )}`
-    )*/
-    if (
-      creep.withdraw(targetFillUpSite, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE
-    ) {
-      creep.moveTo(targetFillUpSite, {
-        visualizePathStyle: { stroke: "#ffffff" },
-      })
+  // Maybe there are some dropped resources we can go grab
+  const droppedResourceTarget = creep.pos.findClosestByPath(
+    FIND_DROPPED_RESOURCES,
+    {
+      filter(resource) {
+        return resource.amount >= 0
+      },
     }
-  } else {
-    // Maybe there are some dropped resources we can go grab
-    const droppedResourceTarget = creep.pos.findClosestByPath(
-      FIND_DROPPED_RESOURCES,
-      {
-        filter(resource) {
-          return resource.amount >= 0
-        },
-      }
-    )
+  )
 
-    if (droppedResourceTarget != null) {
-      creep.say("🔄 PICK UP")
-      if (creep.pickup(droppedResourceTarget) === ERR_NOT_IN_RANGE) {
-        creep.moveTo(droppedResourceTarget, {
-          visualizePathStyle: { stroke: "#ffaa00" },
-        })
-      }
+  if (droppedResourceTarget != null) {
+    creep.say("🔄 PICK UP")
+    if (creep.pickup(droppedResourceTarget) === ERR_NOT_IN_RANGE) {
+      creep.moveTo(droppedResourceTarget, {
+        visualizePathStyle: { stroke: "#ffaa00" },
+      })
     }
   }
 }
