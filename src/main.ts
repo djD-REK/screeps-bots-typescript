@@ -114,10 +114,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
         Game.creeps,
         (creep) => creep.memory.role === "Harvester"
       ).forEach((creep) => {
-        // We've progressed to miners, so harvesters become fetchers
+        // We've progressed to miners, so harvesters become builders
         creep.say("EVOLVE")
-        console.log(`Harvester ${creep.name} has become a Fetcher`)
-        creep.memory.role = "Fetcher"
+        console.log(`Harvester ${creep.name} has become a Builder`)
+        creep.memory.role = "Builder"
         creep.memory.state = "THINK"
       })
     }
@@ -184,7 +184,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
         if (creep.memory.role === "Miner") {
           roleMiner.run(creep)
         }
-        if (creep.memory.role === "Miner") {
+        if (creep.memory.role === "Fetcher") {
           roleFetcher.run(creep)
         }
         if (creep.memory.role === "Upgrader") {

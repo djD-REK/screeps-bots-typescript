@@ -48,6 +48,31 @@ export const actionMine = (creep: Creep) => {
     }
   } else {
     // We need to move to the assigned destination
+    if (
+      creep.room.lookForAt(
+        LOOK_CREEPS,
+        creep.memory.destination.x,
+        creep.memory.destination.y
+      ).length > 0
+    ) {
+      console.log(
+        `${creep.name} says there is a creep at ` +
+          `${creep.memory.destination.x},${creep.memory.destination.y}`
+      )
+      // There's a creep where we are trying to go, so let's pick a new destination
+      creep.memory.state = "THINK"
+      // In the mean time, let's change our current destination to get out of the way
+      if (creep.room.controller) {
+        creep.memory.destination.x = creep.room.controller.pos.x
+        creep.memory.destination.y = creep.room.controller.pos.y
+      } else {
+        // No controller so let's just move randomly for a turn
+        creep.memory.destination.x = Math.floor(Math.random() * 48 + 1)
+        creep.memory.destination.y = Math.floor(Math.random() * 48 + 1)
+      }
+    }
+
+    // Now let's actually move (to our destination or the random location)
     const moveResult = creep.moveTo(
       creep.memory.destination.x,
       creep.memory.destination.y,
@@ -67,7 +92,9 @@ export const actionMine = (creep: Creep) => {
       case ERR_BUSY: // The power creep is not spawned in the world.
       case ERR_INVALID_TARGET: // The target provided is invalid.
       default:
-        console.log(`Unexpected error in move routine: ${moveResult}`)
+        console.log(
+          `${creep.name} had an unexpected error in move routine: ${moveResult}`
+        )
     }
   }
 }

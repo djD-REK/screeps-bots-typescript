@@ -6,8 +6,8 @@ const assessSources = (creep: Creep) => {
   // Select an array of creeps with assigned destinations in this room:
   const miners = Object.keys(Game.creeps).filter(
     (creepName) =>
-      (Game.creeps[creepName].memory.role === "harvester" ||
-        Game.creeps[creepName].memory.role === "miner") &&
+      (Game.creeps[creepName].memory.role === "Harvester" ||
+        Game.creeps[creepName].memory.role === "Miner") &&
       Game.creeps[creepName].room === creep.room &&
       creepName !== creep.name
   )
