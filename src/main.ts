@@ -29,8 +29,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   const roadCount = Game.spawns.Spawn1.room.find(FIND_MY_STRUCTURES, {
     filter: { structureType: STRUCTURE_ROAD },
   }).length
-  let newConstructionSites = 0 // Only build a limited number of construction sites at once
-  if (constructionSiteCount + roadCount === 0) {
+  if (constructionSiteCount === 0) {
     console.log(`We might need some roads`)
     // Plan roads from spawn to sources
     for (const source of sources) {
@@ -41,14 +40,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
         if (pathStep.x === source.pos.x && pathStep.y === source.pos.y) {
           // Don't build construction sites directly on top of sources
         } else {
-          if (newConstructionSites < MAX_CONSTRUCTION_SITES / 10) {
-            Game.spawns.Spawn1.room.createConstructionSite(
-              pathStep.x,
-              pathStep.y,
-              STRUCTURE_ROAD
-            )
-            newConstructionSites++
-          }
+          Game.spawns.Spawn1.room.createConstructionSite(
+            pathStep.x,
+            pathStep.y,
+            STRUCTURE_ROAD
+          )
         }
       }
     }
@@ -65,14 +61,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
         ) {
           // Don't build construction sites directly on top of controllers
         } else {
-          if (newConstructionSites < MAX_CONSTRUCTION_SITES / 10) {
-            Game.spawns.Spawn1.room.createConstructionSite(
-              pathStep.x,
-              pathStep.y,
-              STRUCTURE_ROAD
-            )
-            newConstructionSites++
-          }
+          Game.spawns.Spawn1.room.createConstructionSite(
+            pathStep.x,
+            pathStep.y,
+            STRUCTURE_ROAD
+          )
         }
       }
     }
@@ -127,7 +120,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
           },
         }
       )
-    } else if (upgraders.length < 3 && constructionSiteCount === 0) {
+    } else if (
+      upgraders.length < 3 &&
+      constructionSiteCount === 0 &&
+      builders.length === 0
+    ) {
       const upgraderName = Game.time + "_" + "Upgrader" + upgraders.length
       console.log("Spawning new upgrader: " + upgraderName)
       Game.spawns.Spawn1.spawnCreep(
@@ -144,7 +141,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
           },
         }
       )
-    } else if (builders.length < 3 && constructionSiteCount > 0) {
+    } else if (
+      builders.length < 3 &&
+      constructionSiteCount > 0 &&
+      upgraders.length === 0
+    ) {
       const builderName = Game.time + "_" + "Builder" + builders.length
       console.log("Spawning new builder: " + builderName)
       Game.spawns.Spawn1.spawnCreep(

@@ -19,16 +19,35 @@ export const actionHarvest = (creep: Creep) => {
     changeSource(creep)
   }
 
-  const harvestResult = creep.harvest(sources[creep.memory.sourceNumber])
+  // TODO doesn't work
+  const source = sources[creep.memory.sourceNumber]
+  const path = creep.pos.findPathTo(source)
+  if (path) {
+    const lastPathStep = path[path.length - 1]
+    const foundCreep = creep.room.lookForAt(
+      LOOK_CREEPS,
+      lastPathStep.x,
+      lastPathStep.y
+    )
+    if (foundCreep.length) {
+      // There's a creep there already
+      changeSource(creep)
+    }
+  } else {
+    // No path found at all
+    changeSource(creep)
+  }
+
+  const harvestResult = creep.harvest(source)
   switch (harvestResult) {
     case OK: // The operation has been scheduled successfully.
       // Log destination while harvesting
       creep.memory.destination = creep.pos
       break
     case ERR_NOT_IN_RANGE: // The target is too far away.
-      const moveResult = creep.moveTo(sources[creep.memory.sourceNumber], {
+      const moveResult = creep.moveTo(source, {
         visualizePathStyle: { stroke: "#ffaa00" },
-        reusePath: 0, // Disable path reuse; TODO This uses a lot of CPU
+        reusePath: 5, // Disable path reuse; TODO This uses a lot of CPU
       })
       switch (moveResult) {
         // Do nothing cases
