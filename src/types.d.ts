@@ -4,9 +4,7 @@
 interface CreepMemory {
   role: string
   room: string
-  working: boolean
   state: string
-  sourceNumber: number
   destination: RoomPosition
 }
 

@@ -1,5 +1,4 @@
 import { ErrorMapper } from "utils/ErrorMapper"
-import { roleHarvester } from "roleHarvester"
 import { roleMiner } from "roleMiner"
 import { roleUpgrader } from "roleUpgrader"
 import { roleDefender } from "roleDefender"
@@ -77,12 +76,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
     Game.spawns.Spawn1.room.energyAvailable >= 300 &&
     Game.spawns.Spawn1.spawning === null
   ) {
-    const harvesters = _.filter(
-      Game.creeps,
-      (creep) => creep.memory.role === "harvester"
-    )
-    console.log("Harvesters: " + harvesters.length)
-
     const miners = _.filter(
       Game.creeps,
       (creep) => creep.memory.role === "miner"
@@ -108,22 +101,18 @@ export const loop = ErrorMapper.wrapLoop(() => {
     console.log("Defenders: " + defenders.length)
 
     // Spawn a creep
-    // if (harvesters.length < 4 * sources.length) {
-    if (harvesters.length < 7) {
-      const harvesterName = Game.time + "_" + "Harvester" + harvesters.length
-      console.log("Spawning new harvester: " + harvesterName)
+    if (miners.length < 7) {
+      const minerName = Game.time + "_" + "Miner" + miners.length
+      console.log("Spawning new miner: " + minerName)
       Game.spawns.Spawn1.spawnCreep(
-        // [MOVE, MOVE, WORK, CARRY], // 250
-        [MOVE, MOVE, WORK, CARRY, CARRY], // 300
-        harvesterName,
+        [WORK, WORK, MOVE], // 250
+        minerName,
         {
           memory: {
-            role: "harvester",
+            role: "miner",
             room: Game.spawns.Spawn1.room.name,
-            working: false,
             state: "THINK",
             destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
-            sourceNumber: 0,
           },
         }
       )
@@ -141,10 +130,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
           memory: {
             role: "upgrader",
             room: Game.spawns.Spawn1.room.name,
-            working: false,
             state: "THINK",
             destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
-            sourceNumber: -1,
           },
         }
       )
@@ -162,10 +149,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
           memory: {
             role: "builder",
             room: Game.spawns.Spawn1.room.name,
-            working: false,
             state: "THINK",
             destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
-            sourceNumber: -1,
           },
         }
       )
@@ -179,10 +164,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
           memory: {
             role: "defender",
             room: Game.spawns.Spawn1.room.name,
-            working: false,
             state: "THINK",
             destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
-            sourceNumber: -1,
           },
         }
       )
@@ -194,11 +177,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
     try {
       const creep = Game.creeps[creepName]
       if (creep.spawning === false) {
-        if (creep.memory.role === "harvester") {
-          roleHarvester.run(creep)
-        }
         if (creep.memory.role === "miner") {
-          roleHarvester.run(creep)
+          roleMiner.run(creep)
         }
         if (creep.memory.role === "upgrader") {
           roleUpgrader.run(creep)
