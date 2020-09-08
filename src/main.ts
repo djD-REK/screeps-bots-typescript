@@ -116,7 +116,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       const harvesterName = Game.time + "_" + "Harvester" + harvesters.length
       console.log("Spawning new harvester: " + harvesterName)
       Game.spawns.Spawn1.spawnCreep(
-        [WORK, WORK, MOVE], // 250
+        [WORK, WORK, MOVE, CARRY], // 300
         harvesterName,
         {
           memory: {
