@@ -6,6 +6,7 @@ interface CreepMemory {
   room: string
   state: string
   destination: RoomPosition
+  sourceNumber: number
 }
 
 interface Memory {
