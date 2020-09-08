@@ -110,8 +110,19 @@ export const loop = ErrorMapper.wrapLoop(() => {
     )
     console.log("Defenders: " + defenders.length)
 
+    // Evolutions
+    if (miners.length >= harvesters.length) {
+      harvesters.forEach((creep) => {
+        // We've progressed to miners, so harvesters become builders
+        creep.say("EVOLVE")
+        console.log(`Harvester ${creep.name} has become a Builder`)
+        creep.memory.role = "builder"
+        creep.memory.state = "THINK"
+      })
+    }
+
     // Spawn a creep
-    if (harvesters.length < 5 && miners.length === 0) {
+    if (harvesters.length < mineablePositionsCount && miners.length === 0) {
       // Brand new room
       const harvesterName = Game.time + "_" + "Harvester" + harvesters.length
       console.log("Spawning new harvester: " + harvesterName)

@@ -19,25 +19,7 @@ export const actionHarvest = (creep: Creep) => {
     changeSource(creep)
   }
 
-  // TODO doesn't work
   const source = sources[creep.memory.sourceNumber]
-  const path = creep.pos.findPathTo(source)
-  if (path) {
-    const lastPathStep = path[path.length - 1]
-    const foundCreep = creep.room.lookForAt(
-      LOOK_CREEPS,
-      lastPathStep.x,
-      lastPathStep.y
-    )
-    if (foundCreep.length) {
-      // There's a creep there already
-      changeSource(creep)
-    }
-  } else {
-    // No path found at all
-    changeSource(creep)
-  }
-
   const harvestResult = creep.harvest(source)
   switch (harvestResult) {
     case OK: // The operation has been scheduled successfully.
