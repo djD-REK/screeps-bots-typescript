@@ -32,15 +32,17 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }).length
   if (constructionSiteCount === 0) {
     console.log(`We might need some roads`)
-    // Plan roads from spawn to sources
-    for (const source of sources) {
+    // Plan roads from spawn to all possible mining positions (i.e. all sources)
+    const mineablePositions = getMineablePositions(Game.spawns.Spawn1.room)
+    for (const source of mineablePositions) {
       const pathToSource = Game.spawns.Spawn1.pos.findPathTo(source, {
         ignoreCreeps: true,
       })
-      for (const pathStep of pathToSource) {
-        if (pathStep.x === source.pos.x && pathStep.y === source.pos.y) {
-          // Don't build construction sites directly on top of sources
-        } else {
+      for (const [index, pathStep] of pathToSource.entries()) {
+        if (index < pathToSource.length - 2) {
+          // Don't build construction sites directly on top of sources and
+          // don't build them within 2 range of sources (mining positions)
+          // TODO: Check for mining positions and build caddy corner to them
           Game.spawns.Spawn1.room.createConstructionSite(
             pathStep.x,
             pathStep.y,
@@ -52,16 +54,13 @@ export const loop = ErrorMapper.wrapLoop(() => {
     // Plan roads from spawn to room controller
     const controller = Game.spawns.Spawn1.room.controller
     if (controller) {
-      const pathToSource = Game.spawns.Spawn1.pos.findPathTo(controller, {
+      const pathToController = Game.spawns.Spawn1.pos.findPathTo(controller, {
         ignoreCreeps: true,
       })
-      for (const pathStep of pathToSource) {
-        if (
-          pathStep.x === controller.pos.x &&
-          pathStep.y === controller.pos.y
-        ) {
-          // Don't build construction sites directly on top of controllers
-        } else {
+      for (const [index, pathStep] of pathToController.entries()) {
+        if (index < pathToController.length - 4) {
+          // Don't build construction sites within 3 range of controller
+          // because the upgradeController command has 3 squares range
           Game.spawns.Spawn1.room.createConstructionSite(
             pathStep.x,
             pathStep.y,
@@ -106,7 +105,37 @@ export const loop = ErrorMapper.wrapLoop(() => {
     console.log("Defenders: " + defenders.length)
 
     // Spawn a creep
-    if (miners.length < 7) {
+    if (miners.length < 1) {
+      const minerName = Game.time + "_" + "Miner" + miners.length
+      console.log("Spawning new miner: " + minerName)
+      Game.spawns.Spawn1.spawnCreep(
+        [WORK, WORK, MOVE], // 250
+        minerName,
+        {
+          memory: {
+            role: "miner",
+            room: Game.spawns.Spawn1.room.name,
+            state: "THINK",
+            destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
+          },
+        }
+      )
+    } else if (builders.length < 1 && constructionSiteCount > 0) {
+      const builderName = Game.time + "_" + "Builder" + builders.length
+      console.log("Spawning new builder: " + builderName)
+      Game.spawns.Spawn1.spawnCreep(
+        [WORK, WORK, MOVE, CARRY], // 300
+        builderName,
+        {
+          memory: {
+            role: "builder",
+            room: Game.spawns.Spawn1.room.name,
+            state: "THINK",
+            destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
+          },
+        }
+      )
+    } else if (miners.length < mineablePositionsCount) {
       const minerName = Game.time + "_" + "Miner" + miners.length
       console.log("Spawning new miner: " + minerName)
       Game.spawns.Spawn1.spawnCreep(

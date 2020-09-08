@@ -11,14 +11,46 @@ const assessSources = (creep: Creep) => {
       creepName !== creep.name
   )
 
+  console.log("Found miners:" + miners.length)
+
   const occupiedMineablePositions: RoomPosition[] = []
   miners.forEach((creepName) => {
-    occupiedMineablePositions.push(Game.creeps.creepName.pos)
+    occupiedMineablePositions.push(Game.creeps[creepName].pos)
   })
+  console.log(`Mineable: ${mineablePositions.length}`)
 
-  const unoccupiedMineablePositions: RoomPosition[] = mineablePositions.filter(
-    (position) => !occupiedMineablePositions.includes(position)
-  )
+  // Use a Map object to filter out all the occupied positions
+  const unoccupiedMineableMap = new Map<string, boolean>()
+  mineablePositions.forEach((possiblePosition) => {
+    unoccupiedMineableMap.set(
+      `${possiblePosition.x},${possiblePosition.y}`,
+      true
+    )
+  })
+  occupiedMineablePositions.forEach((occupiedPosition) => {
+    unoccupiedMineableMap.delete(`${occupiedPosition.x},${occupiedPosition.y}`)
+  })
+  const unoccupiedMineablePositions: RoomPosition[] = []
+  for (const stringPosition of unoccupiedMineableMap.keys()) {
+    const regExp = /(?<x>\d+),(?<y>\d+)/
+    // Board is a 50x50 grid with coordinates ranging from 0 to 49 i.e. 1-2 digits
+    const resultOfRegExp = regExp.exec(stringPosition)
+
+    if (resultOfRegExp) {
+      if (resultOfRegExp.groups) {
+        const xCoordinate = Number(resultOfRegExp.groups.x) // e.g. 23
+        const yCoordinate = Number(resultOfRegExp.groups.y) // e.g. 26
+        unoccupiedMineablePositions.push(
+          new RoomPosition(xCoordinate, yCoordinate, creep.room.name)
+        )
+      }
+    } else {
+      console.log(`Failed RegExp exec on ${stringPosition}`)
+    }
+  }
+
+  console.log(`Occupied: ${occupiedMineablePositions.length}`)
+  console.log(`Unoccupied: ${unoccupiedMineablePositions.length}`)
 
   // The array mineablePositions now only includes available positions
   if (unoccupiedMineablePositions.length === 0) {

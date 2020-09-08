@@ -24,6 +24,25 @@ export const actionMine = (creep: Creep) => {
           console.log(`Unexpected error in harvest routine: ${harvestResult}`)
       }
     }
+    // Build a container if we can
+    if (
+      creep.room.lookForAt(LOOK_CONSTRUCTION_SITES, creep.pos).length > 0 ||
+      creep.room.lookForAt(LOOK_STRUCTURES, creep.pos).length > 0
+    ) {
+      // We already have a container at this active mining position
+    } else {
+      // We need a container, unless we have more than 5 (the max)
+      const containers = creep.room.find(FIND_MY_STRUCTURES, {
+        filter: { structureType: STRUCTURE_CONTAINER },
+      })
+      if (containers.length < 5) {
+        creep.room.createConstructionSite(
+          creep.pos.x,
+          creep.pos.y,
+          STRUCTURE_CONTAINER
+        )
+      }
+    }
   } else {
     // We need to move to the assigned destination
     const moveResult = creep.moveTo(
