@@ -80,10 +80,18 @@ export const loop = ErrorMapper.wrapLoop(() => {
     Game.spawns.Spawn1.spawning === null
   ) {
     // Define roles
-    const creepRoles = ["Harvester", "Miner", "Upgrader", "Builder", "Defender"]
+    const creepRoles = [
+      "Harvester",
+      "Miner",
+      "Fetcher",
+      "Upgrader",
+      "Builder",
+      "Defender",
+    ]
     const creepTemplates: { [role: string]: BodyPartConstant[] } = {
       Harvester: [WORK, WORK, MOVE, CARRY], // 300 energy
       Miner: [WORK, WORK, MOVE], // 250
+      Fetcher: [MOVE, CARRY, CARRY, CARRY, CARRY], // 300
       Upgrader: [WORK, WORK, MOVE, CARRY], // 300
       Builder: [WORK, WORK, MOVE, CARRY], // 300
       Defender: [MOVE, MOVE, ATTACK, ATTACK], // 260
@@ -157,6 +165,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
       spawnCreep("Harvester")
     } else if (creepCounts.Miner < mineablePositionsCount) {
       spawnCreep("Miner")
+    } else if (creepCounts.Fetcher < mineablePositionsCount) {
+      spawnCreep("Fetcher")
     } else if (
       creepCounts.Upgrader < 3 &&
       constructionSiteCount === 0 &&

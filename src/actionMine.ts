@@ -60,16 +60,7 @@ export const actionMine = (creep: Creep) => {
           `${creep.memory.destination.x},${creep.memory.destination.y}`
       )
       // There's a creep where we are trying to go, so let's pick a new destination
-      creep.memory.state = "THINK"
-      // In the mean time, let's change our current destination to get out of the way
-      if (creep.room.controller) {
-        creep.memory.destination.x = creep.room.controller.pos.x
-        creep.memory.destination.y = creep.room.controller.pos.y
-      } else {
-        // No controller so let's just move randomly for a turn
-        creep.memory.destination.x = Math.floor(Math.random() * 48 + 1)
-        creep.memory.destination.y = Math.floor(Math.random() * 48 + 1)
-      }
+      creep.memory.state = "MEANDER"
     }
 
     // Now let's actually move (to our destination or the random location)
