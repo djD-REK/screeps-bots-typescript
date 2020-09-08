@@ -29,8 +29,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
   const roadCount = Game.spawns.Spawn1.room.find(FIND_MY_STRUCTURES, {
     filter: { structureType: STRUCTURE_ROAD },
   }).length
+  let newConstructionSites = 0 // Only build a limited number of construction sites at once
   if (constructionSiteCount + roadCount === 0) {
-    console.log(`We need some roads`)
+    console.log(`We might need some roads`)
     // Plan roads from spawn to sources
     for (const source of sources) {
       const pathToSource = Game.spawns.Spawn1.pos.findPathTo(source, {
@@ -40,11 +41,14 @@ export const loop = ErrorMapper.wrapLoop(() => {
         if (pathStep.x === source.pos.x && pathStep.y === source.pos.y) {
           // Don't build construction sites directly on top of sources
         } else {
-          Game.spawns.Spawn1.room.createConstructionSite(
-            pathStep.x,
-            pathStep.y,
-            STRUCTURE_ROAD
-          )
+          if (newConstructionSites < MAX_CONSTRUCTION_SITES / 10) {
+            Game.spawns.Spawn1.room.createConstructionSite(
+              pathStep.x,
+              pathStep.y,
+              STRUCTURE_ROAD
+            )
+            newConstructionSites++
+          }
         }
       }
     }
@@ -61,11 +65,14 @@ export const loop = ErrorMapper.wrapLoop(() => {
         ) {
           // Don't build construction sites directly on top of controllers
         } else {
-          Game.spawns.Spawn1.room.createConstructionSite(
-            pathStep.x,
-            pathStep.y,
-            STRUCTURE_ROAD
-          )
+          if (newConstructionSites < MAX_CONSTRUCTION_SITES / 10) {
+            Game.spawns.Spawn1.room.createConstructionSite(
+              pathStep.x,
+              pathStep.y,
+              STRUCTURE_ROAD
+            )
+            newConstructionSites++
+          }
         }
       }
     }
@@ -101,12 +108,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
     console.log("Defenders: " + defenders.length)
 
     // Spawn a creep
-    // if (harvesters.length <= 3 * sources.length) {
-    if (harvesters.length < 10) {
+    if (harvesters.length < 4 * sources.length) {
       const harvesterName = Game.time + "_" + "Harvester" + harvesters.length
       console.log("Spawning new harvester: " + harvesterName)
       Game.spawns.Spawn1.spawnCreep(
-        [MOVE, MOVE, WORK, CARRY], // 250
+        // [MOVE, MOVE, WORK, CARRY], // 250
+        [MOVE, MOVE, WORK, CARRY, CARRY], // 300
         harvesterName,
         {
           memory: {
