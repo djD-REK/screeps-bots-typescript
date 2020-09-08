@@ -17,14 +17,36 @@ export const actionFillUp = (creep: Creep) => {
     },
   })
   // Maybe there are some dropped resources we can go grab
-  const droppedResourceTarget = creep.pos.findClosestByPath(
+  let droppedResourceTarget = creep.pos.findClosestByPath(
     FIND_DROPPED_RESOURCES,
     {
       filter(resource) {
-        return resource.amount >= 0
+        return resource.amount >= 1000
       },
     }
   )
+
+  if (droppedResourceTarget === null) {
+    droppedResourceTarget = creep.pos.findClosestByPath(
+      FIND_DROPPED_RESOURCES,
+      {
+        filter(resource) {
+          return resource.amount >= 100
+        },
+      }
+    )
+  }
+
+  if (droppedResourceTarget === null) {
+    droppedResourceTarget = creep.pos.findClosestByPath(
+      FIND_DROPPED_RESOURCES,
+      {
+        filter(resource) {
+          return resource.amount >= 0
+        },
+      }
+    )
+  }
 
   if (droppedResourceTarget != null) {
     creep.say("🔄 PICK UP")

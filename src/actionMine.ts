@@ -35,7 +35,10 @@ export const actionMine = (creep: Creep) => {
       const containers = creep.room.find(FIND_MY_STRUCTURES, {
         filter: { structureType: STRUCTURE_CONTAINER },
       })
-      if (containers.length < 5) {
+      // TODO: Move containers logic to road building section
+      // i.e. build roads before containers
+      if (containers.length < 0) {
+        // Does not run at the moment
         creep.room.createConstructionSite(
           creep.pos.x,
           creep.pos.y,
