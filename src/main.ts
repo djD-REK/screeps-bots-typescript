@@ -1,5 +1,6 @@
 import { ErrorMapper } from "utils/ErrorMapper"
 import { roleHarvester } from "roleHarvester"
+import { roleMiner } from "roleMiner"
 import { roleUpgrader } from "roleUpgrader"
 import { roleDefender } from "roleDefender"
 import { roleBuilder } from "roleBuilder"
@@ -81,6 +82,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
       (creep) => creep.memory.role === "harvester"
     )
     console.log("Harvesters: " + harvesters.length)
+
+    const miners = _.filter(
+      Game.creeps,
+      (creep) => creep.memory.role === "miner"
+    )
+    console.log("Miners: " + miners.length)
 
     const upgraders = _.filter(
       Game.creeps,
@@ -188,6 +195,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
       const creep = Game.creeps[creepName]
       if (creep.spawning === false) {
         if (creep.memory.role === "harvester") {
+          roleHarvester.run(creep)
+        }
+        if (creep.memory.role === "miner") {
           roleHarvester.run(creep)
         }
         if (creep.memory.role === "upgrader") {
