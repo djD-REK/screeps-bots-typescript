@@ -6,7 +6,8 @@ const assessSources = (creep: Creep) => {
   // Select an array of creeps with assigned destinations in this room:
   const miners = Object.keys(Game.creeps).filter(
     (creepName) =>
-      Game.creeps[creepName].memory.role === "miner" &&
+      (Game.creeps[creepName].memory.role === "harvester" ||
+        Game.creeps[creepName].memory.role === "miner") &&
       Game.creeps[creepName].room === creep.room &&
       creepName !== creep.name
   )
@@ -15,7 +16,16 @@ const assessSources = (creep: Creep) => {
 
   const occupiedMineablePositions: RoomPosition[] = []
   miners.forEach((creepName) => {
+    // Actually occupied positions
     occupiedMineablePositions.push(Game.creeps[creepName].pos)
+    // Designated mining positions (miner may be in transit)
+    occupiedMineablePositions.push(
+      new RoomPosition(
+        Game.creeps[creepName].memory.destination.x,
+        Game.creeps[creepName].memory.destination.y,
+        creep.room.name
+      )
+    )
   })
   console.log(`Mineable: ${mineablePositions.length}`)
 
