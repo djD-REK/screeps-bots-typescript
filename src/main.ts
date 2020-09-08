@@ -105,37 +105,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     console.log("Defenders: " + defenders.length)
 
     // Spawn a creep
-    if (miners.length < 1) {
-      const minerName = Game.time + "_" + "Miner" + miners.length
-      console.log("Spawning new miner: " + minerName)
-      Game.spawns.Spawn1.spawnCreep(
-        [WORK, WORK, MOVE], // 250
-        minerName,
-        {
-          memory: {
-            role: "miner",
-            room: Game.spawns.Spawn1.room.name,
-            state: "THINK",
-            destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
-          },
-        }
-      )
-    } else if (builders.length < 1 && constructionSiteCount > 0) {
-      const builderName = Game.time + "_" + "Builder" + builders.length
-      console.log("Spawning new builder: " + builderName)
-      Game.spawns.Spawn1.spawnCreep(
-        [WORK, WORK, MOVE, CARRY], // 300
-        builderName,
-        {
-          memory: {
-            role: "builder",
-            room: Game.spawns.Spawn1.room.name,
-            state: "THINK",
-            destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
-          },
-        }
-      )
-    } else if (miners.length < mineablePositionsCount) {
+    if (miners.length < mineablePositionsCount) {
       const minerName = Game.time + "_" + "Miner" + miners.length
       console.log("Spawning new miner: " + minerName)
       Game.spawns.Spawn1.spawnCreep(
