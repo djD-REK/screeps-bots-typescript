@@ -1,6 +1,6 @@
 export const getMineablePositions = (room: Room) => {
-  // Select all sources with available energy from this room:
-  const activeSources = room.find(FIND_SOURCES_ACTIVE)
+  // Select all sources from this room:
+  const activeSources = room.find(FIND_SOURCES)
   // Make an array of valid destinations to mine sources
   const mineablePositions: RoomPosition[] = []
   activeSources.forEach((source) => {
