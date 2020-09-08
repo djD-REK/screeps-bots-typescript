@@ -1,18 +1,26 @@
 export const actionDeposit = (creep: Creep) => {
   // Find a drop off site and move to it
   const targetDropOffSite = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-    // var targets = creep.room.find(FIND_MY_STRUCTURES, {
-    // var targets = Game.spawns["Spawn1"].room.find(FIND_MY_STRUCTURES, {
     filter: (structure) => {
       return (
-        structure.structureType === STRUCTURE_EXTENSION ||
-        structure.structureType === STRUCTURE_SPAWN ||
-        structure.structureType === STRUCTURE_TOWER ||
-        structure.structureType === STRUCTURE_STORAGE
-        // && structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
+        (structure.structureType === STRUCTURE_EXTENSION ||
+          structure.structureType === STRUCTURE_SPAWN) &&
+        structure.energy < structure.energyCapacity
       )
     },
   })
+  /* TODO: Add container logic (unowned, thus different)
+  if(targetDropOffSite===null) {
+    // There is no extension or spawn, but maybe there is a contrainer
+    targetDropOffSite = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+      filter: (structure) => {
+        return (
+          (structure.structureType === STRUCTURE_CONTAINER &&
+            _.sum(structure.store) < structure.storeCapacity)
+        )
+      },
+    })
+  }*/
   if (targetDropOffSite != null) {
     // There is somewhere to drop it off in the current room
     if (
