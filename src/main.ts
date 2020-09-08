@@ -37,8 +37,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
         ignoreCreeps: true,
       })
       for (const pathStep of pathToSource) {
-        if (pathStep.x !== source.pos.x && pathStep.y !== source.pos.y) {
+        if (pathStep.x === source.pos.x && pathStep.y === source.pos.y) {
           // Don't build construction sites directly on top of sources
+        } else {
           Game.spawns.Spawn1.room.createConstructionSite(
             pathStep.x,
             pathStep.y,
@@ -55,10 +56,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
       })
       for (const pathStep of pathToSource) {
         if (
-          pathStep.x !== controller.pos.x &&
-          pathStep.y !== controller.pos.y
+          pathStep.x === controller.pos.x &&
+          pathStep.y === controller.pos.y
         ) {
           // Don't build construction sites directly on top of controllers
+        } else {
           Game.spawns.Spawn1.room.createConstructionSite(
             pathStep.x,
             pathStep.y,

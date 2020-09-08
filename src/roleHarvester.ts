@@ -22,6 +22,7 @@ export const roleHarvester = {
         creep.memory.destination = new RoomPosition(0, 0, creep.memory.room)
         creep.say("🚶 HARVEST")
         creep.memory.state = "HARVEST"
+        creep.memory.sourceNumber = 0 // Reset source to closest in room
       }
     }
   },
