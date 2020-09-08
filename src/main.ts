@@ -102,7 +102,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
     // Spawn a creep
     // if (harvesters.length <= 3 * sources.length) {
-    if (harvesters.length < 7) {
+    if (harvesters.length < 10) {
       const harvesterName = Game.time + "_" + "Harvester" + harvesters.length
       console.log("Spawning new harvester: " + harvesterName)
       Game.spawns.Spawn1.spawnCreep(
@@ -115,11 +115,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
             working: false,
             state: "THINK",
             destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
-            sourceNumber: Math.floor(harvesters.length / 4),
+            sourceNumber: 0,
           },
         }
       )
-    } else if (upgraders.length < 3) {
+    } else if (upgraders.length < 3 && constructionSiteCount === 0) {
       const upgraderName = Game.time + "_" + "Upgrader" + upgraders.length
       console.log("Spawning new upgrader: " + upgraderName)
       Game.spawns.Spawn1.spawnCreep(
@@ -136,7 +136,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
           },
         }
       )
-    } else if (builders.length < 3) {
+    } else if (builders.length < 3 && constructionSiteCount > 0) {
       const builderName = Game.time + "_" + "Builder" + builders.length
       console.log("Spawning new builder: " + builderName)
       Game.spawns.Spawn1.spawnCreep(

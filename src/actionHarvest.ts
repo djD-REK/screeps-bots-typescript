@@ -1,7 +1,12 @@
 const changeSource = (creep: Creep) => {
   const sources = creep.room.find(FIND_SOURCES_ACTIVE)
-  // Randomize current source assignment
-  creep.memory.sourceNumber = Math.floor(Math.random() * sources.length)
+  // Add one to source assignment (next closest) if possible
+  if (creep.memory.sourceNumber < sources.length - 1) {
+    creep.memory.sourceNumber += 1
+  } else {
+    // Randomize current source assignment
+    creep.memory.sourceNumber = Math.floor(Math.random() * sources.length)
+  }
   creep.say("🔄 harvest")
   console.log(
     `${creep.name} assigned to @sources[${creep.memory.sourceNumber}]`
