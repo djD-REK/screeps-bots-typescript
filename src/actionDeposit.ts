@@ -20,6 +20,7 @@ export const actionDeposit = (creep: Creep) => {
     ) {
       creep.moveTo(targetDropOffSite, {
         visualizePathStyle: { stroke: "#ffffff" },
+        reusePath: 1, // Disable path reuse; TODO This uses a lot of CPU
       })
     }
   } else {

@@ -28,6 +28,7 @@ export const actionHarvest = (creep: Creep) => {
     case ERR_NOT_IN_RANGE: // The target is too far away.
       const moveResult = creep.moveTo(sources[creep.memory.sourceNumber], {
         visualizePathStyle: { stroke: "#ffaa00" },
+        reusePath: 0, // Disable path reuse; TODO This uses a lot of CPU
       })
       switch (moveResult) {
         // Do nothing cases
