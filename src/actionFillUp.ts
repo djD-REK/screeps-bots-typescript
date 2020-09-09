@@ -1,5 +1,3 @@
-import { resourceUsage } from "process"
-
 export const actionFillUp = (creep: Creep) => {
   // We should compare the amount of all energy sources in the room
   // Specifically: dropped resources and energy stored in containers
