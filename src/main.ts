@@ -134,14 +134,16 @@ export const loop = ErrorMapper.wrapLoop(() => {
       "Fetcher",
       "Upgrader",
       "Builder",
+      // "Worker", // Evolves into Upgrader or Builder
       "Defender",
     ]
     const creepTemplates: { [role: string]: BodyPartConstant[] } = {
       Harvester: [WORK, WORK, MOVE, CARRY], // 300 energy
       Miner: [WORK, WORK, MOVE], // 250
       Fetcher: [MOVE, CARRY, CARRY, CARRY, CARRY], // 300
-      Upgrader: [WORK, WORK, MOVE, CARRY], // 300
-      Builder: [WORK, WORK, MOVE, CARRY], // 300
+      // Upgrader: [WORK, WORK, MOVE, CARRY], // 300
+      // Builder: [WORK, WORK, MOVE, CARRY], // 300
+      Worker: [WORK, WORK, MOVE, CARRY], // 300
       Defender: [MOVE, MOVE, ATTACK, ATTACK], // 260
     }
     const creepCounts: { [role: string]: number } = {}
@@ -183,18 +185,35 @@ export const loop = ErrorMapper.wrapLoop(() => {
         creep.memory.state = "THINK"
       })
     }
-    // Builder ==> Upgrader
-    if (constructionSiteCount === 0 && creepCounts.Builder > 0) {
-      _.filter(Game.creeps, (creep) => creep.memory.role === "Builder").forEach(
-        (creep) => {
-          // We've run out of stuff to build, so builders become upgraders
-          creep.say("EVOLVE")
-          const newRole = "Upgrader"
-          console.log(`${creep.name} has evolved to a ${newRole}`)
-          creep.memory.role = newRole
-          creep.memory.state = "THINK"
-        }
-      )
+    // Upgrader || Worker ==> Builder
+    if (constructionSiteCount > 0) {
+      _.filter(
+        Game.creeps,
+        (creep) =>
+          creep.memory.role === "Upgrader" || creep.memory.role === "Worker"
+      ).forEach((creep) => {
+        // We have stuff to build, so builders and workers become upgraders
+        creep.say("EVOLVE")
+        const newRole = "Builder"
+        console.log(`${creep.name} has evolved to a ${newRole}`)
+        creep.memory.role = newRole
+        creep.memory.state = "THINK"
+      })
+    }
+    // Builder || Worker ==> Upgrader
+    if (constructionSiteCount === 0) {
+      _.filter(
+        Game.creeps,
+        (creep) =>
+          creep.memory.role === "Builder" || creep.memory.role === "Worker"
+      ).forEach((creep) => {
+        // We've run out of stuff to build, so builders and workers become upgraders
+        creep.say("EVOLVE")
+        const newRole = "Upgrader"
+        console.log(`${creep.name} has evolved to a ${newRole}`)
+        creep.memory.role = newRole
+        creep.memory.state = "THINK"
+      })
     }
 
     // Helper Functions
@@ -231,23 +250,14 @@ export const loop = ErrorMapper.wrapLoop(() => {
       spawnCreep("Harvester")
     } else if (creepCounts.Miner < mineablePositionsCount) {
       spawnCreep("Miner")
-    } else if (creepCounts.Fetcher < 3) {
+    } else if (creepCounts.Fetcher < mineablePositionsCount) {
       spawnCreep("Fetcher")
-    } else if (
-      creepCounts.Upgrader < 3 &&
-      constructionSiteCount === 0 &&
-      creepCounts.Builder === 0
-    ) {
-      spawnCreep("Upgrader")
-    } else if (
-      creepCounts.Builder < 12 &&
-      constructionSiteCount > 0 &&
-      creepCounts.Upgrader === 0
-    ) {
-      spawnCreep("Builder")
-    } else if (creepCounts.Defender < 3) {
-      spawnCreep("Defender")
+    } else {
+      spawnCreep("Worker")
     }
+
+    // TODO: Defense against creep invasion
+    // else if (creepCounts.Defender < 3) {      spawnCreep("Defender")    }
   }
 
   // Run all creeps
