@@ -225,7 +225,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     ) {
       spawnCreep("Upgrader")
     } else if (
-      creepCounts.Builder < 6 &&
+      creepCounts.Builder < 12 &&
       constructionSiteCount > 0 &&
       creepCounts.Upgrader === 0
     ) {
