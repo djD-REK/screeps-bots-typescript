@@ -56,7 +56,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
         )
         containersCount++
       }
-      console.log(containersCount + "is containersCount")
       // Build roads surrounding each mineablePosition
       for (let x = mineablePosition.x - 1; x < mineablePosition.x + 1; x++) {
         for (let y = mineablePosition.y - 1; y < mineablePosition.y + 1; y++) {
