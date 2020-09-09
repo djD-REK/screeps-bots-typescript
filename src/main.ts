@@ -173,8 +173,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
       ).forEach((creep) => {
         // We've progressed to miners, so harvesters become builders
         creep.say("EVOLVE")
-        console.log(`Harvester ${creep.name} has become a Builder`)
-        creep.memory.role = "Builder"
+        const newRole = "Builder"
+        const newName = generateCreepName(newRole)
+        console.log(`${creep.name} has evolved to ${newName}`)
+        creep.name = newName
+        creep.memory.role = newRole
         creep.memory.state = "THINK"
       })
     }
@@ -213,7 +216,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       spawnCreep("Harvester")
     } else if (creepCounts.Miner < mineablePositionsCount) {
       spawnCreep("Miner")
-    } else if (creepCounts.Fetcher < mineablePositionsCount) {
+    } else if (creepCounts.Fetcher < 3) {
       spawnCreep("Fetcher")
     } else if (
       creepCounts.Upgrader < 3 &&
@@ -222,7 +225,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     ) {
       spawnCreep("Upgrader")
     } else if (
-      creepCounts.Builder < 3 &&
+      creepCounts.Builder < 6 &&
       constructionSiteCount > 0 &&
       creepCounts.Upgrader === 0
     ) {
