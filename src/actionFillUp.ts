@@ -1,8 +1,6 @@
 import { resourceUsage } from "process"
 
 export const actionFillUp = (creep: Creep) => {
-  creep.say("🚶 FILL UP")
-
   // We should compare the amount of all energy sources in the room
   // Specifically: dropped resources and energy stored in containers
   const allEnergySources: (StructureContainer | Resource)[] = []
@@ -50,7 +48,6 @@ export const actionFillUp = (creep: Creep) => {
   if (targetFillUpSite) {
     if ("store" in targetFillUpSite) {
       // Stored energy resource in a container in this room
-      creep.say("🚶 WITHDRAW")
       if (
         creep.withdraw(targetFillUpSite, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE
       ) {
@@ -61,7 +58,6 @@ export const actionFillUp = (creep: Creep) => {
     }
     if ("amount" in targetFillUpSite) {
       // Dropped energy resource in this room
-      creep.say("🔄 PICK UP")
       if (creep.pickup(targetFillUpSite) === ERR_NOT_IN_RANGE) {
         creep.moveTo(targetFillUpSite, {
           visualizePathStyle: { stroke: "#ffaa00" },
