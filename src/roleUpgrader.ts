@@ -9,7 +9,7 @@ export const roleUpgrader = {
     if (creep.memory.state === "FILL UP") {
       // Go harvest active resources
       actionFillUp(creep)
-      if (creep.store.getFreeCapacity() === 0) {
+      if (creep.store.getFreeCapacity() < 5) {
         creep.say("🚶 UPGRADE")
         creep.memory.state = "UPGRADE"
       }

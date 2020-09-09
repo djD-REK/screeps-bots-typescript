@@ -33,8 +33,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
     filter: { structureType: STRUCTURE_ROAD },
   }).length
   // if (constructionSiteCount === 0) {
-  if (true) {
-    console.log(`We might need some roads`)
+  if (Game.time % 100 === 0) {
+    console.log(`=== Road planning check (every 100 ticks) ===`)
     const mineablePositions = getMineablePositions(Game.spawns.Spawn1.room)
     const terrain = new Room.Terrain(Game.spawns.Spawn1.room.name)
     // Count the containers because there's a maximum of 5 containers allowed
