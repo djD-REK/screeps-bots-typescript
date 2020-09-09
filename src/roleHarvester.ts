@@ -10,7 +10,7 @@ export const roleHarvester = {
     if (creep.memory.state === "HARVEST") {
       // Go harvest active resources
       actionHarvest(creep)
-      if (creep.store.getFreeCapacity() < 5) {
+      if (creep.store.getUsedCapacity() / creep.store.getCapacity() > 0.9) {
         creep.say("🚶 DEPOSIT")
         creep.memory.state = "DEPOSIT"
       }
