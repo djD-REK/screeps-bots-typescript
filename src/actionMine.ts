@@ -10,10 +10,10 @@ export const actionMine = (creep: Creep) => {
       switch (harvestResult) {
         // Do nothing cases
         case OK: // The operation has been scheduled successfully.
+        case ERR_NOT_ENOUGH_RESOURCES: // The target does not contain any harvestable energy or mineral.
           break
         // Unhandled cases
         case ERR_NOT_IN_RANGE: // The target is too far away.
-        case ERR_NOT_ENOUGH_RESOURCES: // The target does not contain any harvestable energy or mineral.
         case ERR_NOT_OWNER: // You are not the owner of this creep, or the room controller is owned or reserved by another player.
         case ERR_BUSY: // The creep is still being spawned.
         case ERR_NOT_FOUND: // Extractor not found. You must build an extractor structure to harvest minerals.
@@ -21,7 +21,9 @@ export const actionMine = (creep: Creep) => {
         case ERR_TIRED: // The extractor or the deposit is still cooling down.
         case ERR_NO_BODYPART: // There are no WORK body parts in this creep’s body.
         default:
-          console.log(`Unexpected error in harvest routine: ${harvestResult}`)
+          console.log(
+            `${creep.name} had an unexpected error in harvest routine: ${harvestResult}`
+          )
       }
     }
     // Build a container if we can
