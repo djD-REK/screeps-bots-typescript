@@ -131,6 +131,7 @@ export const roleMiner = {
             `${creep.name} had an unexpected error in move routine: ${moveResult}`
           )
       }
+      creep.memory.state = "THINK"
     }
   },
 }

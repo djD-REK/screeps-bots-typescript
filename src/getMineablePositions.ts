@@ -6,7 +6,7 @@ export const getMineablePositions = (room: Room) => {
   activeSources.forEach((source) => {
     const sourceX = source.pos.x
     const sourceY = source.pos.y
-    // Check for source keepers
+    // Check for source keepers & their lairs
     const creepsLookArray = room.lookForAtArea(
       // lookForAtArea(type, top, left, bottom, right, [asArray])
       LOOK_CREEPS,
@@ -16,7 +16,9 @@ export const getMineablePositions = (room: Room) => {
       sourceX + 1,
       true
     )
-    const sourceKeepers = []
+
+    const actualSourceKeepers = []
+
     creepsLookArray
       .filter(
         (positionAsJSON) =>
@@ -25,9 +27,31 @@ export const getMineablePositions = (room: Room) => {
       .forEach((creepPositionAsJSON) => {
         // Each item returned by lookForAtArea looks something like:
         // {"type":"terrain","terrain":"plain","x":24,"y":42}
-        sourceKeepers.push(creepPositionAsJSON)
+        actualSourceKeepers.push(creepPositionAsJSON)
       })
-    if (sourceKeepers.length === 0) {
+
+    const structuresLookArray = room.lookForAtArea(
+      // lookForAtArea(type, top, left, bottom, right, [asArray])
+      LOOK_STRUCTURES,
+      sourceY - 4,
+      sourceX - 4,
+      sourceY + 4,
+      sourceX + 4,
+      true
+    )
+
+    structuresLookArray
+      .filter(
+        (positionAsJSON) =>
+          positionAsJSON.structure.structureType === STRUCTURE_KEEPER_LAIR
+      )
+      .forEach((structurePositionAsJSON) => {
+        // Each item returned by lookForAtArea looks something like:
+        // {"type":"terrain","terrain":"plain","x":24,"y":42}
+        actualSourceKeepers.push(structurePositionAsJSON)
+      })
+
+    if (actualSourceKeepers.length === 0) {
       // No Source Keepers so we can count this source as valid
       const terrainLookArray = room.lookForAtArea(
         // lookForAtArea(type, top, left, bottom, right, [asArray])

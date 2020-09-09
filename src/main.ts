@@ -35,14 +35,63 @@ export const loop = ErrorMapper.wrapLoop(() => {
   // if (constructionSiteCount === 0) {
   if (true) {
     console.log(`We might need some roads`)
-    // Plan roads from spawn to all possible mining positions (i.e. all sources)
     const mineablePositions = getMineablePositions(Game.spawns.Spawn1.room)
-    for (const source of mineablePositions) {
-      const pathToSource = Game.spawns.Spawn1.pos.findPathTo(source, {
-        ignoreCreeps: true,
-      })
-      for (const [index, pathStep] of pathToSource.entries()) {
-        if (index < pathToSource.length - 2) {
+    const terrain = new Room.Terrain(Game.spawns.Spawn1.room.name)
+    // Count the containers because there's a maximum of 5 containers allowed
+    const MAX_CONTAINERS = 5
+    let containersCount = Game.spawns.Spawn1.room.find(FIND_STRUCTURES, {
+      filter: (structure) => structure.structureType === "container",
+    }).length
+    containersCount += Game.spawns.Spawn1.room.find(FIND_CONSTRUCTION_SITES, {
+      filter: (constructionSite) =>
+        constructionSite.structureType === "container",
+    }).length
+    // Plan containers at each mineable position and roads around them
+    for (const mineablePosition of mineablePositions) {
+      if (containersCount < MAX_CONTAINERS) {
+        Game.spawns.Spawn1.room.createConstructionSite(
+          mineablePosition.x,
+          mineablePosition.y,
+          STRUCTURE_CONTAINER
+        )
+        containersCount++
+      }
+      console.log(containersCount + "is containersCount")
+      // Build roads surrounding each mineablePosition
+      for (let x = mineablePosition.x - 1; x < mineablePosition.x + 1; x++) {
+        for (let y = mineablePosition.y - 1; y < mineablePosition.y + 1; y++) {
+          if (x === mineablePosition.x && y === mineablePosition.y) {
+            // We don't want a road on the actual mineable Position
+            continue
+          }
+          switch (terrain.get(x, y)) {
+            // No action cases
+            case TERRAIN_MASK_WALL:
+              break
+            // Build road cases
+            case 0: // plain
+            case TERRAIN_MASK_SWAMP:
+            default:
+              Game.spawns.Spawn1.room.createConstructionSite(
+                x,
+                y,
+                STRUCTURE_ROAD
+              )
+          }
+        }
+      }
+    }
+
+    // Plan roads from spawn to all possible mining positions (i.e. all sources)
+    for (const mineablePosition of mineablePositions) {
+      const pathToMineablePosition = Game.spawns.Spawn1.pos.findPathTo(
+        mineablePosition,
+        {
+          ignoreCreeps: true,
+        }
+      )
+      for (const [index, pathStep] of pathToMineablePosition.entries()) {
+        if (index < pathToMineablePosition.length - 1) {
           // Don't build construction sites directly on top of sources and
           // don't build them within 2 range of sources (mining positions)
           // TODO: Check for mining positions and build caddy corner to them
