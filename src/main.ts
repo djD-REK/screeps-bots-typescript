@@ -166,7 +166,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
 
     // Evolutions
-    if (creepCounts.Miner >= creepCounts.Harvester) {
+    // Harvester ==> Builder
+    if (
+      creepCounts.Harvester > 0 &&
+      creepCounts.Miner >= creepCounts.Harvester
+    ) {
       _.filter(
         Game.creeps,
         (creep) => creep.memory.role === "Harvester"
@@ -174,14 +178,26 @@ export const loop = ErrorMapper.wrapLoop(() => {
         // We've progressed to miners, so harvesters become builders
         creep.say("EVOLVE")
         const newRole = "Builder"
-        const newName = generateCreepName(newRole)
-        console.log(`${creep.name} has evolved to ${newName}`)
-        creep.name = newName
+        console.log(`${creep.name} has evolved to a ${newRole}`)
         creep.memory.role = newRole
         creep.memory.state = "THINK"
       })
     }
+    // Builder ==> Upgrader
+    if (constructionSiteCount === 0 && creepCounts.Builder > 0) {
+      _.filter(Game.creeps, (creep) => creep.memory.role === "Builder").forEach(
+        (creep) => {
+          // We've run out of stuff to build, so builders become upgraders
+          creep.say("EVOLVE")
+          const newRole = "Upgrader"
+          console.log(`${creep.name} has evolved to a ${newRole}`)
+          creep.memory.role = newRole
+          creep.memory.state = "THINK"
+        }
+      )
+    }
 
+    // Helper Functions
     const generateCreepName = (role: string) => {
       let randomNumber: number
       let name: string
@@ -192,7 +208,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
       // Return a unique name for this creep
       return name
     }
-
     const spawnCreep = (role: string) => {
       const creepName = generateCreepName(role)
       console.log(`Spawning new creep: ${creepName}`)
