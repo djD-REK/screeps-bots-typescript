@@ -143,6 +143,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
     Defender: [MOVE, MOVE, ATTACK, ATTACK], // 260
   }
   const creepCounts: { [role: string]: number } = {}
+  for (const role of creepRoles) {
+    creepCounts[role] = _.filter(
+      Game.creeps,
+      (creep) => creep.memory.role === role
+    ).length
+  }
 
   // Evolutions
   // Harvester ==> Builder
@@ -199,10 +205,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
     // Log current counts to console
     for (const role of creepRoles) {
-      creepCounts[role] = _.filter(
-        Game.creeps,
-        (creep) => creep.memory.role === role
-      ).length
       const outputMessage = `${role}s: ${creepCounts[role]}`
       if (role === "Miner") {
         console.log(
@@ -247,9 +249,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
       spawnCreep("Harvester")
     } else if (creepCounts.Miner < mineablePositionsCount) {
       spawnCreep("Miner")
-    } else if (creepCounts.Fetcher < mineablePositionsCount) {
+    } else if (creepCounts.Fetcher < mineablePositionsCount / 2) {
       spawnCreep("Fetcher")
-    } else {
+    } else if (
+      creepCounts.Builder + creepCounts.Upgrader <
+      mineablePositionsCount
+    ) {
       spawnCreep("Worker")
     }
 
