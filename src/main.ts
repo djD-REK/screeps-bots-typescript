@@ -95,10 +95,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
       // Build roads surrounding each mineablePosition
       for (let x = mineablePosition.x - 1; x <= mineablePosition.x + 1; x++) {
         for (let y = mineablePosition.y - 1; y <= mineablePosition.y + 1; y++) {
-          if (x === mineablePosition.x && y === mineablePosition.y) {
-            // We don't want a road on the actual mineable position
-            continue
-          }
           switch (terrain.get(x, y)) {
             // No action cases
             case TERRAIN_MASK_WALL:
