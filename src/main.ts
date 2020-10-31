@@ -25,17 +25,18 @@ export const loop = ErrorMapper.wrapLoop(() => {
   // Find all potential sources in this room
   const sources = Game.spawns.Spawn1.room.find(FIND_SOURCES)
 
-  // Plan some roads if we have a brand new Spawn
+  // Plan some roads every so often
   const constructionSiteCount = Game.spawns.Spawn1.room.find(
     FIND_MY_CONSTRUCTION_SITES
   ).length
   const roadCount = Game.spawns.Spawn1.room.find(FIND_MY_STRUCTURES, {
     filter: { structureType: STRUCTURE_ROAD },
   }).length
-  // if (constructionSiteCount === 0) {
   if (Game.time % 100 === 0) {
     console.log(`=== Road planning check (every 100 ticks) ===`)
+    // Find the mineable positions we want to build roads to
     const mineablePositions = getMineablePositions(Game.spawns.Spawn1.room)
+    // Create a terrain helper for quick lookups of terrain
     const terrain = new Room.Terrain(Game.spawns.Spawn1.room.name)
     // Count the containers because there's a maximum of 5 containers allowed
     const MAX_CONTAINERS = 5
@@ -57,10 +58,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
         containersCount++
       }
       // Build roads surrounding each mineablePosition
-      for (let x = mineablePosition.x - 1; x < mineablePosition.x + 1; x++) {
-        for (let y = mineablePosition.y - 1; y < mineablePosition.y + 1; y++) {
+      for (let x = mineablePosition.x - 1; x <= mineablePosition.x + 1; x++) {
+        for (let y = mineablePosition.y - 1; y <= mineablePosition.y + 1; y++) {
           if (x === mineablePosition.x && y === mineablePosition.y) {
-            // We don't want a road on the actual mineable Position
+            // We don't want a road on the actual mineable position
             continue
           }
           switch (terrain.get(x, y)) {
