@@ -82,24 +82,72 @@ export const loop = ErrorMapper.wrapLoop(() => {
       }
     }
 
-    // Plan roads from spawn to all possible mining positions (i.e. all sources)
+    // Plan roads surrounding each Spawn in this room
     for (const mineablePosition of mineablePositions) {
-      const pathToMineablePosition = Game.spawns.Spawn1.pos.findPathTo(
-        mineablePosition,
-        {
-          ignoreCreeps: true,
+      if (containersCount < MAX_CONTAINERS) {
+        Game.spawns.Spawn1.room.createConstructionSite(
+          mineablePosition.x,
+          mineablePosition.y,
+          STRUCTURE_CONTAINER
+        )
+        containersCount++
+      }
+      // Build roads surrounding each mineablePosition
+      for (let x = mineablePosition.x - 1; x <= mineablePosition.x + 1; x++) {
+        for (let y = mineablePosition.y - 1; y <= mineablePosition.y + 1; y++) {
+          if (x === mineablePosition.x && y === mineablePosition.y) {
+            // We don't want a road on the actual mineable position
+            continue
+          }
+          switch (terrain.get(x, y)) {
+            // No action cases
+            case TERRAIN_MASK_WALL:
+              break
+            // Build road cases
+            case 0: // plain
+            case TERRAIN_MASK_SWAMP:
+            default:
+              Game.spawns.Spawn1.room.createConstructionSite(
+                x,
+                y,
+                STRUCTURE_ROAD
+              )
+          }
         }
-      )
-      for (const [index, pathStep] of pathToMineablePosition.entries()) {
-        if (index < pathToMineablePosition.length - 1) {
-          // Don't build construction sites directly on top of sources and
-          // don't build them within 2 range of sources (mining positions)
-          // TODO: Check for mining positions and build caddy corner to them
-          Game.spawns.Spawn1.room.createConstructionSite(
-            pathStep.x,
-            pathStep.y,
-            STRUCTURE_ROAD
-          )
+      }
+    }
+
+    const roomSpawns = Game.spawns.Spawn1.room.find(FIND_STRUCTURES, {
+      filter: (structure) => structure.structureType === "spawn",
+    })
+    const roomSpawnPositions = roomSpawns.map((aSpawn) => aSpawn.pos)
+    // Plan roads to assist traffic around any Spawns in this room
+    for (const roomSpawnPosition of roomSpawnPositions) {
+      // Build roads completely surrounding each Spawn in this room
+      for (let x = roomSpawnPosition.x - 1; x <= roomSpawnPosition.x + 1; x++) {
+        for (
+          let y = roomSpawnPosition.y - 1;
+          y <= roomSpawnPosition.y + 1;
+          y++
+        ) {
+          if (x === roomSpawnPosition.x && y === roomSpawnPosition.y) {
+            // We don't want a road on the actual position of the Spawn
+            continue
+          }
+          switch (terrain.get(x, y)) {
+            // No action cases
+            case TERRAIN_MASK_WALL:
+              break
+            // Build road cases
+            case 0: // plain
+            case TERRAIN_MASK_SWAMP:
+            default:
+              Game.spawns.Spawn1.room.createConstructionSite(
+                x,
+                y,
+                STRUCTURE_ROAD
+              )
+          }
         }
       }
     }
