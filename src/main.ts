@@ -34,6 +34,14 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }).length // Not used right now
   if (Game.time % 100 === 0) {
     console.log(`=== Road planning check (every 100 ticks) ===`)
+
+    // Road planning logic part 1: For mineable positions
+    // CURRENT TODO: Plan roads to each mineable position in surrounding rooms
+    // CURRENT LOOP: for each accessible room surrounding the current spawn
+    // CURRENT 1: Find "accessible rooms" (they have exits to this spawn)
+    // CURRENT 2: do everything below: plan containers, roads, etc.
+    // CURRENT idea: add surrounding / accessible mineable positions to the mineablePositions object, and then iterate through it once
+
     // Find the mineable positions we want to build roads to
     const mineablePositions = getMineablePositions(Game.spawns.Spawn1.room)
     // Create a terrain helper for quick lookups of terrain
@@ -102,25 +110,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       }
     }
 
-    // Plan roads from spawn to room controller
-    const controller = Game.spawns.Spawn1.room.controller
-    if (controller) {
-      const pathToController = Game.spawns.Spawn1.pos.findPathTo(controller, {
-        ignoreCreeps: true,
-      })
-      for (const [index, pathStep] of pathToController.entries()) {
-        if (index < pathToController.length - 4) {
-          // Don't build construction sites within 3 range of controller
-          // because the upgradeController command has 3 squares range
-          Game.spawns.Spawn1.room.createConstructionSite(
-            pathStep.x,
-            pathStep.y,
-            STRUCTURE_ROAD
-          )
-        }
-      }
-    }
-
+    // Road planning logic part 2: for creep Spawns
     const roomSpawns = Game.spawns.Spawn1.room.find(FIND_STRUCTURES, {
       filter: (structure) => structure.structureType === "spawn",
     })
@@ -152,6 +142,24 @@ export const loop = ErrorMapper.wrapLoop(() => {
                 STRUCTURE_ROAD
               )
           }
+        }
+      }
+    }
+    // Plan roads from spawn to room controller
+    const controller = Game.spawns.Spawn1.room.controller
+    if (controller) {
+      const pathToController = Game.spawns.Spawn1.pos.findPathTo(controller, {
+        ignoreCreeps: true,
+      })
+      for (const [index, pathStep] of pathToController.entries()) {
+        if (index < pathToController.length - 4) {
+          // Don't build construction sites within 3 range of controller
+          // because the upgradeController command has 3 squares range
+          Game.spawns.Spawn1.room.createConstructionSite(
+            pathStep.x,
+            pathStep.y,
+            STRUCTURE_ROAD
+          )
         }
       }
     }
