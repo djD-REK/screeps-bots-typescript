@@ -34,7 +34,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   const roadCount = Game.spawns.Spawn1.room.find(FIND_MY_STRUCTURES, {
     filter: { structureType: STRUCTURE_ROAD },
   }).length // Not used right now
-  if (Game.time % 100 === 0) {
+  if (Game.time % 10 === 0) {
     console.log(`=== Road planning check (every 100 ticks) ===`)
 
     // Road planning logic part 1: For mineable positions in the current room
@@ -159,6 +159,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       }
     }
 
+    /*
     // Road planning logic part 3: Roads to energy sources in other rooms
     // First, find the rooms accessible from this one (this room exits there)
     const accessibleAdjacentRooms: Array<Room> = []
@@ -252,7 +253,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
           }
         }
 
-        // Build roads from the creep Spawn to each exit (mineable position)
+        // Build roads from each mineable position back to the creep Spawn
         const pathFromMineablePositionToSpawn = Game.spawns.Spawn1.pos.findPathTo(
           mineablePosition,
           {
@@ -301,6 +302,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
         }
       }
     }
+    */
     // End of road planning logic
   }
 
