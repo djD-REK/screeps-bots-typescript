@@ -7,6 +7,8 @@ import { roleDefender } from "roleDefender"
 import { roleBuilder } from "roleBuilder"
 import { getMineablePositions } from "getMineablePositions"
 
+const MAX_CONTAINERS = 5
+
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
 export const loop = ErrorMapper.wrapLoop(() => {
@@ -35,19 +37,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
   if (Game.time % 100 === 0) {
     console.log(`=== Road planning check (every 100 ticks) ===`)
 
-    // Road planning logic part 1: For mineable positions
-    // CURRENT TODO: Plan roads to each mineable position in surrounding rooms
-    // CURRENT LOOP: for each accessible room surrounding the current spawn
-    // CURRENT 1: Find "accessible rooms" (they have exits to this spawn)
-    // CURRENT 2: do everything below: plan containers, roads, etc.
-    // CURRENT idea: add surrounding / accessible mineable positions to the mineablePositions object, and then iterate through it once
-
+    // Road planning logic part 1: For mineable positions in the current room
     // Find the mineable positions we want to build roads to
     const mineablePositions = getMineablePositions(Game.spawns.Spawn1.room)
     // Create a terrain helper for quick lookups of terrain
     const terrain = new Room.Terrain(Game.spawns.Spawn1.room.name)
     // Count the containers because there's a maximum of 5 containers allowed
-    const MAX_CONTAINERS = 5
     let containersCount = Game.spawns.Spawn1.room.find(FIND_STRUCTURES, {
       filter: (structure) => structure.structureType === "container",
     }).length
@@ -163,6 +158,150 @@ export const loop = ErrorMapper.wrapLoop(() => {
         }
       }
     }
+
+    // Road planning logic part 3: Roads to energy sources in other rooms
+    // First, find the rooms accessible from this one (this room exits there)
+    const accessibleAdjacentRooms: Array<Room> = []
+    const currentRoom = Game.spawns.Spawn1.room
+    // Adjacent rooms: +/- 1 in the x, +/- in the y
+    // There are 4 possible adjacent rooms
+    // Example room name: W23S13
+    const matchedRoomName = currentRoom.name.match(/(\w)(\d+)(\w)(\d+)/)
+    if (matchedRoomName) {
+      const currentRoomWestOrEast = matchedRoomName[1]
+      const currentRoomXCoordinate = Number(matchedRoomName[2])
+      const currentRoomNorthOrSouth = matchedRoomName[3]
+      const currentRoomYCoordinate = Number(matchedRoomName[4])
+      const adjacentRoomNameNorth = `${currentRoomWestOrEast}${currentRoomXCoordinate}${currentRoomNorthOrSouth}${
+        currentRoomYCoordinate + 1
+      }`
+      const adjacentRoomNameEast = `${currentRoomWestOrEast}${
+        currentRoomXCoordinate + 1
+      }${currentRoomNorthOrSouth}${currentRoomYCoordinate}`
+      const adjacentRoomNameSouth = `${currentRoomWestOrEast}${currentRoomXCoordinate}${currentRoomNorthOrSouth}${
+        currentRoomYCoordinate - 1
+      }`
+      const adjacentRoomNameWest = `${currentRoomWestOrEast}${
+        currentRoomXCoordinate - 1
+      }${currentRoomNorthOrSouth}${currentRoomYCoordinate}`
+
+      // If these rooms are accessible, add them to the list of rooms
+      if (currentRoom.findExitTo(adjacentRoomNameNorth) > 0) {
+        accessibleAdjacentRooms.push(new Room(adjacentRoomNameNorth))
+      }
+      if (currentRoom.findExitTo(adjacentRoomNameEast) > 0) {
+        accessibleAdjacentRooms.push(new Room(adjacentRoomNameEast))
+      }
+      if (currentRoom.findExitTo(adjacentRoomNameSouth) > 0) {
+        accessibleAdjacentRooms.push(new Room(adjacentRoomNameSouth))
+      }
+      if (currentRoom.findExitTo(adjacentRoomNameWest) > 0) {
+        accessibleAdjacentRooms.push(new Room(adjacentRoomNameWest))
+      }
+    }
+
+    // Loop through the accessible rooms and plan roads to mineable positions
+    for (const accessibleAdjacentRoom of accessibleAdjacentRooms) {
+      // Find the mineable positions we want to build roads to
+      const mineablePositionsAdjacentRoom = getMineablePositions(
+        accessibleAdjacentRoom
+      )
+      // Create a terrain helper for quick lookups of terrain
+      const terrainAdjacentRoom = new Room.Terrain(accessibleAdjacentRoom.name)
+      // Count the containers because there's a maximum of 5 containers allowed
+      let containersCount = accessibleAdjacentRoom.find(FIND_STRUCTURES, {
+        filter: (structure) => structure.structureType === "container",
+      }).length
+      containersCount += accessibleAdjacentRoom.find(FIND_CONSTRUCTION_SITES, {
+        filter: (constructionSite) =>
+          constructionSite.structureType === "container",
+      }).length
+
+      // Plan containers at each mineable position as well as
+      // roads to and around each mineable position
+      for (const mineablePosition of mineablePositionsAdjacentRoom) {
+        if (containersCount < MAX_CONTAINERS) {
+          accessibleAdjacentRoom.createConstructionSite(
+            mineablePosition.x,
+            mineablePosition.y,
+            STRUCTURE_CONTAINER
+          )
+          containersCount++
+        }
+
+        // Build roads from the creep Spawn to each exit (mineable position)
+        const pathFromSpawnToMineablePosition = Game.spawns.Spawn1.pos.findPathTo(
+          mineablePosition,
+          {
+            ignoreCreeps: true,
+          }
+        )
+        for (const [
+          index,
+          pathStep,
+        ] of pathFromSpawnToMineablePosition.entries()) {
+          if (index < pathFromSpawnToMineablePosition.length - 1) {
+            pathStep
+            // Here's the reason it's pathToMineablePosition.length - 1:
+            // Don't build on top of exits
+            Game.spawns.Spawn1.room.createConstructionSite(
+              pathStep.x,
+              pathStep.y,
+              STRUCTURE_ROAD
+            )
+          }
+        }
+
+        // Build roads from the creep Spawn to each exit (mineable position)
+        const pathFromMineablePositionToSpawn = Game.spawns.Spawn1.pos.findPathTo(
+          mineablePosition,
+          {
+            ignoreCreeps: true,
+          }
+        )
+        for (const [
+          index,
+          pathStep,
+        ] of pathFromMineablePositionToSpawn.entries()) {
+          if (index < pathFromMineablePositionToSpawn.length - 1) {
+            pathStep
+            // Here's the reason it's pathToMineablePosition.length - 1:
+            // Don't build on top of exits
+            accessibleAdjacentRoom.createConstructionSite(
+              pathStep.x,
+              pathStep.y,
+              STRUCTURE_ROAD
+            )
+          }
+        }
+
+        // Build roads surrounding each mineablePosition
+        for (let x = mineablePosition.x - 1; x <= mineablePosition.x + 1; x++) {
+          for (
+            let y = mineablePosition.y - 1;
+            y <= mineablePosition.y + 1;
+            y++
+          ) {
+            switch (terrainAdjacentRoom.get(x, y)) {
+              // No action cases
+              case TERRAIN_MASK_WALL:
+                break
+              // Build road cases
+              case 0: // plain
+              case TERRAIN_MASK_SWAMP:
+              default:
+                accessibleAdjacentRoom.createConstructionSite(
+                  x,
+                  y,
+                  STRUCTURE_ROAD
+                )
+                break
+            }
+          }
+        }
+      }
+    }
+    // End of road planning logic
   }
 
   // Constants and initializations
