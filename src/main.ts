@@ -162,7 +162,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
     // Road planning logic part 3: Roads to energy sources in other rooms
     // 1st Find the rooms accessible from this one (this room exits there)
-    const accessibleAdjacentRoomNames: Array<String> = []
+    const accessibleAdjacentRooms: Array<Room> = []
     const currentRoom = Game.spawns.Spawn1.room
     // Adjacent rooms: +/- 1 in the x, +/- in the y
     // There are 4 possible adjacent rooms
@@ -187,35 +187,47 @@ export const loop = ErrorMapper.wrapLoop(() => {
         currentRoomXCoordinate - 1
       }${currentRoomNorthOrSouth}${currentRoomYCoordinate}`
 
-      // If these rooms are accessible, add them to the list of rooms
-      if (currentRoom.findExitTo(adjacentRoomNameNorth) > 0) {
-        accessibleAdjacentRoomNames.push(adjacentRoomNameNorth)
+      // If we have vision in these rooms (not undefined in Game.rooms), and
+      // these rooms are accessible from this room, add them to the list.
+      if (
+        Game.rooms[adjacentRoomNameNorth] &&
+        currentRoom.findExitTo(adjacentRoomNameNorth) > 0
+      ) {
+        accessibleAdjacentRooms.push(new Room(adjacentRoomNameNorth))
       }
-      if (currentRoom.findExitTo(adjacentRoomNameEast) > 0) {
-        accessibleAdjacentRoomNames.push(adjacentRoomNameEast)
+      if (
+        Game.rooms[adjacentRoomNameEast] &&
+        currentRoom.findExitTo(adjacentRoomNameEast) > 0
+      ) {
+        accessibleAdjacentRooms.push(new Room(adjacentRoomNameEast))
       }
-      if (currentRoom.findExitTo(adjacentRoomNameSouth) > 0) {
-        accessibleAdjacentRoomNames.push(adjacentRoomNameSouth)
+      if (
+        Game.rooms[adjacentRoomNameSouth] &&
+        currentRoom.findExitTo(adjacentRoomNameSouth) > 0
+      ) {
+        accessibleAdjacentRooms.push(new Room(adjacentRoomNameSouth))
       }
-      if (currentRoom.findExitTo(adjacentRoomNameWest) > 0) {
-        accessibleAdjacentRoomNames.push(adjacentRoomNameWest)
+      if (
+        Game.rooms[adjacentRoomNameWest] &&
+        currentRoom.findExitTo(adjacentRoomNameWest) > 0
+      ) {
+        accessibleAdjacentRooms.push(new Room(adjacentRoomNameWest))
       }
     }
 
-    /*
     // 2nd Loop through the accessible rooms & plan roads to mineable positions
-    for (const accessibleAdjacentRoomName of accessibleAdjacentRoomNames) {
+    for (const accessibleAdjacentRoom of accessibleAdjacentRooms) {
       // Find the mineable positions we want to build roads to
       const mineablePositionsAdjacentRoom = getMineablePositions(
-        accessibleAdjacentRoomName
+        accessibleAdjacentRoom
       )
       // Create a terrain helper for quick lookups of terrain
-      const terrainAdjacentRoom = new Room.Terrain(accessibleAdjacentRoomName.name)
+      const terrainAdjacentRoom = new Room.Terrain(accessibleAdjacentRoom.name)
       // Count the containers because there's a maximum of 5 containers allowed
-      let containersCount = accessibleAdjacentRoomName.find(FIND_STRUCTURES, {
+      let containersCount = accessibleAdjacentRoom.find(FIND_STRUCTURES, {
         filter: (structure) => structure.structureType === "container",
       }).length
-      containersCount += accessibleAdjacentRoomName.find(FIND_CONSTRUCTION_SITES, {
+      containersCount += accessibleAdjacentRoom.find(FIND_CONSTRUCTION_SITES, {
         filter: (constructionSite) =>
           constructionSite.structureType === "container",
       }).length
@@ -224,7 +236,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       // roads to and around each mineable position
       for (const mineablePosition of mineablePositionsAdjacentRoom) {
         if (containersCount < MAX_CONTAINERS) {
-          accessibleAdjacentRoomName.createConstructionSite(
+          accessibleAdjacentRoom.createConstructionSite(
             mineablePosition.x,
             mineablePosition.y,
             STRUCTURE_CONTAINER
@@ -270,7 +282,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
             pathStep
             // Here's the reason it's pathToMineablePosition.length - 1:
             // Don't build on top of exits
-            accessibleAdjacentRoomName.createConstructionSite(
+            accessibleAdjacentRoom.createConstructionSite(
               pathStep.x,
               pathStep.y,
               STRUCTURE_ROAD
@@ -293,7 +305,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
               case 0: // plain
               case TERRAIN_MASK_SWAMP:
               default:
-                accessibleAdjacentRoomName.createConstructionSite(
+                accessibleAdjacentRoom.createConstructionSite(
                   x,
                   y,
                   STRUCTURE_ROAD
@@ -304,7 +316,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
         }
       }
     }
-    */
     // End of road planning logic
   }
 
