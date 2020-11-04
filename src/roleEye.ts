@@ -16,20 +16,29 @@ export const roleEye = {
     }
     if (accessibleRoomNamesWithoutVision.length > 0) {
       // There are accessible adjacent rooms without vision
-      const targetRoom = accessibleRoomNamesWithoutVision[0]
-      const exitDirection = currentRoom.findExitTo(targetRoom)
+      const targetRoomName = accessibleRoomNamesWithoutVision[0]
+      creep.say(`🚶${targetRoomName}`)
+      const exitDirection = currentRoom.findExitTo(targetRoomName)
       switch (exitDirection) {
         case FIND_EXIT_TOP:
-          creep.moveTo(currentRoom.find(FIND_EXIT_TOP)[0])
+          creep.moveTo(currentRoom.find(FIND_EXIT_TOP)[0], {
+            visualizePathStyle: { stroke: "#ffffff" },
+          })
           break
         case FIND_EXIT_RIGHT:
-          creep.moveTo(currentRoom.find(FIND_EXIT_RIGHT)[0])
+          creep.moveTo(currentRoom.find(FIND_EXIT_RIGHT)[0], {
+            visualizePathStyle: { stroke: "#ffffff" },
+          })
           break
         case FIND_EXIT_BOTTOM:
-          creep.moveTo(currentRoom.find(FIND_EXIT_BOTTOM)[0])
+          creep.moveTo(currentRoom.find(FIND_EXIT_BOTTOM)[0], {
+            visualizePathStyle: { stroke: "#ffffff" },
+          })
           break
         case FIND_EXIT_LEFT:
-          creep.moveTo(currentRoom.find(FIND_EXIT_LEFT)[0])
+          creep.moveTo(currentRoom.find(FIND_EXIT_LEFT)[0], {
+            visualizePathStyle: { stroke: "#ffffff" },
+          })
           break
         default:
           console.log(
