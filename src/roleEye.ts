@@ -1,9 +1,9 @@
 import { getAccessibleAdjacentRoomNames } from "helperFunctions"
 
 const assignDestination = (destinationRoomName: string, creep: Creep) => {
-    const currentRoom = creep.room
-    creep.say(`🚶${destinationRoomName}`)
-    const exitDirection = currentRoom.findExitTo(destinationRoomName)
+  const currentRoom = creep.room
+  creep.say(`🚶${destinationRoomName}`)
+  const exitDirection = currentRoom.findExitTo(destinationRoomName)
   switch (exitDirection) {
     case FIND_EXIT_TOP:
       creep.memory.destination = currentRoom.find(FIND_EXIT_TOP)[0]
@@ -28,7 +28,8 @@ const assignDestination = (destinationRoomName: string, creep: Creep) => {
 const chooseDestination = (creep: Creep) => {
   const currentRoom = creep.room
   const accessibleAdjacentRoomNames = getAccessibleAdjacentRoomNames(
-    Game.spawns.Spawn1.room
+    currentRoom
+    // Game.spawns.Spawn1.room
   )
   const accessibleRoomNamesWithoutVision: Array<string> = []
   for (const roomName of accessibleAdjacentRoomNames) {
@@ -45,8 +46,7 @@ const chooseDestination = (creep: Creep) => {
     )
     const destinationRoomName =
       accessibleRoomNamesWithoutVision[randomRoomIndex]
-      assignDestination(destinationRoomName,creep)
-    }
+    assignDestination(destinationRoomName, creep)
   } else {
     // There are not any accessible adjacent rooms without vision
     // In other words, I have vision of all adjacent accessible rooms
@@ -54,9 +54,8 @@ const chooseDestination = (creep: Creep) => {
     const randomRoomNameIndex = Math.floor(
       Math.random() * accessibleAdjacentRoomNames.length
     )
-    const destinationRoomName =
-    accessibleAdjacentRoomNames[randomRoomNameIndex]
-    assignDestination(destinationRoomName,creep)
+    const destinationRoomName = accessibleAdjacentRoomNames[randomRoomNameIndex]
+    assignDestination(destinationRoomName, creep)
   }
 }
 
@@ -65,8 +64,11 @@ export const roleEye = {
     if (creep.memory.destination) {
       // We have a destination
       const moveResult = creep.moveTo(
-        creep.memory.destination.x,
-        creep.memory.destination.y,
+        new RoomPosition(
+          creep.memory.destination.x,
+          creep.memory.destination.y,
+          creep.memory.destination.roomName
+        ),
         {
           visualizePathStyle: { stroke: "#ffaa00" },
           reusePath: 5, // Disable path reuse; TODO This uses a lot of CPU
@@ -79,7 +81,7 @@ export const roleEye = {
           break // Do nothing
         // Change source case (There are probably creeps in the way)
         case ERR_NO_PATH: // No path to the target could be found.
-          assignDestination(creep)
+          chooseDestination(creep)
           break
         // Unhandled cases
         case ERR_NOT_OWNER: // You are not the owner of this creep.
@@ -91,7 +93,7 @@ export const roleEye = {
           )
       }
     } else {
-      assignDestination(creep)
+      chooseDestination(creep)
     }
   },
 }
