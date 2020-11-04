@@ -4,6 +4,7 @@ const assignDestination = (destinationRoomName: string, creep: Creep) => {
   const currentRoom = creep.room
   creep.memory.destination.roomName = currentRoom.name
   const exitDirection = currentRoom.findExitTo(destinationRoomName)
+  // TODO Check destination tile to see if it's a valid position (not a wall)
   switch (exitDirection) {
     case FIND_EXIT_TOP:
       const destinationTop = currentRoom.find(FIND_EXIT_TOP)[0]
@@ -74,11 +75,22 @@ export const roleEye = {
   run(creep: Creep) {
     if (creep.memory.destination) {
       // We have a destination
+      const colorsArray = [
+        "red",
+        "orange",
+        "yellow",
+        "green",
+        "blue",
+        "purple",
+        "white",
+      ]
+      const randomColor =
+        colorsArray[Math.floor(Math.random() * colorsArray.length)]
       const moveResult = creep.moveTo(
         creep.memory.destination.x,
         creep.memory.destination.y,
         {
-          visualizePathStyle: { stroke: "#ffaa00" },
+          visualizePathStyle: { stroke: randomColor },
           reusePath: 5, // Disable path reuse; TODO This uses a lot of CPU
         }
       )
