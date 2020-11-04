@@ -74,3 +74,58 @@ export const getMineablePositions = (room: Room) => {
   })
   return mineablePositions
 }
+
+export const getAccessibleAdjacentRoomNames = (currentRoom: Room) => {
+  const accessibleAdjacentRoomNames: Array<string> = []
+  // Adjacent rooms: +/- 1 in the x, +/- in the y
+  // There are 4 possible adjacent rooms
+  // Example room name: W23S13
+  const matchedRoomName = currentRoom.name.match(/(\w)(\d+)(\w)(\d+)/)
+  if (matchedRoomName) {
+    const currentRoomWestOrEast = matchedRoomName[1]
+    const currentRoomXCoordinate = Number(matchedRoomName[2])
+    const currentRoomNorthOrSouth = matchedRoomName[3]
+    const currentRoomYCoordinate = Number(matchedRoomName[4])
+
+    const adjacentRoomNameNorth = `${currentRoomWestOrEast}${currentRoomXCoordinate}${currentRoomNorthOrSouth}${
+      currentRoomYCoordinate + 1
+    }`
+    const adjacentRoomNameEast = `${currentRoomWestOrEast}${
+      currentRoomXCoordinate + 1
+    }${currentRoomNorthOrSouth}${currentRoomYCoordinate}`
+    const adjacentRoomNameSouth = `${currentRoomWestOrEast}${currentRoomXCoordinate}${currentRoomNorthOrSouth}${
+      currentRoomYCoordinate - 1
+    }`
+    const adjacentRoomNameWest = `${currentRoomWestOrEast}${
+      currentRoomXCoordinate - 1
+    }${currentRoomNorthOrSouth}${currentRoomYCoordinate}`
+
+    // these rooms are accessible from this room, add them to the list.
+    if (currentRoom.findExitTo(adjacentRoomNameNorth) > 0) {
+      accessibleAdjacentRoomNames.push(adjacentRoomNameNorth)
+    }
+    if (currentRoom.findExitTo(adjacentRoomNameEast) > 0) {
+      accessibleAdjacentRoomNames.push(adjacentRoomNameEast)
+    }
+    if (currentRoom.findExitTo(adjacentRoomNameSouth) > 0) {
+      accessibleAdjacentRoomNames.push(adjacentRoomNameSouth)
+    }
+    if (currentRoom.findExitTo(adjacentRoomNameWest) > 0) {
+      accessibleAdjacentRoomNames.push(adjacentRoomNameWest)
+    }
+  }
+  return accessibleAdjacentRoomNames
+}
+
+export const getRoomObjectsIfVision = (roomNames: Array<string>) => {
+  // This function prevents the TypeError: creeps is undefined that occurs
+  // when trying to spawn a new Room object in a room without vision
+  const roomsWithVision: Array<Room> = []
+  // If we have vision in these rooms (not undefined in Game.rooms)
+  for (const roomName of roomNames) {
+    if (Game.rooms[roomName]) {
+      roomsWithVision.push(new Room(roomName))
+    }
+  }
+  return roomsWithVision
+}

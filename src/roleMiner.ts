@@ -1,5 +1,5 @@
 import { actionMine } from "actionMine"
-import { getMineablePositions } from "getMineablePositions"
+import { getMineablePositions } from "helperFunctions"
 
 const assessSources = (creep: Creep) => {
   const mineablePositions: RoomPosition[] = getMineablePositions(creep.room)

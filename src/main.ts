@@ -5,7 +5,12 @@ import { roleFetcher } from "roleFetcher"
 import { roleUpgrader } from "roleUpgrader"
 import { roleDefender } from "roleDefender"
 import { roleBuilder } from "roleBuilder"
-import { getMineablePositions } from "getMineablePositions"
+import { roleEye } from "roleEye"
+import {
+  getMineablePositions,
+  getAccessibleAdjacentRoomNames,
+  getRoomObjectsIfVision,
+} from "helperFunctions"
 
 const MAX_CONTAINERS = 5
 
@@ -162,61 +167,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
     // Road planning logic part 3: Roads to energy sources in other rooms
     // 1st Find the rooms accessible from this one (this room exits there)
-    const accessibleAdjacentRooms: Array<Room> = []
-    const currentRoom = Game.spawns.Spawn1.room
-    // Adjacent rooms: +/- 1 in the x, +/- in the y
-    // There are 4 possible adjacent rooms
-    // Example room name: W23S13
-    const matchedRoomName = currentRoom.name.match(/(\w)(\d+)(\w)(\d+)/)
-    if (matchedRoomName) {
-      const currentRoomWestOrEast = matchedRoomName[1]
-      const currentRoomXCoordinate = Number(matchedRoomName[2])
-      const currentRoomNorthOrSouth = matchedRoomName[3]
-      const currentRoomYCoordinate = Number(matchedRoomName[4])
-
-      const adjacentRoomNameNorth = `${currentRoomWestOrEast}${currentRoomXCoordinate}${currentRoomNorthOrSouth}${
-        currentRoomYCoordinate + 1
-      }`
-      const adjacentRoomNameEast = `${currentRoomWestOrEast}${
-        currentRoomXCoordinate + 1
-      }${currentRoomNorthOrSouth}${currentRoomYCoordinate}`
-      const adjacentRoomNameSouth = `${currentRoomWestOrEast}${currentRoomXCoordinate}${currentRoomNorthOrSouth}${
-        currentRoomYCoordinate - 1
-      }`
-      const adjacentRoomNameWest = `${currentRoomWestOrEast}${
-        currentRoomXCoordinate - 1
-      }${currentRoomNorthOrSouth}${currentRoomYCoordinate}`
-
-      // If we have vision in these rooms (not undefined in Game.rooms), and
-      // these rooms are accessible from this room, add them to the list.
-      if (
-        Game.rooms[adjacentRoomNameNorth] &&
-        currentRoom.findExitTo(adjacentRoomNameNorth) > 0
-      ) {
-        accessibleAdjacentRooms.push(new Room(adjacentRoomNameNorth))
-      }
-      if (
-        Game.rooms[adjacentRoomNameEast] &&
-        currentRoom.findExitTo(adjacentRoomNameEast) > 0
-      ) {
-        accessibleAdjacentRooms.push(new Room(adjacentRoomNameEast))
-      }
-      if (
-        Game.rooms[adjacentRoomNameSouth] &&
-        currentRoom.findExitTo(adjacentRoomNameSouth) > 0
-      ) {
-        accessibleAdjacentRooms.push(new Room(adjacentRoomNameSouth))
-      }
-      if (
-        Game.rooms[adjacentRoomNameWest] &&
-        currentRoom.findExitTo(adjacentRoomNameWest) > 0
-      ) {
-        accessibleAdjacentRooms.push(new Room(adjacentRoomNameWest))
-      }
-    }
+    const accessibleAdjacentRoomsWithVision: Array<Room> = getRoomObjectsIfVision(
+      getAccessibleAdjacentRoomNames(Game.spawns.Spawn1.room)
+    )
 
     // 2nd Loop through the accessible rooms & plan roads to mineable positions
-    for (const accessibleAdjacentRoom of accessibleAdjacentRooms) {
+    for (const accessibleAdjacentRoom of accessibleAdjacentRoomsWithVision) {
       // Find the mineable positions we want to build roads to
       const mineablePositionsAdjacentRoom = getMineablePositions(
         accessibleAdjacentRoom
@@ -329,6 +285,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     "Builder",
     // "Worker", // Evolves into Upgrader or Builder
     "Defender",
+    "Eye",
   ]
   const creepTemplates: { [role: string]: BodyPartConstant[] } = {
     Harvester: [WORK, WORK, MOVE, CARRY], // 300 energy
@@ -338,6 +295,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     // Builder: [WORK, WORK, MOVE, CARRY], // 300
     Worker: [WORK, WORK, MOVE, CARRY], // 300
     Defender: [MOVE, MOVE, ATTACK, ATTACK], // 260
+    Eye: [MOVE],
   }
   const creepCounts: { [role: string]: number } = {}
   for (const role of creepRoles) {
@@ -453,6 +411,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
       mineablePositionsCount
     ) {
       spawnCreep("Worker")
+    } else if (creepCounts.Eye < 4) {
+      spawnCreep("Eye")
     }
 
     // TODO: Defense against creep invasion
@@ -461,30 +421,39 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
   // Run all creeps
   for (const creepName in Game.creeps) {
+    const creep = Game.creeps[creepName]
+    const creepRole = creep.memory.role
     try {
-      const creep = Game.creeps[creepName]
       if (creep.spawning === false) {
-        if (creep.memory.role === "Harvester") {
-          roleHarvester.run(creep)
-        }
-        if (creep.memory.role === "Miner") {
-          roleMiner.run(creep)
-        }
-        if (creep.memory.role === "Fetcher") {
-          roleFetcher.run(creep)
-        }
-        if (creep.memory.role === "Upgrader") {
-          roleUpgrader.run(creep)
-        }
-        if (creep.memory.role === "Builder") {
-          roleBuilder.run(creep)
-        }
-        if (creep.memory.role === "Defender") {
-          roleDefender.run(creep)
+        switch (creepRole) {
+          case "Harvester":
+            roleHarvester.run(creep)
+            break
+          case "Miner":
+            roleMiner.run(creep)
+            break
+          case "Fetcher":
+            roleFetcher.run(creep)
+            break
+          case "Upgrader":
+            roleUpgrader.run(creep)
+            break
+          case "Builder":
+            roleBuilder.run(creep)
+            break
+          case "Defender":
+            roleDefender.run(creep)
+            break
+          case "Eye":
+            roleEye.run(creep)
+            break
+          default:
+            console.log(`Unknown creep role${creep.memory.role}`)
+            break
         }
       }
     } catch (e) {
-      console.log(`${creepName} threw a ${e}`)
+      console.log(`${creepName} of role ${creepRole} threw a ${e}`)
     }
   }
 })
