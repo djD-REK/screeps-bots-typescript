@@ -2,20 +2,28 @@ import { getAccessibleAdjacentRoomNames } from "helperFunctions"
 
 const assignDestination = (destinationRoomName: string, creep: Creep) => {
   const currentRoom = creep.room
-  creep.say(`🚶${destinationRoomName}`)
+  creep.memory.destination.roomName = currentRoom.name
   const exitDirection = currentRoom.findExitTo(destinationRoomName)
   switch (exitDirection) {
     case FIND_EXIT_TOP:
-      creep.memory.destination = currentRoom.find(FIND_EXIT_TOP)[0]
+      const destinationTop = currentRoom.find(FIND_EXIT_TOP)[0]
+      creep.memory.destination.x = destinationTop.x
+      creep.memory.destination.y = destinationTop.y
       break
     case FIND_EXIT_RIGHT:
-      creep.memory.destination = currentRoom.find(FIND_EXIT_RIGHT)[0]
+      const destinationRight = currentRoom.find(FIND_EXIT_RIGHT)[0]
+      creep.memory.destination.x = destinationRight.x
+      creep.memory.destination.y = destinationRight.y
       break
     case FIND_EXIT_BOTTOM:
-      creep.memory.destination = currentRoom.find(FIND_EXIT_BOTTOM)[0]
+      const destinationBottom = currentRoom.find(FIND_EXIT_BOTTOM)[0]
+      creep.memory.destination.x = destinationBottom.x
+      creep.memory.destination.y = destinationBottom.y
       break
     case FIND_EXIT_LEFT:
-      creep.memory.destination = currentRoom.find(FIND_EXIT_LEFT)[0]
+      const destinationLeft = currentRoom.find(FIND_EXIT_LEFT)[0]
+      creep.memory.destination.x = destinationLeft.x
+      creep.memory.destination.y = destinationLeft.y
       break
     default:
       console.log(
@@ -23,6 +31,9 @@ const assignDestination = (destinationRoomName: string, creep: Creep) => {
       )
       break
   }
+  creep.say(
+    `🚶-->(${creep.memory.destination.x},${creep.memory.destination.y})`
+  )
 }
 
 const chooseDestination = (creep: Creep) => {
@@ -64,11 +75,8 @@ export const roleEye = {
     if (creep.memory.destination) {
       // We have a destination
       const moveResult = creep.moveTo(
-        new RoomPosition(
-          creep.memory.destination.x,
-          creep.memory.destination.y,
-          creep.memory.destination.roomName
-        ),
+        creep.memory.destination.x,
+        creep.memory.destination.y,
         {
           visualizePathStyle: { stroke: "#ffaa00" },
           reusePath: 5, // Disable path reuse; TODO This uses a lot of CPU
