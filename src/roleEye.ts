@@ -1,6 +1,31 @@
 import { getAccessibleAdjacentRoomNames } from "helperFunctions"
 
-const assignDestination = (creep: Creep) => {
+const assignDestination = (destinationRoomName: string, creep: Creep) => {
+    const currentRoom = creep.room
+    creep.say(`🚶${destinationRoomName}`)
+    const exitDirection = currentRoom.findExitTo(destinationRoomName)
+  switch (exitDirection) {
+    case FIND_EXIT_TOP:
+      creep.memory.destination = currentRoom.find(FIND_EXIT_TOP)[0]
+      break
+    case FIND_EXIT_RIGHT:
+      creep.memory.destination = currentRoom.find(FIND_EXIT_RIGHT)[0]
+      break
+    case FIND_EXIT_BOTTOM:
+      creep.memory.destination = currentRoom.find(FIND_EXIT_BOTTOM)[0]
+      break
+    case FIND_EXIT_LEFT:
+      creep.memory.destination = currentRoom.find(FIND_EXIT_LEFT)[0]
+      break
+    default:
+      console.log(
+        `${creep.name} with ${creep.memory.role} had error: exit direction ${exitDirection}`
+      )
+      break
+  }
+}
+
+const chooseDestination = (creep: Creep) => {
   const currentRoom = creep.room
   const accessibleAdjacentRoomNames = getAccessibleAdjacentRoomNames(
     Game.spawns.Spawn1.room
@@ -20,29 +45,18 @@ const assignDestination = (creep: Creep) => {
     )
     const destinationRoomName =
       accessibleRoomNamesWithoutVision[randomRoomIndex]
-    creep.say(`🚶${destinationRoomName}`)
-    const exitDirection = currentRoom.findExitTo(destinationRoomName)
-    switch (exitDirection) {
-      case FIND_EXIT_TOP:
-        creep.memory.destination = currentRoom.find(FIND_EXIT_TOP)[0]
-        break
-      case FIND_EXIT_RIGHT:
-        creep.memory.destination = currentRoom.find(FIND_EXIT_RIGHT)[0]
-        break
-      case FIND_EXIT_BOTTOM:
-        creep.memory.destination = currentRoom.find(FIND_EXIT_BOTTOM)[0]
-        break
-      case FIND_EXIT_LEFT:
-        creep.memory.destination = currentRoom.find(FIND_EXIT_LEFT)[0]
-        break
-      default:
-        console.log(
-          `${creep.name} with ${creep.memory.role} had error: exit direction ${exitDirection}`
-        )
-        break
+      assignDestination(destinationRoomName,creep)
     }
   } else {
     // There are not any accessible adjacent rooms without vision
+    // In other words, I have vision of all adjacent accessible rooms
+    accessibleAdjacentRoomNames
+    const randomRoomNameIndex = Math.floor(
+      Math.random() * accessibleAdjacentRoomNames.length
+    )
+    const destinationRoomName =
+    accessibleAdjacentRoomNames[randomRoomNameIndex]
+    assignDestination(destinationRoomName,creep)
   }
 }
 
