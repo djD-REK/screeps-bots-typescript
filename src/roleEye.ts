@@ -2,7 +2,7 @@ import { getAccessibleAdjacentRoomNames } from "helperFunctions"
 
 const assignDestination = (destinationRoomName: string, creep: Creep) => {
   const currentRoom = creep.room
-  creep.memory.destination = new RoomPosition(-1, -1, currentRoom.name)
+  creep.memory.destination = new RoomPosition(25, 25, currentRoom.name)
   const exitDirection = currentRoom.findExitTo(destinationRoomName)
   // TODO Check destination tile to see if it's a valid position (not a wall)
   switch (exitDirection) {
