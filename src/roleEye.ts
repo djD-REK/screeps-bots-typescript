@@ -15,7 +15,11 @@ const assignDestination = (creep: Creep) => {
   }
   if (accessibleRoomNamesWithoutVision.length > 0) {
     // There are accessible adjacent rooms without vision
-    const destinationRoomName = accessibleRoomNamesWithoutVision[0]
+    const randomRoomIndex = Math.floor(
+      Math.random() * accessibleRoomNamesWithoutVision.length
+    )
+    const destinationRoomName =
+      accessibleRoomNamesWithoutVision[randomRoomIndex]
     creep.say(`🚶${destinationRoomName}`)
     const exitDirection = currentRoom.findExitTo(destinationRoomName)
     switch (exitDirection) {
