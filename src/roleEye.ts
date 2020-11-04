@@ -33,7 +33,7 @@ export const roleEye = {
           break
         default:
           console.log(
-            `${creep.name} with ${creep.role} had error: exit direction ${exitDirection}`
+            `${creep.name} with ${creep.memory.role} had error: exit direction ${exitDirection}`
           )
           break
       }
