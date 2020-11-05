@@ -173,6 +173,16 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
     // 2nd Loop through the accessible rooms & plan roads to mineable positions
     for (const accessibleAdjacentRoom of accessibleAdjacentRoomsWithVision) {
+      console.log(
+        `DELETING ALL CONSTRUCTION SITES in ${accessibleAdjacentRoom.name}`
+      )
+      const sites = Game.rooms[accessibleAdjacentRoom.name].find(
+        FIND_CONSTRUCTION_SITES
+      )
+      for (const site of sites) {
+        site.remove()
+      }
+
       // Find the mineable positions we want to build roads to
       const mineablePositionsAdjacentRoom = getMineablePositions(
         accessibleAdjacentRoom
@@ -224,8 +234,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
         }
 
         // Build roads from each mineable position back to the creep Spawn
-        const pathFromMineablePositionToSpawn = Game.spawns.Spawn1.pos.findPathTo(
-          mineablePosition,
+        const pathFromMineablePositionToSpawn = mineablePosition.findPathTo(
+          Game.spawns.Spawn1.pos,
           {
             ignoreCreeps: true,
           }
@@ -411,7 +421,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       mineablePositionsCount
     ) {
       spawnCreep("Worker")
-    } else if (creepCounts.Eye < 50) {
+    } else if (creepCounts.Eye < 4) {
       spawnCreep("Eye")
     }
 
