@@ -32,9 +32,7 @@ const assignDestination = (destinationRoomName: string, creep: Creep) => {
       )
       break
   }
-  creep.say(
-    `🚶-->(${creep.memory.destination.x},${creep.memory.destination.y})`
-  )
+  creep.say(`🚶(${creep.memory.destination.x},${creep.memory.destination.y})`)
 }
 
 const chooseDestination = (creep: Creep) => {
