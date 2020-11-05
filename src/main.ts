@@ -32,13 +32,20 @@ export const loop = ErrorMapper.wrapLoop(() => {
   // Find all potential sources in this room
   // const sources = Game.spawns.Spawn1.room.find(FIND_SOURCES)
 
-  // Plan some roads every so often
-  const constructionSiteCount = Game.spawns.Spawn1.room.find(
+  // ROAD PLANNING CHECK: Plan some roads every so often
+  // First, count the construction sites in this & surrounding rooms
+  let constructionSiteCount = Game.spawns.Spawn1.room.find(
     FIND_MY_CONSTRUCTION_SITES
   ).length
-  const roadCount = Game.spawns.Spawn1.room.find(FIND_MY_STRUCTURES, {
-    filter: { structureType: STRUCTURE_ROAD },
-  }).length // Not used right now
+  // Find the rooms accessible from this one (this room exits there)
+  const accessibleAdjacentRoomsWithVision: Array<Room> = getRoomObjectsIfVision(
+    getAccessibleAdjacentRoomNames(Game.spawns.Spawn1.room)
+  )
+  for (const accessibleAdjacentRoom of accessibleAdjacentRoomsWithVision) {
+    constructionSiteCount += accessibleAdjacentRoom.find(
+      FIND_MY_CONSTRUCTION_SITES
+    ).length
+  }
   if (Game.time % 5 === 0) {
     // if (Game.time % 100 === 0)
     console.log(`=== Road planning check (every 100 ticks) ===`)
@@ -166,12 +173,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
 
     // Road planning logic part 3: Roads to energy sources in other rooms
-    // 1st Find the rooms accessible from this one (this room exits there)
-    const accessibleAdjacentRoomsWithVision: Array<Room> = getRoomObjectsIfVision(
-      getAccessibleAdjacentRoomNames(Game.spawns.Spawn1.room)
-    )
-
-    // 2nd Loop through the accessible rooms & plan roads to mineable positions
+    // Loop through the accessible rooms & plan roads to mineable positions
     for (const accessibleAdjacentRoom of accessibleAdjacentRoomsWithVision) {
       const deleteRooms = () => {
         console.log(
