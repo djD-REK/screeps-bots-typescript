@@ -1,6 +1,24 @@
 import { getAccessibleAdjacentRoomNames } from "helperFunctions"
 
+// TODO: Write jsDoc documentation for helper functions for my sanity:)
+// TODO: Move this to a helper function that gets reused in many creeps
+// Because it assigns them a destination in memory that is the closest
+// exit tile by path to go to the specified destination room
 const assignDestination = (destinationRoomName: string, creep: Creep) => {
+  // TODO: Assign destination of the optimum exit tile, not any exit tile
+  /* Game.spawns.Spawn1.room.find(FIND_EXIT_TOP).forEach(roomPos => {console.log(`${roomPos.x},${roomPos.y}`)})
+  [4:08:59 PM][shard2]9,0
+  [4:08:59 PM][shard2]10,0
+  [4:08:59 PM][shard2]11,0
+  [4:08:59 PM][shard2]12,0
+  [4:08:59 PM][shard2]13,0
+  [4:08:59 PM][shard2]14,0
+  [4:08:59 PM][shard2]15,0
+  [4:08:59 PM][shard2]16,0
+  // All valid room positions are saved, not the closet one
+  // Use this:
+  console.log(Game.spawns.Spawn1.pos.findClosestByPath(FIND_EXIT_TOP))
+  */
   const currentRoom = creep.room
   creep.memory.destination = new RoomPosition(25, 25, currentRoom.name)
   const exitDirection = currentRoom.findExitTo(destinationRoomName)
