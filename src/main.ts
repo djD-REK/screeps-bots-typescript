@@ -173,14 +173,16 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
     // 2nd Loop through the accessible rooms & plan roads to mineable positions
     for (const accessibleAdjacentRoom of accessibleAdjacentRoomsWithVision) {
-      console.log(
-        `DELETING ALL CONSTRUCTION SITES in ${accessibleAdjacentRoom.name}`
-      )
-      const sites = Game.rooms[accessibleAdjacentRoom.name].find(
-        FIND_CONSTRUCTION_SITES
-      )
-      for (const site of sites) {
-        site.remove()
+      const deleteRooms = () => {
+        console.log(
+          `DELETING ALL CONSTRUCTION SITES in ${accessibleAdjacentRoom.name}`
+        )
+        const sites = Game.rooms[accessibleAdjacentRoom.name].find(
+          FIND_CONSTRUCTION_SITES
+        )
+        for (const site of sites) {
+          site.remove()
+        }
       }
 
       // Find the mineable positions we want to build roads to
