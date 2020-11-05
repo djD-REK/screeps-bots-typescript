@@ -74,7 +74,14 @@ const chooseDestination = (creep: Creep) => {
 export const roleEye = {
   run(creep: Creep) {
     if (creep.memory.destination) {
-      // We have a destination
+      if (creep.room.name !== creep.memory.destination.roomName) {
+        // We've arrived in another room
+        chooseDestination(creep)
+      }
+      // TODO: Add an if there's an enemy in this room I need to go home
+      else {
+      }
+      // We have a destination in this room, so move to it
       const colorsArray = [
         "red",
         "orange",
