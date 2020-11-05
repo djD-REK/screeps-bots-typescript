@@ -1,6 +1,8 @@
+import { getAccessibleAdjacentRoomNames } from "helperFunctions"
+
 export const actionBuild = (creep: Creep) => {
   // Build a structure (i.e. a road) if we are close to one
-  const targetConstructionSite = creep.pos.findClosestByRange(
+  const targetConstructionSite = creep.pos.findClosestByPath(
     FIND_MY_CONSTRUCTION_SITES
   )
   if (targetConstructionSite) {
