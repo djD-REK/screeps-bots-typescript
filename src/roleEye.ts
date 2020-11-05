@@ -82,17 +82,26 @@ export const roleEye = {
   run(creep: Creep) {
     if (
       !creep.memory.destination ||
-      creep.room.name !== creep.memory.destination.roomName ||
-      (creep.memory.destination &&
-        Game.rooms[creep.memory.destination.roomName])
+      creep.room.name !== creep.memory.destination.roomName
     ) {
       // We have no destination (initial state) OR
-      // We've arrived in another room OR
-      // We now have vision of the room we were headed to
-      // SO choose a new destination
+      // We've arrived in another room
+      // UNLESS we have vision of all the adjacent rooms
       chooseDestination(creep)
       // TODO: Add an if there's an enemy in this room I need to go home
     }
+    const accessibleRoomNamesWithoutVision = getAccessibleRoomNamesWithoutVision(
+      creep.room
+    )
+    if (
+      Game.rooms[creep.memory.destination.roomName] &&
+      accessibleRoomNamesWithoutVision.length > 0
+    ) {
+      // Wait a second, we have vision of the destination, so change it,
+      // unless we have vision of all the possible destinations right now.
+      chooseDestination(creep)
+    }
+
     // By this point, we'll always have a destination assigned.
     // We have a destination in this room, so move to it
     const colorsArray = [
