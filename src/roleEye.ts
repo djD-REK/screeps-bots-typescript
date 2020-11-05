@@ -78,6 +78,53 @@ const chooseDestination = (creep: Creep) => {
   }
 }
 
+// HELPER FUNCTION
+export const getRoomNameBasedOnExitCoordinates = (
+  x: number,
+  y: number,
+  currentRoom: Room
+) => {
+  // Example room name: W23S13
+  const matchedRoomName = currentRoom.name.match(/(\w)(\d+)(\w)(\d+)/)
+  if (matchedRoomName) {
+    const currentRoomWestOrEast = matchedRoomName[1]
+    const currentRoomXCoordinate = Number(matchedRoomName[2])
+    const currentRoomNorthOrSouth = matchedRoomName[3]
+    const currentRoomYCoordinate = Number(matchedRoomName[4])
+
+    const adjacentRoomNameNorth = `${currentRoomWestOrEast}${currentRoomXCoordinate}${currentRoomNorthOrSouth}${
+      currentRoomYCoordinate + 1
+    }`
+    const adjacentRoomNameEast = `${currentRoomWestOrEast}${
+      currentRoomXCoordinate + 1
+    }${currentRoomNorthOrSouth}${currentRoomYCoordinate}`
+    const adjacentRoomNameSouth = `${currentRoomWestOrEast}${currentRoomXCoordinate}${currentRoomNorthOrSouth}${
+      currentRoomYCoordinate - 1
+    }`
+    const adjacentRoomNameWest = `${currentRoomWestOrEast}${
+      currentRoomXCoordinate - 1
+    }${currentRoomNorthOrSouth}${currentRoomYCoordinate}`
+
+    if (y === 0) {
+      // North exit
+      return adjacentRoomNameNorth
+    }
+    if (x === 49) {
+      // East exit
+      return adjacentRoomNameEast
+    }
+    if (y === 49) {
+      // South exit
+      return adjacentRoomNameSouth
+    }
+    if (x === 0) {
+      // West exit
+      return adjacentRoomNameWest
+    }
+  }
+  return currentRoom.name // Should never reach this line ^__^
+}
+
 export const roleEye = {
   run(creep: Creep) {
     if (
@@ -93,8 +140,13 @@ export const roleEye = {
     const accessibleRoomNamesWithoutVision = getAccessibleRoomNamesWithoutVision(
       creep.room
     )
+    const destinationRoomName = getRoomNameBasedOnExitCoordinates(
+      creep.memory.destination.x,
+      creep.memory.destination.y,
+      new Room(creep.memory.destination.roomName)
+    )
     if (
-      Game.rooms[creep.memory.destination.roomName] &&
+      Game.rooms[destinationRoomName] &&
       accessibleRoomNamesWithoutVision.length > 0
     ) {
       // Wait a second, we have vision of the destination, so change it,
