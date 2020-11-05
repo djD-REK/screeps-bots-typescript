@@ -9,7 +9,7 @@ import { roleEye } from "roleEye"
 import {
   getMineablePositions,
   getAccessibleAdjacentRoomNames,
-  getRoomObjectsIfVision,
+  getRoomsFromRoomNamesIfVision,
 } from "helperFunctions"
 
 const MAX_CONTAINERS = 5
@@ -35,10 +35,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
   // ROAD PLANNING CHECK: Plan some roads every so often
   // First, count the construction sites in this & surrounding rooms
   let constructionSiteCount = Game.spawns.Spawn1.room.find(
-    FIND_MY_CONSTRUCTION_SITES
+    FIND_CONSTRUCTION_SITES
   ).length
+  // FIND_MY_CONSTRUCTION_SITES won't work on roads (neutral structures)
   // Find the rooms accessible from this one (this room exits there)
-  const accessibleAdjacentRoomsWithVision: Array<Room> = getRoomObjectsIfVision(
+  const accessibleAdjacentRoomsWithVision: Array<Room> = getRoomsFromRoomNamesIfVision(
     getAccessibleAdjacentRoomNames(Game.spawns.Spawn1.room)
   )
   for (const accessibleAdjacentRoom of accessibleAdjacentRoomsWithVision) {

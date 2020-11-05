@@ -117,7 +117,7 @@ export const getAccessibleAdjacentRoomNames = (currentRoom: Room) => {
   return accessibleAdjacentRoomNames
 }
 
-export const getRoomObjectsIfVision = (roomNames: Array<string>) => {
+export const getRoomsFromRoomNamesIfVision = (roomNames: Array<string>) => {
   // This function prevents the TypeError: creeps is undefined that occurs
   // when trying to spawn a new Room object in a room without vision
   const roomsWithVision: Array<Room> = []

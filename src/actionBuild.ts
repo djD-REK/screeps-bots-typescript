@@ -1,11 +1,36 @@
-import { getAccessibleAdjacentRoomNames } from "helperFunctions"
+import {
+  getAccessibleAdjacentRoomNames,
+  getRoomsFromRoomNamesIfVision,
+} from "helperFunctions"
 
 export const actionBuild = (creep: Creep) => {
   // Build a structure (i.e. a road) if we are close to one
   const targetConstructionSite = creep.pos.findClosestByPath(
     FIND_MY_CONSTRUCTION_SITES
   )
+  if (!targetConstructionSite) {
+    const accessibleAdjacentRooms = getRoomsFromRoomNamesIfVision(
+      getAccessibleAdjacentRoomNames(Game.spawns.Spawn1.room)
+    )
+    // Pick a construction site in a surrounding room with vision
+    // Save the destination to memory
+    // TODO: New state for "transitioning" or "patrolling" to a
+    // different room; then pick the closest site when arrived.
+    for (const accessibleAdjacentRoom of accessibleAdjacentRooms) {
+      const sites = Game.rooms[accessibleAdjacentRoom.name].find(
+        FIND_CONSTRUCTION_SITES
+      )
+      if (sites.length) {
+        creep.memory.destination = new RoomPosition(0, 0, creep.room.name)
+        // destination would be the exit
+        // if the current room name doesn't match, we've transited to the destination
+        // at that point, change state to find a construction site
+        // if there are no sites anywhere, set destination for home spawn
+      }
+    }
+  }
   if (targetConstructionSite) {
+    // There is a construction site in the creep's current room
     const buildResult = creep.build(targetConstructionSite)
     switch (buildResult) {
       // Move to the nearest one
