@@ -35,8 +35,8 @@ const assignDestination = (destinationRoomName: string, creep: Creep) => {
   creep.say(`🚶(${creep.memory.destination.x},${creep.memory.destination.y})`)
 }
 
-const chooseDestination = (creep: Creep) => {
-  const currentRoom = creep.room
+// HELPER FUNCTION
+const getAccessibleRoomNamesWithoutVision = (currentRoom: Room) => {
   const accessibleAdjacentRoomNames = getAccessibleAdjacentRoomNames(
     currentRoom
     // Game.spawns.Spawn1.room
@@ -49,6 +49,13 @@ const chooseDestination = (creep: Creep) => {
       accessibleRoomNamesWithoutVision.push(roomName)
     }
   }
+  return accessibleRoomNamesWithoutVision
+}
+
+const chooseDestination = (creep: Creep) => {
+  const accessibleRoomNamesWithoutVision: Array<string> = getAccessibleRoomNamesWithoutVision(
+    creep.room
+  )
   if (accessibleRoomNamesWithoutVision.length > 0) {
     // There are accessible adjacent rooms without vision
     const randomRoomIndex = Math.floor(
@@ -60,7 +67,9 @@ const chooseDestination = (creep: Creep) => {
   } else {
     // There are not any accessible adjacent rooms without vision
     // In other words, I have vision of all adjacent accessible rooms
-    accessibleAdjacentRoomNames
+    const accessibleAdjacentRoomNames = getAccessibleAdjacentRoomNames(
+      creep.room
+    )
     const randomRoomNameIndex = Math.floor(
       Math.random() * accessibleAdjacentRoomNames.length
     )
@@ -71,54 +80,57 @@ const chooseDestination = (creep: Creep) => {
 
 export const roleEye = {
   run(creep: Creep) {
-    if (creep.memory.destination) {
-      if (creep.room.name !== creep.memory.destination.roomName) {
-        // We've arrived in another room
-        chooseDestination(creep)
-      }
-      // TODO: Add an if there's an enemy in this room I need to go home
-      else {
-      }
-      // We have a destination in this room, so move to it
-      const colorsArray = [
-        "red",
-        "orange",
-        "yellow",
-        "green",
-        "blue",
-        "purple",
-        "white",
-      ]
-      const randomColor =
-        colorsArray[Math.floor(Math.random() * colorsArray.length)]
-      const moveResult = creep.moveTo(
-        creep.memory.destination.x,
-        creep.memory.destination.y,
-        {
-          visualizePathStyle: { stroke: randomColor },
-          reusePath: 5, // Disable path reuse; TODO This uses a lot of CPU
-        }
-      )
-      switch (moveResult) {
-        // Do nothing cases
-        case OK: // The operation has been scheduled successfully.
-        case ERR_TIRED: // The fatigue indicator of the creep is non-zero.
-          break // Do nothing
-        // Change source case (There are probably creeps in the way)
-        case ERR_NO_PATH: // No path to the target could be found.
-          chooseDestination(creep)
-          break
-        // Unhandled cases
-        case ERR_NOT_OWNER: // You are not the owner of this creep.
-        case ERR_BUSY: // The power creep is not spawned in the world.
-        case ERR_INVALID_TARGET: // The target provided is invalid.
-        default:
-          console.log(
-            `${creep.name} had an unexpected error in move routine: ${moveResult}`
-          )
-      }
-    } else {
+    if (
+      !creep.memory.destination ||
+      creep.room.name !== creep.memory.destination.roomName ||
+      (creep.memory.destination &&
+        Game.rooms[creep.memory.destination.roomName])
+    ) {
+      // We have no destination (initial state) OR
+      // We've arrived in another room OR
+      // We now have vision of the room we were headed to
+      // SO choose a new destination
       chooseDestination(creep)
+      // TODO: Add an if there's an enemy in this room I need to go home
+    }
+    // By this point, we'll always have a destination assigned.
+    // We have a destination in this room, so move to it
+    const colorsArray = [
+      "red",
+      "orange",
+      "yellow",
+      "green",
+      "blue",
+      "purple",
+      "white",
+    ]
+    const randomColor =
+      colorsArray[Math.floor(Math.random() * colorsArray.length)]
+    const moveResult = creep.moveTo(
+      creep.memory.destination.x,
+      creep.memory.destination.y,
+      {
+        visualizePathStyle: { stroke: randomColor },
+        reusePath: 5, // Disable path reuse; TODO This uses a lot of CPU
+      }
+    )
+    switch (moveResult) {
+      // Do nothing cases
+      case OK: // The operation has been scheduled successfully.
+      case ERR_TIRED: // The fatigue indicator of the creep is non-zero.
+        break // Do nothing
+      // Change source case (There are probably creeps in the way)
+      case ERR_NO_PATH: // No path to the target could be found.
+        chooseDestination(creep)
+        break
+      // Unhandled cases
+      case ERR_NOT_OWNER: // You are not the owner of this creep.
+      case ERR_BUSY: // The power creep is not spawned in the world.
+      case ERR_INVALID_TARGET: // The target provided is invalid.
+      default:
+        console.log(
+          `${creep.name} had an unexpected error in move routine: ${moveResult}`
+        )
     }
   },
 }
