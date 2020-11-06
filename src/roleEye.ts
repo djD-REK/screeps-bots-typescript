@@ -5,42 +5,30 @@ import { getAccessibleAdjacentRoomNames } from "helperFunctions"
 // Because it assigns them a destination in memory that is the closest
 // exit tile by path to go to the specified destination room
 const assignDestination = (destinationRoomName: string, creep: Creep) => {
-  // TODO: Assign destination of the optimum exit tile, not any exit tile
-  /* Game.spawns.Spawn1.room.find(FIND_EXIT_TOP).forEach(roomPos => {console.log(`${roomPos.x},${roomPos.y}`)})
-  [4:08:59 PM][shard2]9,0
-  [4:08:59 PM][shard2]10,0
-  [4:08:59 PM][shard2]11,0
-  [4:08:59 PM][shard2]12,0
-  [4:08:59 PM][shard2]13,0
-  [4:08:59 PM][shard2]14,0
-  [4:08:59 PM][shard2]15,0
-  [4:08:59 PM][shard2]16,0
-  // All valid room positions are saved, not the closet one
-  // Use this:
-  console.log(Game.spawns.Spawn1.pos.findClosestByPath(FIND_EXIT_TOP))
-  */
   const currentRoom = creep.room
   creep.memory.destination = new RoomPosition(25, 25, currentRoom.name)
-  const exitDirection = currentRoom.findExitTo(destinationRoomName)
+  const exitDirection = currentRoom.findClosestByPathExitTo(destinationRoomName)
   // TODO Check destination tile to see if it's a valid position (not a wall)
   switch (exitDirection) {
     case FIND_EXIT_TOP:
-      const destinationTop = currentRoom.find(FIND_EXIT_TOP)[0]
+      const destinationTop = currentRoom.findClosestByPath(FIND_EXIT_TOP)[0]
       creep.memory.destination.x = destinationTop.x
       creep.memory.destination.y = destinationTop.y
       break
     case FIND_EXIT_RIGHT:
-      const destinationRight = currentRoom.find(FIND_EXIT_RIGHT)[0]
+      const destinationRight = currentRoom.findClosestByPath(FIND_EXIT_RIGHT)[0]
       creep.memory.destination.x = destinationRight.x
       creep.memory.destination.y = destinationRight.y
       break
     case FIND_EXIT_BOTTOM:
-      const destinationBottom = currentRoom.find(FIND_EXIT_BOTTOM)[0]
+      const destinationBottom = currentRoom.findClosestByPath(
+        FIND_EXIT_BOTTOM
+      )[0]
       creep.memory.destination.x = destinationBottom.x
       creep.memory.destination.y = destinationBottom.y
       break
     case FIND_EXIT_LEFT:
-      const destinationLeft = currentRoom.find(FIND_EXIT_LEFT)[0]
+      const destinationLeft = currentRoom.findClosestByPath(FIND_EXIT_LEFT)[0]
       creep.memory.destination.x = destinationLeft.x
       creep.memory.destination.y = destinationLeft.y
       break
