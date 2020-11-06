@@ -9,6 +9,8 @@ import {
 
 export const roleEye = {
   run(creep: Creep) {
+    // TODO: Add if there's an enemy in this room I need to go home
+
     // Stop exploring if I'm the only creep in the room
     if (creep.room.find(FIND_MY_CREEPS).length === 1) {
       creep.memory.state = "OBSERVE"
@@ -22,9 +24,7 @@ export const roleEye = {
       ) {
         // We have no destination (initial state) OR
         // We've arrived in another room
-        // UNLESS we have vision of all the adjacent rooms
         chooseDestination(creep)
-        // TODO: Add an if there's an enemy in this room I need to go home
       }
       const accessibleRoomNamesWithoutVision = getAccessibleRoomNamesWithoutVision(
         creep.room

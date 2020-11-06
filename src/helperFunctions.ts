@@ -171,6 +171,7 @@ export const getAccessibleRoomNamesWithoutVision = (currentRoom: Room) => {
   return accessibleRoomNamesWithoutVision
 }
 
+// Choose an appropriate destination in this room based on creep's role
 export const chooseDestination = (creep: Creep) => {
   if (creep.memory.role === "Eye") {
     const accessibleRoomNamesWithoutVision: Array<string> = getAccessibleRoomNamesWithoutVision(
