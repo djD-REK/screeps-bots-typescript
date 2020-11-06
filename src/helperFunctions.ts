@@ -142,7 +142,12 @@ export const assignDestination = (
   creep.memory.destination = new RoomPosition(25, 25, currentRoom.name)
   const exitDirection = currentRoom.findExitTo(destinationRoomName)
   // TODO Check destination tile to see if it's a valid position (not a wall)
-  const exitPosition = creep.pos.findClosestByPath(FIND_EXIT_TOP)
+  const exitPosition =
+    (exitDirection === FIND_EXIT_TOP ||
+      exitDirection === FIND_EXIT_RIGHT ||
+      exitDirection === FIND_EXIT_BOTTOM ||
+      exitDirection === FIND_EXIT_LEFT) &&
+    creep.pos.findClosestByPath(exitDirection)
   if (exitPosition) {
     creep.memory.destination.x = exitPosition.x
     creep.memory.destination.y = exitPosition.y
