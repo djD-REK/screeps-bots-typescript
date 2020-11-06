@@ -119,7 +119,7 @@ export const getAccessibleAdjacentRoomNames = (currentRoom: Room) => {
         currentRoom.lookForAt("structure", exitPosition.x, exitPosition.y)
           .length === 0
       ) {
-        accessibleAdjacentRoomNames.push(adjacentRoomNameNorth)
+        accessibleAdjacentRoomNames.push(adjacentRoomNameEast)
       }
     }
     if (currentRoom.findExitTo(adjacentRoomNameSouth) > 0) {
@@ -128,7 +128,7 @@ export const getAccessibleAdjacentRoomNames = (currentRoom: Room) => {
         currentRoom.lookForAt("structure", exitPosition.x, exitPosition.y)
           .length === 0
       ) {
-        accessibleAdjacentRoomNames.push(adjacentRoomNameNorth)
+        accessibleAdjacentRoomNames.push(adjacentRoomNameSouth)
       }
     }
     if (currentRoom.findExitTo(adjacentRoomNameWest) > 0) {
@@ -137,7 +137,7 @@ export const getAccessibleAdjacentRoomNames = (currentRoom: Room) => {
         currentRoom.lookForAt("structure", exitPosition.x, exitPosition.y)
           .length === 0
       ) {
-        accessibleAdjacentRoomNames.push(adjacentRoomNameNorth)
+        accessibleAdjacentRoomNames.push(adjacentRoomNameWest)
       }
     }
   }
