@@ -7,36 +7,16 @@ import { getAccessibleAdjacentRoomNames } from "helperFunctions"
 const assignDestination = (destinationRoomName: string, creep: Creep) => {
   const currentRoom = creep.room
   creep.memory.destination = new RoomPosition(25, 25, currentRoom.name)
-  const exitDirection = currentRoom.findClosestByPathExitTo(destinationRoomName)
+  const exitDirection = currentRoom.findExitTo(destinationRoomName)
   // TODO Check destination tile to see if it's a valid position (not a wall)
-  switch (exitDirection) {
-    case FIND_EXIT_TOP:
-      const destinationTop = currentRoom.findClosestByPath(FIND_EXIT_TOP)[0]
-      creep.memory.destination.x = destinationTop.x
-      creep.memory.destination.y = destinationTop.y
-      break
-    case FIND_EXIT_RIGHT:
-      const destinationRight = currentRoom.findClosestByPath(FIND_EXIT_RIGHT)[0]
-      creep.memory.destination.x = destinationRight.x
-      creep.memory.destination.y = destinationRight.y
-      break
-    case FIND_EXIT_BOTTOM:
-      const destinationBottom = currentRoom.findClosestByPath(
-        FIND_EXIT_BOTTOM
-      )[0]
-      creep.memory.destination.x = destinationBottom.x
-      creep.memory.destination.y = destinationBottom.y
-      break
-    case FIND_EXIT_LEFT:
-      const destinationLeft = currentRoom.findClosestByPath(FIND_EXIT_LEFT)[0]
-      creep.memory.destination.x = destinationLeft.x
-      creep.memory.destination.y = destinationLeft.y
-      break
-    default:
-      console.log(
-        `${creep.name} with ${creep.memory.role} had error: exit direction ${exitDirection}`
-      )
-      break
+  const exitPosition = creep.pos.findClosestByPath(FIND_EXIT_TOP)
+  if (exitPosition) {
+    creep.memory.destination.x = exitPosition.x
+    creep.memory.destination.y = exitPosition.y
+  } else {
+    console.log(
+      `${creep.name} with ${creep.memory.role} could not find the exit direction ${exitDirection}`
+    )
   }
   creep.say(`🚶(${creep.memory.destination.x},${creep.memory.destination.y})`)
 }
