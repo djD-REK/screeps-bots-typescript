@@ -145,6 +145,7 @@ export const getAccessibleAdjacentRoomNames = (currentRoom: Room) => {
       }
     }
   }
+  // WIP TODO -- fix checking for structures at exit tiles because currently not working
   return accessibleAdjacentRoomNames
 }
 
