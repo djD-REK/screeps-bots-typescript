@@ -10,6 +10,7 @@ import {
   getMineablePositions,
   getAccessibleAdjacentRoomNames,
   getRoomsFromRoomNamesIfVision,
+  getAccessibleRoomNamesWithVision,
 } from "helperFunctions"
 
 const MAX_CONTAINERS = 5
@@ -371,8 +372,20 @@ export const loop = ErrorMapper.wrapLoop(() => {
     Game.spawns.Spawn1.room.energyAvailable >= 300 &&
     Game.spawns.Spawn1.spawning === null
   ) {
-    const mineablePositionsCount = getMineablePositions(Game.spawns.Spawn1.room)
+    let mineablePositionsCount = getMineablePositions(Game.spawns.Spawn1.room)
       .length
+    const accessibleRoomNamesWithVision: Array<string> = getAccessibleRoomNamesWithVision(
+      Game.spawns.Spawn1.room
+    )
+    if (accessibleRoomNamesWithVision.length > 0) {
+      // There are accessible adjacent rooms with vision
+      // So add their mineable positions to the count
+      for (const accessibleRoom of accessibleRoomNamesWithVision) {
+        mineablePositionsCount += getMineablePositions(
+          Game.rooms[accessibleRoom]
+        ).length
+      }
+    }
 
     // Log current counts to console
     for (const role of creepRoles) {

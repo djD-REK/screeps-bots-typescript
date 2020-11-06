@@ -191,11 +191,9 @@ export const assignDestination = (
   creep.say(`🚶(${creep.memory.destination.x},${creep.memory.destination.y})`)
 }
 
-// HELPER FUNCTION
 export const getAccessibleRoomNamesWithoutVision = (currentRoom: Room) => {
   const accessibleAdjacentRoomNames = getAccessibleAdjacentRoomNames(
     currentRoom
-    // Game.spawns.Spawn1.room
   )
   const accessibleRoomNamesWithoutVision: Array<string> = []
   for (const roomName of accessibleAdjacentRoomNames) {
@@ -206,6 +204,21 @@ export const getAccessibleRoomNamesWithoutVision = (currentRoom: Room) => {
     }
   }
   return accessibleRoomNamesWithoutVision
+}
+
+export const getAccessibleRoomNamesWithVision = (currentRoom: Room) => {
+  const accessibleAdjacentRoomNames = getAccessibleAdjacentRoomNames(
+    currentRoom
+  )
+  const accessibleRoomNamesWithVision: Array<string> = []
+  for (const roomName of accessibleAdjacentRoomNames) {
+    // Game.rooms is an object of all the rooms I have vision in
+    if (Game.rooms[roomName]) {
+      // vision if it's not in Game.rooms
+      accessibleRoomNamesWithVision.push(roomName)
+    }
+  }
+  return accessibleRoomNamesWithVision
 }
 
 // Choose an appropriate destination in this room based on creep's role
@@ -236,6 +249,123 @@ export const chooseDestination = (creep: Creep) => {
       assignDestination(destinationRoomName, creep)
     }
   }
+
+  if (creep.memory.role === "Miner") {
+    const accessibleRoomNamesWithVision: Array<string> = getAccessibleRoomNamesWithVision(
+      creep.room
+    )
+    if (accessibleRoomNamesWithVision.length > 0) {
+      // There are accessible adjacent rooms with vision
+      // For each room
+      // Assess sources for mining
+      // assignDestinationSourceForMining
+      // If there are available mining positions, move there
+      for (const accessibleRoom of accessibleRoomNamesWithVision) {
+        const unoccupiedMineablePositions = assignDestinationSourceForMining(
+          creep,
+          Game.rooms[accessibleRoom]
+        )
+        if (unoccupiedMineablePositions > 0) {
+          break // We found a destination in an adjacent room already
+        }
+      }
+      // All adjacent rooms didn't have anywhere available to mine
+      // So just pick one randomly to go to
+      const randomRoomIndex = Math.floor(
+        Math.random() * accessibleRoomNamesWithVision.length
+      )
+      const destinationRoomName = accessibleRoomNamesWithVision[randomRoomIndex]
+      assignDestination(destinationRoomName, creep)
+    } else {
+      // I don't have vision of any adjacent rooms from the Spawn
+      // I probably need more eye creeps???
+      console.log(`${creep.name} doesn't have vision of any adjacent rooms?`)
+    }
+  }
+}
+
+export const assignDestinationSourceForMining = (
+  creep: Creep,
+  targetRoom: Room
+) => {
+  const mineablePositions: RoomPosition[] = getMineablePositions(targetRoom)
+  // Select an array of creeps with assigned destinations in this room:
+  const miners = Object.keys(Game.creeps).filter(
+    (creepName) =>
+      (Game.creeps[creepName].memory.role === "Harvester" ||
+        Game.creeps[creepName].memory.role === "Miner") &&
+      Game.creeps[creepName].room === targetRoom &&
+      creepName !== creep.name
+  )
+
+  console.log("Found miners:" + miners.length)
+
+  const occupiedMineablePositions: RoomPosition[] = []
+  miners.forEach((creepName) => {
+    // Actually occupied positions
+    occupiedMineablePositions.push(Game.creeps[creepName].pos)
+    // Designated mining positions (miner may be in transit)
+    occupiedMineablePositions.push(
+      new RoomPosition(
+        Game.creeps[creepName].memory.destination.x,
+        Game.creeps[creepName].memory.destination.y,
+        targetRoom.name
+      )
+    )
+  })
+  console.log(`Mineable: ${mineablePositions.length}`)
+
+  // Use a Map object to filter out all the occupied positions
+  const unoccupiedMineableMap = new Map<string, boolean>()
+  mineablePositions.forEach((possiblePosition) => {
+    unoccupiedMineableMap.set(
+      `${possiblePosition.x},${possiblePosition.y}`,
+      true
+    )
+  })
+  occupiedMineablePositions.forEach((occupiedPosition) => {
+    unoccupiedMineableMap.delete(`${occupiedPosition.x},${occupiedPosition.y}`)
+  })
+  const unoccupiedMineablePositions: RoomPosition[] = []
+  for (const stringPosition of unoccupiedMineableMap.keys()) {
+    const regExp = /(?<x>\d+),(?<y>\d+)/
+    // Board is a 50x50 grid with coordinates ranging from 0 to 49 i.e. 1-2 digits
+    const resultOfRegExp = regExp.exec(stringPosition)
+
+    if (resultOfRegExp) {
+      if (resultOfRegExp.groups) {
+        const xCoordinate = Number(resultOfRegExp.groups.x) // e.g. 23
+        const yCoordinate = Number(resultOfRegExp.groups.y) // e.g. 26
+        unoccupiedMineablePositions.push(
+          new RoomPosition(xCoordinate, yCoordinate, targetRoom.name)
+        )
+      }
+    } else {
+      console.log(`Failed RegExp exec on ${stringPosition}`)
+    }
+  }
+
+  console.log(`Occupied: ${occupiedMineablePositions.length}`)
+  console.log(`Unoccupied: ${unoccupiedMineablePositions.length}`)
+
+  // The array mineablePositions now only includes available positions
+  if (unoccupiedMineablePositions.length === 0) {
+    // No available mining positions
+    // --> Mission: EXPLORE
+    // creep.memory.state = "EXPLORE"
+    creep.memory.state = "MEANDER"
+  } else {
+    // Found at least 1 available mining position in the target room
+    // --> Mission: MINE
+    creep.memory.state = "MINE"
+    console.log("Mineable positions: " + [...unoccupiedMineablePositions])
+    creep.memory.destination = unoccupiedMineablePositions[0]
+    // Assign the creep to its destination
+    console.log(
+      `${creep.name} assigned mission to MINE from Destination ${creep.memory.destination}`
+    )
+  }
+  return unoccupiedMineablePositions.length
 }
 
 // HELPER FUNCTION
