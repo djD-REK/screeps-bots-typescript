@@ -250,6 +250,7 @@ export const chooseDestination = (creep: Creep) => {
     }
   }
 
+  // TODO: Fix this logic
   if (creep.memory.role === "Miner") {
     const accessibleRoomNamesWithVision: Array<string> = getAccessibleRoomNamesWithVision(
       creep.room
@@ -284,6 +285,7 @@ export const chooseDestination = (creep: Creep) => {
   }
 }
 
+// TODO: Fix this logic
 export const assignDestinationSourceForMining = (
   creep: Creep,
   targetRoom: Room

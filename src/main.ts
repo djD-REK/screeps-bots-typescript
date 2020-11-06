@@ -337,7 +337,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
     )
   }
   // Upgrader || Worker ==> Builder
-  if (constructionSiteCount > 0) {
+  if (constructionSiteCount < 0) {
+    //if (constructionSiteCount > 0) {
     _.filter(
       Game.creeps,
       (creep) =>
@@ -352,7 +353,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     })
   }
   // Builder || Worker ==> Upgrader
-  if (constructionSiteCount === 0) {
+  if (constructionSiteCount >= 0) {
     _.filter(
       Game.creeps,
       (creep) =>
@@ -440,7 +441,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       mineablePositionsCount
     ) {
       spawnCreep("Worker")
-    } else if (creepCounts.Eye < 40) {
+    } else if (creepCounts.Eye < 10) {
       spawnCreep("Eye")
     }
 

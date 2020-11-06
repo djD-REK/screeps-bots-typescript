@@ -1,7 +1,7 @@
 import { actionMine } from "actionMine"
 import {
-  getMineablePositions,
   assignDestinationSourceForMining,
+  chooseDestination,
 } from "helperFunctions"
 
 export const roleMiner = {
@@ -20,6 +20,11 @@ export const roleMiner = {
       actionMine(creep)
     }
     if (creep.memory.state === "MEANDER") {
+      creep.say("🚶 MINE")
+      creep.memory.state = "MINE"
+      chooseDestination(creep)
+
+      /*
       // In the mean time, let's change our current destination to get out of the way
       if (creep.room.controller) {
         creep.memory.destination.x = creep.room.controller.pos.x
@@ -54,7 +59,7 @@ export const roleMiner = {
             `${creep.name} had an unexpected error in move routine: ${moveResult}`
           )
       }
-      creep.memory.state = "THINK"
+      creep.memory.state = "THINK"*/
     }
   },
 }
