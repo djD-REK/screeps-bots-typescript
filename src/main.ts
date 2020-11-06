@@ -35,7 +35,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   // ROAD PLANNING CHECK: Plan some roads every so often
   // First, count the construction sites in this & surrounding rooms
   let constructionSiteCount = Game.spawns.Spawn1.room.find(
-    FIND_CONSTRUCTION_SITES
+    FIND_CONSTRUCTION_SITES // not FIND_MY_CONSTRUCTION_SITES
   ).length
   // FIND_MY_CONSTRUCTION_SITES won't work on roads (neutral structures)
   // Find the rooms accessible from this one (this room exits there)
@@ -44,7 +44,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   )
   for (const accessibleAdjacentRoom of accessibleAdjacentRoomsWithVision) {
     constructionSiteCount += accessibleAdjacentRoom.find(
-      FIND_MY_CONSTRUCTION_SITES
+      FIND_CONSTRUCTION_SITES // not FIND_MY_CONSTRUCTION_SITES
     ).length
   }
   if (Game.time % 5 === 0) {
