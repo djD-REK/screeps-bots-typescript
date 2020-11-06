@@ -42,6 +42,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   const accessibleAdjacentRoomsWithVision: Array<Room> = getRoomsFromRoomNamesIfVision(
     getAccessibleAdjacentRoomNames(Game.spawns.Spawn1.room)
   )
+  // Add the under-construction roads and containers in adjacent rooms
   for (const accessibleAdjacentRoom of accessibleAdjacentRoomsWithVision) {
     constructionSiteCount += accessibleAdjacentRoom.find(
       FIND_CONSTRUCTION_SITES // not FIND_MY_CONSTRUCTION_SITES
