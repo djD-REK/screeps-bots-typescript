@@ -12,7 +12,9 @@ export const roleEye = {
     // Stop exploring if I'm the only creep in the room
     if (creep.room.find(FIND_MY_CREEPS).length === 1) {
       creep.memory.state = "OBSERVE"
-      creep.moveTo(25, 25) // move to the center
+      // move to the center
+      creep.memory.destination.x = 25
+      creep.memory.destination.y = 25
     } else {
       if (
         !creep.memory.destination ||
@@ -40,9 +42,8 @@ export const roleEye = {
         // unless we have vision of all the possible destinations right now.
         chooseDestination(creep)
       }
-
-      // By this point, we'll always have a destination assigned.
-      moveToDestination(creep)
     }
+    // By this point, we'll always have a destination assigned.
+    moveToDestination(creep)
   },
 }
