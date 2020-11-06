@@ -100,18 +100,45 @@ export const getAccessibleAdjacentRoomNames = (currentRoom: Room) => {
       currentRoomXCoordinate - 1
     }${currentRoomNorthOrSouth}${currentRoomYCoordinate}`
 
-    // these rooms are accessible from this room, add them to the list.
+    // If these rooms are accessible from this room, add them to the list.
+    // But we need to check to see if there's a constructed wall at the exit,
+    // because that means we're in a newbie area, and we can't use that exit.
+
     if (currentRoom.findExitTo(adjacentRoomNameNorth) > 0) {
-      accessibleAdjacentRoomNames.push(adjacentRoomNameNorth)
+      const exitPosition = currentRoom.find(FIND_EXIT_TOP)[0]
+      if (
+        currentRoom.lookForAt("structure", exitPosition.x, exitPosition.y)
+          .length === 0
+      ) {
+        accessibleAdjacentRoomNames.push(adjacentRoomNameNorth)
+      }
     }
     if (currentRoom.findExitTo(adjacentRoomNameEast) > 0) {
-      accessibleAdjacentRoomNames.push(adjacentRoomNameEast)
+      const exitPosition = currentRoom.find(FIND_EXIT_RIGHT)[0]
+      if (
+        currentRoom.lookForAt("structure", exitPosition.x, exitPosition.y)
+          .length === 0
+      ) {
+        accessibleAdjacentRoomNames.push(adjacentRoomNameNorth)
+      }
     }
     if (currentRoom.findExitTo(adjacentRoomNameSouth) > 0) {
-      accessibleAdjacentRoomNames.push(adjacentRoomNameSouth)
+      const exitPosition = currentRoom.find(FIND_EXIT_BOTTOM)[0]
+      if (
+        currentRoom.lookForAt("structure", exitPosition.x, exitPosition.y)
+          .length === 0
+      ) {
+        accessibleAdjacentRoomNames.push(adjacentRoomNameNorth)
+      }
     }
     if (currentRoom.findExitTo(adjacentRoomNameWest) > 0) {
-      accessibleAdjacentRoomNames.push(adjacentRoomNameWest)
+      const exitPosition = currentRoom.find(FIND_EXIT_LEFT)[0]
+      if (
+        currentRoom.lookForAt("structure", exitPosition.x, exitPosition.y)
+          .length === 0
+      ) {
+        accessibleAdjacentRoomNames.push(adjacentRoomNameNorth)
+      }
     }
   }
   return accessibleAdjacentRoomNames
@@ -153,7 +180,7 @@ export const assignDestination = (
     creep.memory.destination.y = exitPosition.y
   } else {
     console.log(
-      `${creep.name} with ${creep.memory.role} could not find the exit direction ${exitDirection}`
+      `${creep.name} with role ${creep.memory.role} could not find the exit direction ${exitDirection}`
     )
   }
   creep.say(`🚶(${creep.memory.destination.x},${creep.memory.destination.y})`)
