@@ -26,11 +26,13 @@ export const roleEye = {
         // We've arrived in another room
         chooseDestination(creep)
       }
+      // TODO This is possibly the part that doesn't work
       const destinationRoomName = getRoomNameBasedOnExitCoordinates(
         creep.memory.destination.x,
         creep.memory.destination.y,
         new Room(creep.memory.destination.roomName)
       )
+      // TODO or maybe it's this part
       const accessibleRoomNamesWithoutVision = getAccessibleRoomNamesWithoutVision(
         creep.room
       )
@@ -40,6 +42,7 @@ export const roleEye = {
         accessibleRoomNamesWithoutVision.length > 0
       ) {*/
       // TODO Fix this logic about rooms with vision
+      console.log(`${creep.name} ${destinationRoomName}`)
       if (Game.rooms[destinationRoomName]) {
         // Wait a second, we have vision of the destination, so change it,
         // unless we have vision of all the possible destinations right now.
