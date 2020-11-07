@@ -361,8 +361,18 @@ export const assignDestinationSourceForMining = (
     // Found at least 1 available mining position in the target room
     // --> Mission: MINE
     creep.memory.state = "MINE"
-    console.log("Mineable positions: " + [...unoccupiedMineablePositions])
-    creep.memory.destination = unoccupiedMineablePositions[0]
+    // Pick a mineable position to mine at randomly
+    // TODO: Pick the closest one by path
+    const randomMineablePositionIndex = Math.floor(
+      Math.random() * unoccupiedMineablePositions.length
+    )
+    console.log(
+      "Mineable positions: " +
+        [...unoccupiedMineablePositions] +
+        `[${randomMineablePositionIndex}]`
+    )
+    creep.memory.destination =
+      unoccupiedMineablePositions[randomMineablePositionIndex]
     // Assign the creep to its destination
     console.log(
       `${creep.name} assigned mission to MINE from Destination ${creep.memory.destination}`
