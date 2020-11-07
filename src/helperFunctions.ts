@@ -232,6 +232,8 @@ export const chooseDestination = (creep: Creep) => {
       const randomRoomIndex = Math.floor(
         Math.random() * accessibleRoomNamesWithoutVision.length
       )
+      // TODO Log the room names because random is broken
+      console.log(...accessibleRoomNamesWithoutVision, randomRoomIndex)
       const destinationRoomName =
         accessibleRoomNamesWithoutVision[randomRoomIndex]
       assignDestination(destinationRoomName, creep)
@@ -270,17 +272,16 @@ export const chooseDestination = (creep: Creep) => {
           break // We found a destination in an adjacent room already
         }
       }
+    } else {
       // All adjacent rooms didn't have anywhere available to mine
       // So just pick one randomly to go to
       const randomRoomIndex = Math.floor(
         Math.random() * accessibleRoomNamesWithVision.length
       )
+      // TODO Log the room names because random is broken
+      console.log(...accessibleRoomNamesWithVision, randomRoomIndex)
       const destinationRoomName = accessibleRoomNamesWithVision[randomRoomIndex]
       assignDestination(destinationRoomName, creep)
-    } else {
-      // I don't have vision of any adjacent rooms from the Spawn
-      // I probably need more eye creeps???
-      console.log(`${creep.name} doesn't have vision of any adjacent rooms?`)
     }
   }
 }

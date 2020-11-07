@@ -436,10 +436,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       spawnCreep("Miner")
     } else if (creepCounts.Fetcher < mineablePositionsCount / 2) {
       spawnCreep("Fetcher")
-    } else if (
-      creepCounts.Builder + creepCounts.Upgrader <
-      mineablePositionsCount
-    ) {
+    } else if (creepCounts.Builder + creepCounts.Upgrader < 0) {
       spawnCreep("Worker")
     } else if (creepCounts.Eye < 10) {
       spawnCreep("Eye")
