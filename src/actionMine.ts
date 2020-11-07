@@ -1,8 +1,9 @@
 export const actionMine = (creep: Creep) => {
+  const destinationRoomName = creep.memory.destination.roomName
   if (
     creep.pos.x === creep.memory.destination.x &&
     creep.pos.y === creep.memory.destination.y &&
-    creep.room.name === creep.memory.destination.roomName
+    creep.room.name === destinationRoomName
   ) {
     // We're at the destination, so it's harvest time
     const source = creep.pos.findClosestByRange(FIND_SOURCES)
@@ -29,8 +30,10 @@ export const actionMine = (creep: Creep) => {
     }
   } else {
     // We need to move to the assigned destination
+
     if (
-      creep.room.lookForAt(
+      Game.rooms[destinationRoomName] &&
+      Game.rooms[destinationRoomName].lookForAt(
         LOOK_CREEPS,
         creep.memory.destination.x,
         creep.memory.destination.y
@@ -46,8 +49,11 @@ export const actionMine = (creep: Creep) => {
 
     // Now let's actually move (to our destination or the random location)
     const moveResult = creep.moveTo(
-      creep.memory.destination.x,
-      creep.memory.destination.y,
+      new RoomPosition(
+        creep.memory.destination.x,
+        creep.memory.destination.y,
+        creep.memory.destination.roomName
+      ),
       {
         visualizePathStyle: { stroke: "#ffaa00" },
       }
