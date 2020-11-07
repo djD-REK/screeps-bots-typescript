@@ -252,7 +252,7 @@ export const chooseDestination = (creep: Creep) => {
     }
   }
 
-  // TODO: Fix this logic
+  // TODO: Fix this logic -- currently not checking for creeps already assigned to that destination
   if (creep.memory.role === "Miner") {
     const accessibleRoomNamesWithVision: Array<string> = getAccessibleRoomNamesWithVision(
       creep.room

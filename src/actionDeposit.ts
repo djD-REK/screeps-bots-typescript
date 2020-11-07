@@ -26,11 +26,18 @@ export const actionDeposit = (creep: Creep) => {
     if (
       creep.transfer(targetDropOffSite, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE
     ) {
-      creep.moveTo(targetDropOffSite, {
+      const moveResult = creep.moveTo(targetDropOffSite, {
         visualizePathStyle: { stroke: "#ffffff" },
         ignoreCreeps: true, // ignore creeps when depositing
         reusePath: 5, // reuse path for 5 turns
       })
+      if (moveResult === ERR_NO_PATH) {
+        creep.moveTo(targetDropOffSite, {
+          visualizePathStyle: { stroke: "#ffffff" },
+          ignoreCreeps: false, // don't ignore creeps when depositing
+          reusePath: 5, // reuse path for 5 turns
+        })
+      }
     }
   } else {
     // There is nowhere to drop it off in the current room

@@ -20,6 +20,7 @@ export const roleMiner = {
       actionMine(creep)
     }
     if (creep.memory.state === "MEANDER") {
+      // My position to mine is occupied
       creep.say("🚶 MINE")
       creep.memory.state = "MINE"
       chooseDestination(creep)
