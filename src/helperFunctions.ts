@@ -292,9 +292,43 @@ export const chooseDestination = (creep: Creep) => {
       assignDestination(destinationRoomName, creep)
     }
   }
+
+  // TODO Assign fetchers to other rooms
+  if (creep.memory.role === "Fetchers") {
+    const accessibleRoomNamesWithoutVision: Array<string> = getAccessibleRoomNamesWithoutVision(
+      creep.room
+    )
+    if (accessibleRoomNamesWithoutVision.length > 0) {
+      // There are accessible adjacent rooms without vision
+      const randomRoomIndex = Math.floor(
+        Math.random() * accessibleRoomNamesWithoutVision.length
+      )
+      console.log(
+        "Accessible Room Names without Vision:",
+        creep.name,
+        ...accessibleRoomNamesWithoutVision,
+        randomRoomIndex
+      )
+      const destinationRoomName =
+        accessibleRoomNamesWithoutVision[randomRoomIndex]
+      assignDestination(destinationRoomName, creep)
+    } else {
+      // There are not any accessible adjacent rooms without vision
+      // In other words, I have vision of all adjacent accessible rooms
+      const accessibleAdjacentRoomNames = getAccessibleAdjacentRoomNames(
+        creep.room
+      )
+      const randomRoomNameIndex = Math.floor(
+        Math.random() * accessibleAdjacentRoomNames.length
+      )
+      const destinationRoomName =
+        accessibleAdjacentRoomNames[randomRoomNameIndex]
+      assignDestination(destinationRoomName, creep)
+    }
+  }
 }
 
-// TODO: Fix this logic
+// TODO: Fix this logic for miners
 export const assignDestinationSourceForMining = (
   creep: Creep,
   targetRoom: Room

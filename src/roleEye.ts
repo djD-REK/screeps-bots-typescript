@@ -26,18 +26,21 @@ export const roleEye = {
         // We've arrived in another room
         chooseDestination(creep)
       }
-      const accessibleRoomNamesWithoutVision = getAccessibleRoomNamesWithoutVision(
-        creep.room
-      )
       const destinationRoomName = getRoomNameBasedOnExitCoordinates(
         creep.memory.destination.x,
         creep.memory.destination.y,
         new Room(creep.memory.destination.roomName)
       )
+      const accessibleRoomNamesWithoutVision = getAccessibleRoomNamesWithoutVision(
+        creep.room
+      )
+      /*
       if (
         Game.rooms[destinationRoomName] &&
         accessibleRoomNamesWithoutVision.length > 0
-      ) {
+      ) {*/
+      // TODO Fix this logic about rooms with vision
+      if (Game.rooms[destinationRoomName]) {
         // Wait a second, we have vision of the destination, so change it,
         // unless we have vision of all the possible destinations right now.
         chooseDestination(creep)
