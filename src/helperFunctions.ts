@@ -232,8 +232,12 @@ export const chooseDestination = (creep: Creep) => {
       const randomRoomIndex = Math.floor(
         Math.random() * accessibleRoomNamesWithoutVision.length
       )
-      // TODO Log the room names because random is broken
-      console.log(...accessibleRoomNamesWithoutVision, randomRoomIndex)
+      console.log(
+        "Accessible Room Names without Vision:",
+        creep.name,
+        ...accessibleRoomNamesWithoutVision,
+        randomRoomIndex
+      )
       const destinationRoomName =
         accessibleRoomNamesWithoutVision[randomRoomIndex]
       assignDestination(destinationRoomName, creep)
@@ -278,8 +282,12 @@ export const chooseDestination = (creep: Creep) => {
       const randomRoomIndex = Math.floor(
         Math.random() * accessibleRoomNamesWithVision.length
       )
-      // TODO Log the room names because random is broken
-      console.log(...accessibleRoomNamesWithVision, randomRoomIndex)
+      console.log(
+        "Accessible Room Names with Vision:",
+        creep.name,
+        ...accessibleRoomNamesWithVision,
+        randomRoomIndex
+      )
       const destinationRoomName = accessibleRoomNamesWithVision[randomRoomIndex]
       assignDestination(destinationRoomName, creep)
     }
