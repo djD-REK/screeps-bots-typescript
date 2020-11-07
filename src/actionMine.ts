@@ -1,7 +1,8 @@
 export const actionMine = (creep: Creep) => {
   if (
     creep.pos.x === creep.memory.destination.x &&
-    creep.pos.y === creep.memory.destination.y
+    creep.pos.y === creep.memory.destination.y &&
+    creep.room.name === creep.memory.destination.roomName
   ) {
     // We're at the destination, so it's harvest time
     const source = creep.pos.findClosestByRange(FIND_SOURCES)
@@ -24,28 +25,6 @@ export const actionMine = (creep: Creep) => {
           console.log(
             `${creep.name} had an unexpected error in harvest routine: ${harvestResult}`
           )
-      }
-    }
-    // Build a container if we can
-    if (
-      creep.room.lookForAt(LOOK_CONSTRUCTION_SITES, creep.pos).length > 0 ||
-      creep.room.lookForAt(LOOK_STRUCTURES, creep.pos).length > 0
-    ) {
-      // We already have a container at this active mining position
-    } else {
-      // We need a container, unless we have more than 5 (the max)
-      const containers = creep.room.find(FIND_MY_STRUCTURES, {
-        filter: { structureType: STRUCTURE_CONTAINER },
-      })
-      // TODO: Move containers logic to road building section
-      // i.e. build roads before containers
-      if (containers.length < 0) {
-        // Does not run at the moment
-        creep.room.createConstructionSite(
-          creep.pos.x,
-          creep.pos.y,
-          STRUCTURE_CONTAINER
-        )
       }
     }
   } else {
