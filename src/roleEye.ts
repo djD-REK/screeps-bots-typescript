@@ -11,8 +11,13 @@ export const roleEye = {
   run(creep: Creep) {
     // TODO: Add if there's an enemy in this room I need to go home
 
-    // Stop exploring if I'm the only creep in the room
-    if (creep.room.find(FIND_MY_CREEPS).length === 1) {
+    // Stop exploring if this Eye creep is the only creep in the room
+    // and don't have any owned structures, which means this creep is
+    // giving us vision of the room right now
+    if (
+      creep.room.find(FIND_MY_CREEPS).length === 1 &&
+      creep.room.find(FIND_MY_STRUCTURES).length === 0
+    ) {
       creep.memory.state = "OBSERVE"
       // move to the center
       creep.memory.destination.x = 25
