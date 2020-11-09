@@ -430,7 +430,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
 
     // Spawn a creep
-    /*
+    const accessibleRoomNamesWithoutVision = getAccessibleRoomNamesWithoutVision(
+      Game.spawns.Spawn1.room
+    )
+
     if (
       creepCounts.Harvester < mineablePositionsCount &&
       creepCounts.Miner === 0
@@ -439,25 +442,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
       spawnCreep("Harvester")
     } else if (creepCounts.Miner < mineablePositionsCount) {
       spawnCreep("Miner")
-    } else if (creepCounts.Fetcher < mineablePositionsCount / 2) {
+    } else if (creepCounts.Fetcher < mineablePositionsCount) {
       spawnCreep("Fetcher")
     } else if (creepCounts.Builder + creepCounts.Upgrader < 0) {
       spawnCreep("Worker")
     } else if (creepCounts.Eye < mineablePositionsCount) {
       spawnCreep("Eye")
-    }
-    */
-    const accessibleRoomNamesWithoutVision = getAccessibleRoomNamesWithoutVision(
-      Game.spawns.Spawn1.room
-    )
-    if (creepCounts.Eye < accessibleRoomNamesWithoutVision.length) {
-      spawnCreep("Eye")
-    } else if (
-      creepCounts.Harvester < mineablePositionsCount &&
-      creepCounts.Miner === 0
-    ) {
-      // Brand new room
-      spawnCreep("Harvester")
     }
 
     // TODO: Defense against creep invasion
