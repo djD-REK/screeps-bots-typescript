@@ -233,10 +233,7 @@ export const chooseDestination = (creep: Creep) => {
         Math.random() * accessibleRoomNamesWithoutVision.length
       )
       console.log(
-        "Accessible Room Names without Vision:",
-        creep.name,
-        ...accessibleRoomNamesWithoutVision,
-        randomRoomIndex
+        `Accessible Room Names without Vision:${creep.name} ${accessibleRoomNamesWithoutVision}; selected random index ${randomRoomIndex}`
       )
       const destinationRoomName =
         accessibleRoomNamesWithoutVision[randomRoomIndex]
