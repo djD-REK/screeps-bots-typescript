@@ -87,10 +87,10 @@ export const roleEye = {
         // unless we have vision of all the possible destinations right now.
         creep.memory.state = "THINK"
       }
-
-      // STATE ACTION: MOVE TO THE DESTINATION
-      // By this point, we'll always have a destination assigned
-      moveToDestination(creep)
     }
+
+    // ALWAYS ACTION: MOVE TO THE DESTINATION
+    // By this point, we'll always have a destination assigned
+    moveToDestination(creep)
   },
 }
