@@ -11,6 +11,7 @@ import {
   getAccessibleAdjacentRoomNames,
   getRoomsFromRoomNamesIfVision,
   getAccessibleRoomNamesWithVision,
+  getAccessibleRoomNamesWithoutVision,
 } from "helperFunctions"
 
 const MAX_CONTAINERS = 5
@@ -426,6 +427,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
 
     // Spawn a creep
+    /*
     if (
       creepCounts.Harvester < mineablePositionsCount &&
       creepCounts.Miner === 0
@@ -440,6 +442,19 @@ export const loop = ErrorMapper.wrapLoop(() => {
       spawnCreep("Worker")
     } else if (creepCounts.Eye < mineablePositionsCount) {
       spawnCreep("Eye")
+    }
+    */
+    const accessibleRoomNamesWithoutVision = getAccessibleRoomNamesWithoutVision(
+      Game.spawns.Spawn1.room
+    )
+    if (creepCounts.Eye < accessibleRoomNamesWithoutVision.length) {
+      spawnCreep("Eye")
+    } else if (
+      creepCounts.Harvester < mineablePositionsCount &&
+      creepCounts.Miner === 0
+    ) {
+      // Brand new room
+      spawnCreep("Harvester")
     }
 
     // TODO: Defense against creep invasion
