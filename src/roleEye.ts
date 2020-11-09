@@ -11,32 +11,6 @@ export const roleEye = {
   run(creep: Creep) {
     // TODO: Add if there's an enemy in this room I need to go home
 
-    if (creep.memory.state === "THINK") {
-      // STATE TRANSITION: THINK --> EXPLORE
-      // WHEN THIS EYE CREEP NEEDS A NEW DESTINATION
-      // Either this creep is brand new (initial state)
-      // OR it has transitioned to a new room (after exploring)
-      // OR it realizes we now have vision of the new room
-      creep.memory.state = "EXPLORE"
-
-      // STATE ACTION: CHOOSE A NEW DESTINATION
-      chooseDestination(creep)
-    }
-    if (creep.memory.state === "OBSERVE") {
-      // STATE TRANSITION: OBSERVE --> THINK
-      // WHEN SOMETHING ELSE IS PROVIDING VISION
-      if (
-        creep.room.find(FIND_MY_CREEPS).length !== 1 ||
-        creep.room.find(FIND_MY_STRUCTURES).length !== 0
-      ) {
-        creep.memory.state = "THINK"
-      }
-      // STATE ACTION: ASSIGN DESTINATION TO THE MIDDLE
-      creep.memory.destination.x = 25
-      creep.memory.destination.y = 25
-      // STATE ACTION: MOVE TO THE DESTINATION
-      moveToDestination(creep)
-    }
     if (creep.memory.state === "EXPLORE") {
       // STATE TRANSITION: EXPLORE --> OBSERVE
       // WHEN THIS EYE CREEP IS PROVIDING VISION
@@ -87,6 +61,32 @@ export const roleEye = {
         // unless we have vision of all the possible destinations right now.
         creep.memory.state = "THINK"
       }
+    }
+
+    if (creep.memory.state === "THINK") {
+      // STATE TRANSITION: THINK --> EXPLORE
+      // WHEN THIS EYE CREEP NEEDS A NEW DESTINATION
+      // Either this creep is brand new (initial state)
+      // OR it has transitioned to a new room (after exploring)
+      // OR it realizes we now have vision of the new room
+      creep.memory.state = "EXPLORE"
+
+      // STATE ACTION: CHOOSE A NEW DESTINATION
+      chooseDestination(creep)
+    }
+
+    if (creep.memory.state === "OBSERVE") {
+      // STATE TRANSITION: OBSERVE --> THINK
+      // WHEN SOMETHING ELSE IS PROVIDING VISION
+      if (
+        creep.room.find(FIND_MY_CREEPS).length !== 1 ||
+        creep.room.find(FIND_MY_STRUCTURES).length !== 0
+      ) {
+        creep.memory.state = "THINK"
+      }
+      // STATE ACTION: ASSIGN DESTINATION TO THE MIDDLE
+      creep.memory.destination.x = 25
+      creep.memory.destination.y = 25
     }
 
     // ALWAYS ACTION: MOVE TO THE DESTINATION
