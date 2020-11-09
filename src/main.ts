@@ -7,7 +7,7 @@ import { roleDefender } from "roleDefender"
 import { roleBuilder } from "roleBuilder"
 import { roleEye } from "roleEye"
 import {
-  getMineablePositions,
+  getMineablePositionsIncludingSurroundingRooms,
   getAccessibleAdjacentRoomNames,
   getRoomsFromRoomNamesIfVision,
   getAccessibleRoomNamesWithVision,
@@ -56,7 +56,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
     // Road planning logic part 1: For mineable positions in the current room
     // Find the mineable positions we want to build roads to
-    const mineablePositions = getMineablePositions(Game.spawns.Spawn1.room)
+    const mineablePositions = getMineablePositionsIncludingSurroundingRooms(
+      Game.spawns.Spawn1.room
+    )
     // Create a terrain helper for quick lookups of terrain
     const terrain = new Room.Terrain(Game.spawns.Spawn1.room.name)
     // Count the containers because there's a maximum of 5 containers allowed
@@ -192,7 +194,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       }
 
       // Find the mineable positions we want to build roads to
-      const mineablePositionsAdjacentRoom = getMineablePositions(
+      const mineablePositionsAdjacentRoom = getMineablePositionsIncludingSurroundingRooms(
         accessibleAdjacentRoom
       )
       // Create a terrain helper for quick lookups of terrain
@@ -374,8 +376,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
     Game.spawns.Spawn1.room.energyAvailable >= 300 &&
     Game.spawns.Spawn1.spawning === null
   ) {
-    let mineablePositionsCount = getMineablePositions(Game.spawns.Spawn1.room)
-      .length
+    let mineablePositionsCount = getMineablePositionsIncludingSurroundingRooms(
+      Game.spawns.Spawn1.room
+    ).length
     const accessibleRoomNamesWithVision: Array<string> = getAccessibleRoomNamesWithVision(
       Game.spawns.Spawn1.room
     )
@@ -383,7 +386,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       // There are accessible adjacent rooms with vision
       // So add their mineable positions to the count
       for (const accessibleRoom of accessibleRoomNamesWithVision) {
-        mineablePositionsCount += getMineablePositions(
+        mineablePositionsCount += getMineablePositionsIncludingSurroundingRooms(
           Game.rooms[accessibleRoom]
         ).length
       }
