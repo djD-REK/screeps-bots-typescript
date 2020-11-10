@@ -355,7 +355,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     })
   }
   // Builder || Worker ==> Upgrader
-  if (constructionSiteCount >= 0) {
+  if (constructionSiteCount === 0) {
     _.filter(
       Game.creeps,
       (creep) =>
