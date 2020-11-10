@@ -443,7 +443,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
         break
       } else if (
         creepCounts.Builder + creepCounts.Upgrader + i <
-        Math.floor(mineablePositionsCount / 2)
+        Math.floor(mineablePositionsCount * 2)
       ) {
         spawnCreep("Worker")
         break
