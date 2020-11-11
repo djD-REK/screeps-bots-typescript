@@ -51,7 +51,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     ).length
   }
   if (Game.time % 5 === 0) {
-    const MAX_CONSTRUCTION_SITES_PER_TICK = 5
+    const MAX_CONSTRUCTION_SITES_PER_TICK = 10
     let constructionSitesPlannedThisTick = 0 // only plan some sites each tick
     // if (Game.time % 100 === 0)
     console.log(`=== Road planning check (every 5 ticks) ===`)
