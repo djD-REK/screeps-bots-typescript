@@ -189,6 +189,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     if (controller) {
       const pathToController = Game.spawns.Spawn1.pos.findPathTo(controller, {
         ignoreCreeps: true,
+        maxRooms: 1,
       })
       for (const [index, pathStep] of pathToController.entries()) {
         if (index < pathToController.length - 4) {
@@ -250,6 +251,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
           mineablePosition,
           {
             ignoreCreeps: true,
+            maxRooms: 1,
           }
         )
         for (const [
@@ -273,6 +275,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
           Game.spawns.Spawn1.pos,
           {
             ignoreCreeps: true,
+            maxRooms: 1,
           }
         )
         for (const [
