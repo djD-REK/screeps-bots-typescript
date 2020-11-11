@@ -87,6 +87,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
         mineablePosition,
         {
           ignoreCreeps: true,
+          maxRooms: 1, // don't path through other rooms
         }
       )
       for (const [index, pathStep] of pathToMineablePosition.entries()) {
@@ -119,6 +120,30 @@ export const loop = ErrorMapper.wrapLoop(() => {
                 STRUCTURE_ROAD
               )
               break
+          }
+        }
+      }
+
+      // Build roads between each mineable position in the Spawn's room
+      // TODO: Build roads between mineable positions in other rooms
+      for (const mineablePositionTwo of mineablePositions) {
+        const pathToMineablePositionTwo = mineablePosition.findPathTo(
+          mineablePositionTwo,
+          {
+            ignoreCreeps: true,
+            maxRooms: 1, // don't path through other rooms
+          }
+        )
+        for (const [index, pathStep] of pathToMineablePositionTwo.entries()) {
+          if (index < pathToMineablePositionTwo.length - 1) {
+            // Here's the reason it's pathToMineablePositionTwo.length - 1:
+            // Don't build construction sites directly on top of sources and
+            // don't build them within 2 range of sources (mining positions)
+            Game.spawns.Spawn1.room.createConstructionSite(
+              pathStep.x,
+              pathStep.y,
+              STRUCTURE_ROAD
+            )
           }
         }
       }
