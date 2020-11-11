@@ -12,18 +12,6 @@ export const roleEye = {
     // TODO: Add if there's an enemy in this room I need to go home
 
     if (creep.memory.state === "EXPLORE") {
-      // STATE TRANSITION: EXPLORE --> OBSERVE
-      // WHEN THIS EYE CREEP IS PROVIDING VISION
-      if (
-        creep.room.find(FIND_MY_CREEPS).length === 1 &&
-        creep.room.find(FIND_MY_STRUCTURES).length === 0
-      ) {
-        // Stop exploring if this Eye creep is the only creep in the room
-        // and don't have any owned structures, which means this creep is
-        // giving us vision of the room right now
-        creep.memory.state = "OBSERVE"
-      }
-
       // STATE TRANSITION: EXPLORE --> THINK
       // WHEN THE CURRENT DESTINATION IS NO LONGER VALID
       // Such as when it has transited into a new room
@@ -35,6 +23,9 @@ export const roleEye = {
 
       // STATE TRANSITION: EXPLORE --> THINK
       // WHEN WE HAVE VISION OF THIS EYE CREEP'S DESTINATION
+      console.log(
+        `Creep ${creep.name} destination in memory (${creep.memory.destination.x},${creep.memory.destination.y}) in ${creep.memory.destination.roomName} and its current room is ${creep.room.name}`
+      )
       const destinationRoomName = getRoomNameBasedOnExitCoordinates(
         creep.memory.destination.x,
         creep.memory.destination.y,
@@ -64,15 +55,27 @@ export const roleEye = {
     }
 
     if (creep.memory.state === "THINK") {
-      // STATE TRANSITION: THINK --> EXPLORE
-      // WHEN THIS EYE CREEP NEEDS A NEW DESTINATION
-      // Either this creep is brand new (initial state)
-      // OR it has transitioned to a new room (after exploring)
-      // OR it realizes we now have vision of the new room
-      creep.memory.state = "EXPLORE"
+      // STATE TRANSITION: EXPLORE --> OBSERVE
+      // WHEN THIS EYE CREEP IS PROVIDING VISION
+      if (
+        creep.room.find(FIND_MY_CREEPS).length === 1 &&
+        creep.room.find(FIND_MY_STRUCTURES).length === 0
+      ) {
+        // Stop exploring if this Eye creep is the only creep in the room
+        // and don't have any owned structures, which means this creep is
+        // giving us vision of the room right now
+        creep.memory.state = "OBSERVE"
+      } else {
+        // STATE TRANSITION: THINK --> EXPLORE
+        // WHEN THIS EYE CREEP NEEDS A NEW DESTINATION
+        // Either this creep is brand new (initial state)
+        // OR it has transitioned to a new room (after exploring)
+        // OR it realizes we now have vision of the new room
+        creep.memory.state = "EXPLORE"
 
-      // STATE ACTION: CHOOSE A NEW DESTINATION
-      chooseDestination(creep)
+        // STATE ACTION: CHOOSE A NEW DESTINATION
+        chooseDestination(creep)
+      }
     }
 
     if (creep.memory.state === "OBSERVE") {
@@ -84,9 +87,10 @@ export const roleEye = {
       ) {
         creep.memory.state = "THINK"
       }
-      // STATE ACTION: ASSIGN DESTINATION TO THE MIDDLE
+      // STATE ACTION: ASSIGN DESTINATION TO THE MIDDLE OF THIS ROOM
       creep.memory.destination.x = 25
       creep.memory.destination.y = 25
+      creep.memory.destination.roomName = creep.room.name
     }
 
     // ALWAYS ACTION: MOVE TO THE DESTINATION
