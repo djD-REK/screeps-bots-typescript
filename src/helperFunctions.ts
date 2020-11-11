@@ -80,26 +80,86 @@ export const getAccessibleAdjacentRoomNames = (currentRoom: Room) => {
   // Adjacent rooms: +/- 1 in the x, +/- in the y
   // There are 4 possible adjacent rooms
   // Example room name: W23S13
+  // Rooms can also be E23N13, and the signs would flip
   const matchedRoomName = currentRoom.name.match(/(\w)(\d+)(\w)(\d+)/)
   if (matchedRoomName) {
     const currentRoomWestOrEast = matchedRoomName[1]
     const currentRoomXCoordinate = Number(matchedRoomName[2])
     const currentRoomNorthOrSouth = matchedRoomName[3]
     const currentRoomYCoordinate = Number(matchedRoomName[4])
+    // Room grid logic:
+    // if we're in N, north is 1 more & south is 1 less
+    // if we're in S, north is 1 less & south is 1 more
+    // if we're in E, east is 1 more & west is 1 less
+    // if we're in W, west is 1 more & east is 1 less
+    // Special cases: W0N0,E0N0,W0S0,E0S0
+    // if we're at N0, south is S0
+    // if we're at S0, north is N0
+    // if we're at E0, west is W0
+    // if we're at W0, east is E0
 
-    const adjacentRoomNameNorth = `${currentRoomWestOrEast}${currentRoomXCoordinate}${currentRoomNorthOrSouth}${
-      currentRoomYCoordinate + 1
-    }`
-    const adjacentRoomNameEast = `${currentRoomWestOrEast}${
-      currentRoomXCoordinate + 1
-    }${currentRoomNorthOrSouth}${currentRoomYCoordinate}`
-    const adjacentRoomNameSouth = `${currentRoomWestOrEast}${currentRoomXCoordinate}${currentRoomNorthOrSouth}${
-      currentRoomYCoordinate - 1
-    }`
-    const adjacentRoomNameWest = `${currentRoomWestOrEast}${
-      currentRoomXCoordinate - 1
-    }${currentRoomNorthOrSouth}${currentRoomYCoordinate}`
+    let adjacentRoomNameNorth = "?",
+      adjacentRoomNameEast = "?",
+      adjacentRoomNameSouth = "?",
+      adjacentRoomNameWest = "?"
 
+    if (currentRoomNorthOrSouth === "N") {
+      // if we're in N, north is 1 more & south is 1 less
+      adjacentRoomNameNorth = `${currentRoomWestOrEast}${currentRoomXCoordinate}${currentRoomNorthOrSouth}${
+        currentRoomYCoordinate + 1
+      }`
+      if (currentRoomYCoordinate > 0) {
+        adjacentRoomNameSouth = `${currentRoomWestOrEast}${currentRoomXCoordinate}${currentRoomNorthOrSouth}${
+          currentRoomYCoordinate - 1
+        }`
+      } else {
+        // special case: if we're at N0, south is S0
+        adjacentRoomNameSouth = `${currentRoomWestOrEast}${currentRoomXCoordinate}S0`
+      }
+    }
+    if (currentRoomNorthOrSouth === "S") {
+      // if we're in S, north is 1 less & south is 1 more
+      adjacentRoomNameSouth = `${currentRoomWestOrEast}${currentRoomXCoordinate}${currentRoomNorthOrSouth}${
+        currentRoomYCoordinate + 1
+      }`
+      if (currentRoomYCoordinate > 0) {
+        adjacentRoomNameNorth = `${currentRoomWestOrEast}${currentRoomXCoordinate}${currentRoomNorthOrSouth}${
+          currentRoomYCoordinate - 1
+        }`
+      } else {
+        // special case: if we're at S0, north is N0
+        adjacentRoomNameNorth = `${currentRoomWestOrEast}${currentRoomXCoordinate}N0`
+      }
+    }
+
+    if (currentRoomWestOrEast === "E") {
+      // if we're in E, east is 1 more & west is 1 less
+      adjacentRoomNameEast = `${currentRoomWestOrEast}${
+        currentRoomXCoordinate + 1
+      }${currentRoomNorthOrSouth}${currentRoomYCoordinate}`
+      if (currentRoomYCoordinate > 0) {
+        adjacentRoomNameWest = `${currentRoomWestOrEast}${
+          currentRoomXCoordinate - 1
+        }${currentRoomNorthOrSouth}${currentRoomYCoordinate}`
+      } else {
+        // special case: if we're at E0, west is W0
+        adjacentRoomNameWest = `W0${currentRoomNorthOrSouth}${currentRoomYCoordinate}`
+      }
+    }
+    if (currentRoomWestOrEast === "W") {
+      // if we're in W, west is 1 more & east is 1 less
+      adjacentRoomNameWest = `${currentRoomWestOrEast}${
+        currentRoomXCoordinate + 1
+      }${currentRoomNorthOrSouth}${currentRoomYCoordinate}`
+      if (currentRoomYCoordinate > 0) {
+        adjacentRoomNameEast = `${currentRoomWestOrEast}${
+          currentRoomXCoordinate - 1
+        }${currentRoomNorthOrSouth}${currentRoomYCoordinate}`
+      } else {
+        // special case: if we're at W0, east is E0
+        adjacentRoomNameEast = `E0${currentRoomNorthOrSouth}${currentRoomYCoordinate}`
+      }
+    }
     // If these rooms are accessible from this room, add them to the list.
     // But we need to check to see if there's a constructed wall at the exit,
     // because that means we're in a newbie area, and we can't use that exit.
@@ -209,6 +269,9 @@ export const getAccessibleRoomNamesWithoutVision = (currentRoom: Room) => {
 export const getAccessibleRoomNamesWithVision = (currentRoom: Room) => {
   const accessibleAdjacentRoomNames = getAccessibleAdjacentRoomNames(
     currentRoom
+  )
+  console.log(
+    `Trying to get accessible adjacent room names for ${currentRoom.name} and found ${accessibleAdjacentRoomNames}`
   )
   const accessibleRoomNamesWithVision: Array<string> = []
   for (const roomName of accessibleAdjacentRoomNames) {

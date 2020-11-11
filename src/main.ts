@@ -381,6 +381,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
     const accessibleRoomNamesWithVision: Array<string> = getAccessibleRoomNamesWithVision(
       Game.spawns.Spawn1.room
     )
+    console.log(
+      `Accessible room names with vision: ${accessibleRoomNamesWithVision}`
+    )
     if (accessibleRoomNamesWithVision.length > 0) {
       // There are accessible adjacent rooms with vision
       // So add their mineable positions to the count
