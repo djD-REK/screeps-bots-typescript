@@ -55,10 +55,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
     console.log(`=== Road planning check (every 100 ticks) ===`)
     const DELETE_CONSTRUCTION_SITES = true
     if (DELETE_CONSTRUCTION_SITES) {
-      console.log("DELETING ALL CONSTRUCTION SITES")
+      console.log("DELETING ALL NOT YET STARTED CONSTRUCTION SITES")
       for (const room of Object.values(Game.rooms)) {
         for (const site of room.find(FIND_CONSTRUCTION_SITES)) {
-          site.remove()
+          if (site.progress === 0) {
+            site.remove()
+          }
         }
       }
     }
