@@ -55,7 +55,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     let constructionSitesPlannedThisTick = 0 // only plan some sites each tick
     // if (Game.time % 100 === 0)
     console.log(`=== Road planning check (every 5 ticks) ===`)
-    const DELETE_CONSTRUCTION_SITES = Game.time % 100 ? true : false
+    const DELETE_CONSTRUCTION_SITES = Game.time % 100 === 0 ? true : false
     if (DELETE_CONSTRUCTION_SITES) {
       console.log(
         "DELETING ALL NOT YET STARTED CONSTRUCTION SITES (every 100 ticks)"
