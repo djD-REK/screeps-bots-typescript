@@ -157,7 +157,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
           const pathToMineablePositionTwo = mineablePosition.findPathTo(
             mineablePositionTwo,
             {
-              ignoreCreeps: false, // don't ignore creeps because we want more raods between sites for Fetcher traffic
+              ignoreCreeps: true,
+              swampCost: 1, // ignore swamps; we want to build on swamps
               maxRooms: 1, // don't path through other rooms
             }
           )
