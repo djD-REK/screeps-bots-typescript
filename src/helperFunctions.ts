@@ -488,6 +488,7 @@ export const moveToDestination = (creep: Creep) => {
     {
       visualizePathStyle: { stroke: randomColor },
       reusePath: 5, // Disable path reuse; TODO This uses a lot of CPU
+      maxRooms: 1, // only search the current room; may fix getting stuck on edges
     }
   )
   switch (moveResult) {
