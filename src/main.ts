@@ -51,6 +51,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
     ).length
   }
   if (Game.time % 5 === 0) {
+    const MAX_CONSTRUCTION_SITES_PER_TICK = 5
+    let constructionSitesPlannedThisTick = 0 // only plan some sites each tick
     // if (Game.time % 100 === 0)
     console.log(`=== Road planning check (every 100 ticks) ===`)
     const DELETE_CONSTRUCTION_SITES = true
@@ -84,70 +86,30 @@ export const loop = ErrorMapper.wrapLoop(() => {
     // Plan containers at each mineable position as well as
     // roads to and around each mineable position
     for (const mineablePosition of mineablePositions) {
-      if (containersCount < MAX_CONTAINERS) {
-        Game.spawns.Spawn1.room.createConstructionSite(
-          mineablePosition.x,
-          mineablePosition.y,
-          STRUCTURE_CONTAINER
-        )
-        containersCount++
-      }
-
-      // Build roads to each mineable position
-      const pathToMineablePosition = Game.spawns.Spawn1.pos.findPathTo(
-        mineablePosition,
-        {
-          ignoreCreeps: true,
-          maxRooms: 1, // don't path through other rooms
-        }
-      )
-      for (const [index, pathStep] of pathToMineablePosition.entries()) {
-        if (index < pathToMineablePosition.length - 1) {
-          // Here's the reason it's pathToMineablePosition.length - 1:
-          // Don't build construction sites directly on top of sources and
-          // don't build them within 2 range of sources (mining positions)
+      if (constructionSitesPlannedThisTick < MAX_CONSTRUCTION_SITES_PER_TICK) {
+        if (containersCount < MAX_CONTAINERS) {
           Game.spawns.Spawn1.room.createConstructionSite(
-            pathStep.x,
-            pathStep.y,
-            STRUCTURE_ROAD
+            mineablePosition.x,
+            mineablePosition.y,
+            STRUCTURE_CONTAINER
           )
+          containersCount++
+          constructionSitesPlannedThisTick++
         }
       }
 
-      // Build roads surrounding each mineablePosition
-      for (let x = mineablePosition.x - 1; x <= mineablePosition.x + 1; x++) {
-        for (let y = mineablePosition.y - 1; y <= mineablePosition.y + 1; y++) {
-          switch (terrain.get(x, y)) {
-            // No action cases
-            case TERRAIN_MASK_WALL:
-              break
-            // Build road cases
-            case 0: // plain
-            case TERRAIN_MASK_SWAMP:
-            default:
-              Game.spawns.Spawn1.room.createConstructionSite(
-                x,
-                y,
-                STRUCTURE_ROAD
-              )
-              break
-          }
-        }
-      }
-
-      // Build roads between each mineable position in the Spawn's room
-      // TODO: Build roads between mineable positions in other rooms
-      for (const mineablePositionTwo of mineablePositions) {
-        const pathToMineablePositionTwo = mineablePosition.findPathTo(
-          mineablePositionTwo,
+      if (constructionSitesPlannedThisTick < MAX_CONSTRUCTION_SITES_PER_TICK) {
+        // Build roads to each mineable position
+        const pathToMineablePosition = Game.spawns.Spawn1.pos.findPathTo(
+          mineablePosition,
           {
-            ignoreCreeps: false, // don't ignore creeps because we want more raods between sites for Fetcher traffic
+            ignoreCreeps: true,
             maxRooms: 1, // don't path through other rooms
           }
         )
-        for (const [index, pathStep] of pathToMineablePositionTwo.entries()) {
-          if (index < pathToMineablePositionTwo.length - 1) {
-            // Here's the reason it's pathToMineablePositionTwo.length - 1:
+        for (const [index, pathStep] of pathToMineablePosition.entries()) {
+          if (index < pathToMineablePosition.length - 1) {
+            // Here's the reason it's pathToMineablePosition.length - 1:
             // Don't build construction sites directly on top of sources and
             // don't build them within 2 range of sources (mining positions)
             Game.spawns.Spawn1.room.createConstructionSite(
@@ -155,6 +117,62 @@ export const loop = ErrorMapper.wrapLoop(() => {
               pathStep.y,
               STRUCTURE_ROAD
             )
+            constructionSitesPlannedThisTick++
+          }
+        }
+      }
+
+      if (constructionSitesPlannedThisTick < MAX_CONSTRUCTION_SITES_PER_TICK) {
+        // Build roads surrounding each mineablePosition
+        for (let x = mineablePosition.x - 1; x <= mineablePosition.x + 1; x++) {
+          for (
+            let y = mineablePosition.y - 1;
+            y <= mineablePosition.y + 1;
+            y++
+          ) {
+            switch (terrain.get(x, y)) {
+              // No action cases
+              case TERRAIN_MASK_WALL:
+                break
+              // Build road cases
+              case 0: // plain
+              case TERRAIN_MASK_SWAMP:
+              default:
+                Game.spawns.Spawn1.room.createConstructionSite(
+                  x,
+                  y,
+                  STRUCTURE_ROAD
+                )
+                constructionSitesPlannedThisTick++
+                break
+            }
+          }
+        }
+      }
+
+      if (constructionSitesPlannedThisTick < MAX_CONSTRUCTION_SITES_PER_TICK) {
+        // Build roads between each mineable position in the Spawn's room
+        // TODO: Build roads between mineable positions in other rooms
+        for (const mineablePositionTwo of mineablePositions) {
+          const pathToMineablePositionTwo = mineablePosition.findPathTo(
+            mineablePositionTwo,
+            {
+              ignoreCreeps: false, // don't ignore creeps because we want more raods between sites for Fetcher traffic
+              maxRooms: 1, // don't path through other rooms
+            }
+          )
+          for (const [index, pathStep] of pathToMineablePositionTwo.entries()) {
+            if (index < pathToMineablePositionTwo.length - 1) {
+              // Here's the reason it's pathToMineablePositionTwo.length - 1:
+              // Don't build construction sites directly on top of sources and
+              // don't build them within 2 range of sources (mining positions)
+              Game.spawns.Spawn1.room.createConstructionSite(
+                pathStep.x,
+                pathStep.y,
+                STRUCTURE_ROAD
+              )
+              constructionSitesPlannedThisTick++
+            }
           }
         }
       }
@@ -166,51 +184,62 @@ export const loop = ErrorMapper.wrapLoop(() => {
     })
     const roomSpawnPositions = roomSpawns.map((aSpawn) => aSpawn.pos)
     // Plan roads to assist traffic around any Spawns in this room
-    for (const roomSpawnPosition of roomSpawnPositions) {
-      // Build roads completely surrounding each Spawn in this room
-      for (let x = roomSpawnPosition.x - 1; x <= roomSpawnPosition.x + 1; x++) {
+    if (constructionSitesPlannedThisTick < MAX_CONSTRUCTION_SITES_PER_TICK) {
+      for (const roomSpawnPosition of roomSpawnPositions) {
+        // Build roads completely surrounding each Spawn in this room
         for (
-          let y = roomSpawnPosition.y - 1;
-          y <= roomSpawnPosition.y + 1;
-          y++
+          let x = roomSpawnPosition.x - 1;
+          x <= roomSpawnPosition.x + 1;
+          x++
         ) {
-          if (x === roomSpawnPosition.x && y === roomSpawnPosition.y) {
-            // We don't want a road on the actual position of the Spawn
-            continue
-          }
-          switch (terrain.get(x, y)) {
-            // No action cases
-            case TERRAIN_MASK_WALL:
-              break
-            // Build road cases
-            case 0: // plain
-            case TERRAIN_MASK_SWAMP:
-            default:
-              Game.spawns.Spawn1.room.createConstructionSite(
-                x,
-                y,
-                STRUCTURE_ROAD
-              )
+          for (
+            let y = roomSpawnPosition.y - 1;
+            y <= roomSpawnPosition.y + 1;
+            y++
+          ) {
+            if (x === roomSpawnPosition.x && y === roomSpawnPosition.y) {
+              // We don't want a road on the actual position of the Spawn
+              continue
+            }
+            switch (terrain.get(x, y)) {
+              // No action cases
+              case TERRAIN_MASK_WALL:
+                break
+              // Build road cases
+              case 0: // plain
+              case TERRAIN_MASK_SWAMP:
+              default:
+                Game.spawns.Spawn1.room.createConstructionSite(
+                  x,
+                  y,
+                  STRUCTURE_ROAD
+                )
+                constructionSitesPlannedThisTick++
+                break
+            }
           }
         }
       }
     }
     // Plan roads from spawn to room controller
-    const controller = Game.spawns.Spawn1.room.controller
-    if (controller) {
-      const pathToController = Game.spawns.Spawn1.pos.findPathTo(controller, {
-        ignoreCreeps: true,
-        maxRooms: 1,
-      })
-      for (const [index, pathStep] of pathToController.entries()) {
-        if (index < pathToController.length - 4) {
-          // Don't build construction sites within 3 range of controller
-          // because the upgradeController command has 3 squares range
-          Game.spawns.Spawn1.room.createConstructionSite(
-            pathStep.x,
-            pathStep.y,
-            STRUCTURE_ROAD
-          )
+    if (constructionSitesPlannedThisTick < MAX_CONSTRUCTION_SITES_PER_TICK) {
+      const controller = Game.spawns.Spawn1.room.controller
+      if (controller) {
+        const pathToController = Game.spawns.Spawn1.pos.findPathTo(controller, {
+          ignoreCreeps: true,
+          maxRooms: 1,
+        })
+        for (const [index, pathStep] of pathToController.entries()) {
+          if (index < pathToController.length - 4) {
+            // Don't build construction sites within 3 range of controller
+            // because the upgradeController command has 3 squares range
+            Game.spawns.Spawn1.room.createConstructionSite(
+              pathStep.x,
+              pathStep.y,
+              STRUCTURE_ROAD
+            )
+            constructionSitesPlannedThisTick++
+          }
         }
       }
     }
@@ -218,18 +247,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
     // Road planning logic part 3: Roads to energy sources in other rooms
     // Loop through the accessible rooms & plan roads to mineable positions
     for (const accessibleAdjacentRoom of accessibleAdjacentRoomsWithVision) {
-      const deleteRooms = () => {
-        console.log(
-          `DELETING ALL CONSTRUCTION SITES in ${accessibleAdjacentRoom.name}`
-        )
-        const sites = Game.rooms[accessibleAdjacentRoom.name].find(
-          FIND_CONSTRUCTION_SITES
-        )
-        for (const site of sites) {
-          site.remove()
-        }
-      }
-
       // Find the mineable positions we want to build roads to
       const mineablePositionsAdjacentRoom = getMineablePositionsIncludingSurroundingRooms(
         accessibleAdjacentRoom
@@ -248,84 +265,107 @@ export const loop = ErrorMapper.wrapLoop(() => {
       // Plan containers at each mineable position as well as
       // roads to and around each mineable position
       for (const mineablePosition of mineablePositionsAdjacentRoom) {
-        if (containersCount < MAX_CONTAINERS) {
-          accessibleAdjacentRoom.createConstructionSite(
-            mineablePosition.x,
-            mineablePosition.y,
-            STRUCTURE_CONTAINER
-          )
-          containersCount++
-        }
-
-        // Build roads from the creep Spawn to each exit (mineable position)
-        const pathFromSpawnToMineablePosition = Game.spawns.Spawn1.pos.findPathTo(
-          mineablePosition,
-          {
-            ignoreCreeps: true,
-            maxRooms: 1,
-          }
-        )
-        for (const [
-          index,
-          pathStep,
-        ] of pathFromSpawnToMineablePosition.entries()) {
-          if (index < pathFromSpawnToMineablePosition.length - 1) {
-            pathStep
-            // Here's the reason it's pathToMineablePosition.length - 1:
-            // Don't build on top of exits
-            Game.spawns.Spawn1.room.createConstructionSite(
-              pathStep.x,
-              pathStep.y,
-              STRUCTURE_ROAD
+        if (
+          constructionSitesPlannedThisTick < MAX_CONSTRUCTION_SITES_PER_TICK
+        ) {
+          if (containersCount < MAX_CONTAINERS) {
+            accessibleAdjacentRoom.createConstructionSite(
+              mineablePosition.x,
+              mineablePosition.y,
+              STRUCTURE_CONTAINER
             )
+            containersCount++
+            constructionSitesPlannedThisTick++
+          }
+        }
+        // Build roads from the creep Spawn to each exit (mineable position)
+        if (
+          constructionSitesPlannedThisTick < MAX_CONSTRUCTION_SITES_PER_TICK
+        ) {
+          const pathFromSpawnToMineablePosition = Game.spawns.Spawn1.pos.findPathTo(
+            mineablePosition,
+            {
+              ignoreCreeps: true,
+              maxRooms: 1,
+            }
+          )
+          for (const [
+            index,
+            pathStep,
+          ] of pathFromSpawnToMineablePosition.entries()) {
+            if (index < pathFromSpawnToMineablePosition.length - 1) {
+              pathStep
+              // Here's the reason it's pathToMineablePosition.length - 1:
+              // Don't build on top of exits
+              Game.spawns.Spawn1.room.createConstructionSite(
+                pathStep.x,
+                pathStep.y,
+                STRUCTURE_ROAD
+              )
+              constructionSitesPlannedThisTick++
+            }
           }
         }
 
         // Build roads from each mineable position back to the creep Spawn
-        const pathFromMineablePositionToSpawn = mineablePosition.findPathTo(
-          Game.spawns.Spawn1.pos,
-          {
-            ignoreCreeps: true,
-            maxRooms: 1,
-          }
-        )
-        for (const [
-          index,
-          pathStep,
-        ] of pathFromMineablePositionToSpawn.entries()) {
-          if (index < pathFromMineablePositionToSpawn.length - 1) {
-            pathStep
-            // Here's the reason it's pathToMineablePosition.length - 1:
-            // Don't build on top of exits
-            accessibleAdjacentRoom.createConstructionSite(
-              pathStep.x,
-              pathStep.y,
-              STRUCTURE_ROAD
-            )
+        if (
+          constructionSitesPlannedThisTick < MAX_CONSTRUCTION_SITES_PER_TICK
+        ) {
+          const pathFromMineablePositionToSpawn = mineablePosition.findPathTo(
+            Game.spawns.Spawn1.pos,
+            {
+              ignoreCreeps: true,
+              maxRooms: 1,
+            }
+          )
+          for (const [
+            index,
+            pathStep,
+          ] of pathFromMineablePositionToSpawn.entries()) {
+            if (index < pathFromMineablePositionToSpawn.length - 1) {
+              pathStep
+              // Here's the reason it's pathToMineablePosition.length - 1:
+              // Don't build on top of exits
+              accessibleAdjacentRoom.createConstructionSite(
+                pathStep.x,
+                pathStep.y,
+                STRUCTURE_ROAD
+              )
+              constructionSitesPlannedThisTick++
+            }
           }
         }
 
         // Build roads surrounding each mineablePosition
-        for (let x = mineablePosition.x - 1; x <= mineablePosition.x + 1; x++) {
+        if (
+          constructionSitesPlannedThisTick < MAX_CONSTRUCTION_SITES_PER_TICK
+        ) {
           for (
-            let y = mineablePosition.y - 1;
-            y <= mineablePosition.y + 1;
-            y++
+            let x = mineablePosition.x - 1;
+            x <= mineablePosition.x + 1;
+            x++
           ) {
-            switch (terrainAdjacentRoom.get(x, y)) {
-              // No action cases
-              case TERRAIN_MASK_WALL:
-                break
-              // Build road cases
-              case 0: // plain
-              case TERRAIN_MASK_SWAMP:
-              default:
-                accessibleAdjacentRoom.createConstructionSite(
-                  x,
-                  y,
-                  STRUCTURE_ROAD
-                )
-                break
+            for (
+              let y = mineablePosition.y - 1;
+              y <= mineablePosition.y + 1;
+              y++
+            ) {
+              switch (terrainAdjacentRoom.get(x, y)) {
+                // No action cases
+                case TERRAIN_MASK_WALL:
+                  break
+                // Build road cases
+                case 0: // plain
+                case TERRAIN_MASK_SWAMP:
+                default:
+                  accessibleAdjacentRoom.createConstructionSite(
+                    x,
+                    y,
+                    STRUCTURE_ROAD
+                  )
+                  constructionSitesPlannedThisTick++
+                  break
+              }
             }
           }
         }
