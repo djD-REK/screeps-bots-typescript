@@ -53,6 +53,15 @@ export const loop = ErrorMapper.wrapLoop(() => {
   if (Game.time % 5 === 0) {
     // if (Game.time % 100 === 0)
     console.log(`=== Road planning check (every 100 ticks) ===`)
+    const DELETE_CONSTRUCTION_SITES = true
+    if (DELETE_CONSTRUCTION_SITES) {
+      console.log("DELETING ALL CONSTRUCTION SITES")
+      for (const room of Object.values(Game.rooms)) {
+        for (const site of room.find(FIND_CONSTRUCTION_SITES)) {
+          site.remove()
+        }
+      }
+    }
 
     // Road planning logic part 1: For mineable positions in the current room
     // Find the mineable positions we want to build roads to
@@ -130,7 +139,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
         const pathToMineablePositionTwo = mineablePosition.findPathTo(
           mineablePositionTwo,
           {
-            ignoreCreeps: true,
+            ignoreCreeps: false, // don't ignore creeps because we want more raods between sites for Fetcher traffic
             maxRooms: 1, // don't path through other rooms
           }
         )
