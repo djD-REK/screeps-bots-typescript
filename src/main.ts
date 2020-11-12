@@ -469,8 +469,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }
 
   // Generate some creeps
+  // TODO : Smarter energy check (300)
   if (
-    Game.spawns.Spawn1.room.energyAvailable >= 300 &&
+    Game.spawns.Spawn1.room.energyAvailable >= 100 &&
     Game.spawns.Spawn1.spawning === null
   ) {
     let mineablePositionsCount = getMineablePositionsIncludingSurroundingRooms(
