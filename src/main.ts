@@ -51,8 +51,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     ).length
   }
   if (Game.time % 5 === 0) {
-    const MAX_CONSTRUCTION_SITES_PER_TICK = 100
-    // TODO Don't double count existing roads
+    const MAX_CONSTRUCTION_SITES_PER_TICK = 5
     let constructionSitesPlannedThisTick = 0 // only plan some sites each tick
     // if (Game.time % 100 === 0)
     console.log(`=== Road planning check (every 5 ticks) ===`)
@@ -91,13 +90,16 @@ export const loop = ErrorMapper.wrapLoop(() => {
     for (const mineablePosition of mineablePositions) {
       if (constructionSitesPlannedThisTick < MAX_CONSTRUCTION_SITES_PER_TICK) {
         if (containersCount < MAX_CONTAINERS) {
-          Game.spawns.Spawn1.room.createConstructionSite(
-            mineablePosition.x,
-            mineablePosition.y,
-            STRUCTURE_CONTAINER
-          )
-          containersCount++
-          constructionSitesPlannedThisTick++
+          if (
+            Game.spawns.Spawn1.room.createConstructionSite(
+              mineablePosition.x,
+              mineablePosition.y,
+              STRUCTURE_CONTAINER
+            ) === OK
+          ) {
+            containersCount++
+            constructionSitesPlannedThisTick++
+          }
         }
       }
 
@@ -115,12 +117,15 @@ export const loop = ErrorMapper.wrapLoop(() => {
             // Here's the reason it's pathToMineablePosition.length - 1:
             // Don't build construction sites directly on top of sources and
             // don't build them within 2 range of sources (mining positions)
-            Game.spawns.Spawn1.room.createConstructionSite(
-              pathStep.x,
-              pathStep.y,
-              STRUCTURE_ROAD
-            )
-            constructionSitesPlannedThisTick++
+            if (
+              Game.spawns.Spawn1.room.createConstructionSite(
+                pathStep.x,
+                pathStep.y,
+                STRUCTURE_ROAD
+              ) === OK
+            ) {
+              constructionSitesPlannedThisTick++
+            }
           }
         }
       }
@@ -141,12 +146,15 @@ export const loop = ErrorMapper.wrapLoop(() => {
               case 0: // plain
               case TERRAIN_MASK_SWAMP:
               default:
-                Game.spawns.Spawn1.room.createConstructionSite(
-                  x,
-                  y,
-                  STRUCTURE_ROAD
-                )
-                constructionSitesPlannedThisTick++
+                if (
+                  Game.spawns.Spawn1.room.createConstructionSite(
+                    x,
+                    y,
+                    STRUCTURE_ROAD
+                  ) === OK
+                ) {
+                  constructionSitesPlannedThisTick++
+                }
                 break
             }
           }
@@ -170,12 +178,15 @@ export const loop = ErrorMapper.wrapLoop(() => {
               // Here's the reason it's pathToMineablePositionTwo.length - 1:
               // Don't build construction sites directly on top of sources and
               // don't build them within 2 range of sources (mining positions)
-              Game.spawns.Spawn1.room.createConstructionSite(
-                pathStep.x,
-                pathStep.y,
-                STRUCTURE_ROAD
-              )
-              constructionSitesPlannedThisTick++
+              if (
+                Game.spawns.Spawn1.room.createConstructionSite(
+                  pathStep.x,
+                  pathStep.y,
+                  STRUCTURE_ROAD
+                ) === OK
+              ) {
+                constructionSitesPlannedThisTick++
+              }
             }
           }
         }
@@ -213,12 +224,15 @@ export const loop = ErrorMapper.wrapLoop(() => {
               case 0: // plain
               case TERRAIN_MASK_SWAMP:
               default:
-                Game.spawns.Spawn1.room.createConstructionSite(
-                  x,
-                  y,
-                  STRUCTURE_ROAD
-                )
-                constructionSitesPlannedThisTick++
+                if (
+                  Game.spawns.Spawn1.room.createConstructionSite(
+                    x,
+                    y,
+                    STRUCTURE_ROAD
+                  ) === OK
+                ) {
+                  constructionSitesPlannedThisTick++
+                }
                 break
             }
           }
@@ -237,12 +251,15 @@ export const loop = ErrorMapper.wrapLoop(() => {
           if (index < pathToController.length - 4) {
             // Don't build construction sites within 3 range of controller
             // because the upgradeController command has 3 squares range
-            Game.spawns.Spawn1.room.createConstructionSite(
-              pathStep.x,
-              pathStep.y,
-              STRUCTURE_ROAD
-            )
-            constructionSitesPlannedThisTick++
+            if (
+              Game.spawns.Spawn1.room.createConstructionSite(
+                pathStep.x,
+                pathStep.y,
+                STRUCTURE_ROAD
+              ) === OK
+            ) {
+              constructionSitesPlannedThisTick++
+            }
           }
         }
       }
@@ -273,13 +290,16 @@ export const loop = ErrorMapper.wrapLoop(() => {
           constructionSitesPlannedThisTick < MAX_CONSTRUCTION_SITES_PER_TICK
         ) {
           if (containersCount < MAX_CONTAINERS) {
-            accessibleAdjacentRoom.createConstructionSite(
-              mineablePosition.x,
-              mineablePosition.y,
-              STRUCTURE_CONTAINER
-            )
-            containersCount++
-            constructionSitesPlannedThisTick++
+            if (
+              accessibleAdjacentRoom.createConstructionSite(
+                mineablePosition.x,
+                mineablePosition.y,
+                STRUCTURE_CONTAINER
+              ) === OK
+            ) {
+              containersCount++
+              constructionSitesPlannedThisTick++
+            }
           }
         }
         // Build roads from the creep Spawn to each exit (mineable position)
@@ -301,12 +321,15 @@ export const loop = ErrorMapper.wrapLoop(() => {
               pathStep
               // Here's the reason it's pathToMineablePosition.length - 1:
               // Don't build on top of exits
-              Game.spawns.Spawn1.room.createConstructionSite(
-                pathStep.x,
-                pathStep.y,
-                STRUCTURE_ROAD
-              )
-              constructionSitesPlannedThisTick++
+              if (
+                Game.spawns.Spawn1.room.createConstructionSite(
+                  pathStep.x,
+                  pathStep.y,
+                  STRUCTURE_ROAD
+                ) === OK
+              ) {
+                constructionSitesPlannedThisTick++
+              }
             }
           }
         }
@@ -330,12 +353,15 @@ export const loop = ErrorMapper.wrapLoop(() => {
               pathStep
               // Here's the reason it's pathToMineablePosition.length - 1:
               // Don't build on top of exits
-              accessibleAdjacentRoom.createConstructionSite(
-                pathStep.x,
-                pathStep.y,
-                STRUCTURE_ROAD
-              )
-              constructionSitesPlannedThisTick++
+              if (
+                accessibleAdjacentRoom.createConstructionSite(
+                  pathStep.x,
+                  pathStep.y,
+                  STRUCTURE_ROAD
+                ) === OK
+              ) {
+                constructionSitesPlannedThisTick++
+              }
             }
           }
         }
@@ -362,12 +388,15 @@ export const loop = ErrorMapper.wrapLoop(() => {
                 case 0: // plain
                 case TERRAIN_MASK_SWAMP:
                 default:
-                  accessibleAdjacentRoom.createConstructionSite(
-                    x,
-                    y,
-                    STRUCTURE_ROAD
-                  )
-                  constructionSitesPlannedThisTick++
+                  if (
+                    accessibleAdjacentRoom.createConstructionSite(
+                      x,
+                      y,
+                      STRUCTURE_ROAD
+                    ) === OK
+                  ) {
+                    constructionSitesPlannedThisTick++
+                  }
                   break
               }
             }
