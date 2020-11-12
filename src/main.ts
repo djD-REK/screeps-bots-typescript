@@ -162,9 +162,13 @@ export const loop = ErrorMapper.wrapLoop(() => {
           }
         }
       }
+    }
 
+    // Plan all roads in the last loop before building roads between mineable positions
+    for (const mineablePosition of mineablePositions) {
       // Build roads between each mineable position in the Spawn's room
       // TODO: Build roads between mineable positions in other rooms
+      // TODO: Build roads between sources instead of mineable positions to reduce duplication
       for (const mineablePositionTwo of mineablePositions) {
         const pathToMineablePositionTwo = mineablePosition.findPathTo(
           mineablePositionTwo,
