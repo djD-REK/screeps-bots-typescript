@@ -50,15 +50,19 @@ export const loop = ErrorMapper.wrapLoop(() => {
       FIND_CONSTRUCTION_SITES // not FIND_MY_CONSTRUCTION_SITES
     ).length
   }
-  if (Game.time % 5 === 0) {
+  const PLAN_CONSTRUCTION_SITES_EVERY_X_TICKS = 3
+  if (Game.time % PLAN_CONSTRUCTION_SITES_EVERY_X_TICKS === 0) {
     const MAX_CONSTRUCTION_SITES_PER_TICK = 5
+    const DELETE_CONSTRUCTION_SITES_EVERY_X_TICKS = 10
     let constructionSitesPlannedThisTick = 0 // only plan some sites each tick
-    // if (Game.time % 100 === 0)
-    console.log(`=== Road planning check (every 5 ticks) ===`)
-    const DELETE_CONSTRUCTION_SITES = Game.time % 100 === 0 ? true : false
+    console.log(
+      `=== Road planning check (every ${PLAN_CONSTRUCTION_SITES_EVERY_X_TICKS} ticks) ===`
+    )
+    const DELETE_CONSTRUCTION_SITES =
+      Game.time % DELETE_CONSTRUCTION_SITES_EVERY_X_TICKS === 0 ? true : false
     if (DELETE_CONSTRUCTION_SITES) {
       console.log(
-        "DELETING ALL NOT YET STARTED CONSTRUCTION SITES (every 100 ticks)"
+        "DELETING ALL NOT YET STARTED CONSTRUCTION SITES (every ${DELETE_CONSTRUCTION_SITES_EVERY_X_TICKS} ticks)"
       )
       for (const room of Object.values(Game.rooms)) {
         for (const site of room.find(FIND_CONSTRUCTION_SITES)) {
