@@ -164,41 +164,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
       }
     }
 
-    // Plan all roads in the last loop before building roads between mineable positions
-    for (const mineablePosition of mineablePositions) {
-      // Build roads between each mineable position in the Spawn's room
-      // TODO: Build roads between mineable positions in other rooms
-      // TODO: Build roads between sources instead of mineable positions to reduce duplication
-      for (const mineablePositionTwo of mineablePositions) {
-        const pathToMineablePositionTwo = mineablePosition.findPathTo(
-          mineablePositionTwo,
-          {
-            ignoreCreeps: true,
-            swampCost: 1, // ignore swamps; we want to build on swamps
-            maxRooms: 1, // don't path through other rooms
-          }
-        )
-        for (const [index, pathStep] of pathToMineablePositionTwo.entries()) {
-          if (index < pathToMineablePositionTwo.length - 1) {
-            // Here's the reason it's pathToMineablePositionTwo.length - 1:
-            // Don't build construction sites directly on top of sources and
-            // don't build them within 2 range of sources (mining positions)
-            if (
-              constructionSitesPlannedThisTick <
-                MAX_CONSTRUCTION_SITES_PER_TICK &&
-              Game.spawns.Spawn1.room.createConstructionSite(
-                pathStep.x,
-                pathStep.y,
-                STRUCTURE_ROAD
-              ) === OK
-            ) {
-              constructionSitesPlannedThisTick++
-            }
-          }
-        }
-      }
-    }
-
     // Road planning logic part 2: for creep Spawns
     const roomSpawns = Game.spawns.Spawn1.room.find(FIND_STRUCTURES, {
       filter: (structure) => structure.structureType === "spawn",
@@ -267,7 +232,42 @@ export const loop = ErrorMapper.wrapLoop(() => {
       }
     }
 
-    // Road planning logic part 3: Roads to energy sources in other rooms
+    // Road planning logic part 3: Build roads between each mineable position in the Spawn's room
+    // Plan all roads in the last 2 loops before building roads between mineable positions
+    for (const mineablePosition of mineablePositions) {
+      // TODO: Build roads between mineable positions in other rooms
+      // TODO: Build roads between sources instead of mineable positions to reduce duplication
+      for (const mineablePositionTwo of mineablePositions) {
+        const pathToMineablePositionTwo = mineablePosition.findPathTo(
+          mineablePositionTwo,
+          {
+            ignoreCreeps: true,
+            swampCost: 1, // ignore swamps; we want to build on swamps
+            maxRooms: 1, // don't path through other rooms
+          }
+        )
+        for (const [index, pathStep] of pathToMineablePositionTwo.entries()) {
+          if (index < pathToMineablePositionTwo.length - 1) {
+            // Here's the reason it's pathToMineablePositionTwo.length - 1:
+            // Don't build construction sites directly on top of sources and
+            // don't build them within 2 range of sources (mining positions)
+            if (
+              constructionSitesPlannedThisTick <
+                MAX_CONSTRUCTION_SITES_PER_TICK &&
+              Game.spawns.Spawn1.room.createConstructionSite(
+                pathStep.x,
+                pathStep.y,
+                STRUCTURE_ROAD
+              ) === OK
+            ) {
+              constructionSitesPlannedThisTick++
+            }
+          }
+        }
+      }
+    }
+
+    // Road planning logic part 4: Roads to energy sources in other rooms
     // Loop through the accessible rooms & plan roads to mineable positions
     for (const accessibleAdjacentRoom of accessibleAdjacentRoomsWithVision) {
       // Find the mineable positions we want to build roads to
