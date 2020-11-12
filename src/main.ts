@@ -62,7 +62,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       Game.time % DELETE_CONSTRUCTION_SITES_EVERY_X_TICKS === 0 ? true : false
     if (DELETE_CONSTRUCTION_SITES) {
       console.log(
-        "DELETING ALL NOT YET STARTED CONSTRUCTION SITES (every ${DELETE_CONSTRUCTION_SITES_EVERY_X_TICKS} ticks)"
+        `DELETING ALL NOT YET STARTED CONSTRUCTION SITES (every ${DELETE_CONSTRUCTION_SITES_EVERY_X_TICKS} ticks)`
       )
       for (const room of Object.values(Game.rooms)) {
         for (const site of room.find(FIND_CONSTRUCTION_SITES)) {
@@ -99,7 +99,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
               mineablePosition.x,
               mineablePosition.y,
               STRUCTURE_CONTAINER
-            ) === OK
+            ) === OK &&
+            constructionSitesPlannedThisTick < MAX_CONSTRUCTION_SITES_PER_TICK
           ) {
             containersCount++
             constructionSitesPlannedThisTick++
@@ -126,7 +127,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
                 pathStep.x,
                 pathStep.y,
                 STRUCTURE_ROAD
-              ) === OK
+              ) === OK &&
+              constructionSitesPlannedThisTick < MAX_CONSTRUCTION_SITES_PER_TICK
             ) {
               constructionSitesPlannedThisTick++
             }
@@ -155,7 +157,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
                     x,
                     y,
                     STRUCTURE_ROAD
-                  ) === OK
+                  ) === OK &&
+                  constructionSitesPlannedThisTick <
+                    MAX_CONSTRUCTION_SITES_PER_TICK
                 ) {
                   constructionSitesPlannedThisTick++
                 }
@@ -187,7 +191,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
                   pathStep.x,
                   pathStep.y,
                   STRUCTURE_ROAD
-                ) === OK
+                ) === OK &&
+                constructionSitesPlannedThisTick <
+                  MAX_CONSTRUCTION_SITES_PER_TICK
               ) {
                 constructionSitesPlannedThisTick++
               }
@@ -233,7 +239,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
                     x,
                     y,
                     STRUCTURE_ROAD
-                  ) === OK
+                  ) === OK &&
+                  constructionSitesPlannedThisTick <
+                    MAX_CONSTRUCTION_SITES_PER_TICK
                 ) {
                   constructionSitesPlannedThisTick++
                 }
@@ -260,7 +268,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
                 pathStep.x,
                 pathStep.y,
                 STRUCTURE_ROAD
-              ) === OK
+              ) === OK &&
+              constructionSitesPlannedThisTick < MAX_CONSTRUCTION_SITES_PER_TICK
             ) {
               constructionSitesPlannedThisTick++
             }
@@ -299,7 +308,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
                 mineablePosition.x,
                 mineablePosition.y,
                 STRUCTURE_CONTAINER
-              ) === OK
+              ) === OK &&
+              constructionSitesPlannedThisTick < MAX_CONSTRUCTION_SITES_PER_TICK
             ) {
               containersCount++
               constructionSitesPlannedThisTick++
@@ -330,7 +340,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
                   pathStep.x,
                   pathStep.y,
                   STRUCTURE_ROAD
-                ) === OK
+                ) === OK &&
+                constructionSitesPlannedThisTick <
+                  MAX_CONSTRUCTION_SITES_PER_TICK
               ) {
                 constructionSitesPlannedThisTick++
               }
@@ -362,7 +374,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
                   pathStep.x,
                   pathStep.y,
                   STRUCTURE_ROAD
-                ) === OK
+                ) === OK &&
+                constructionSitesPlannedThisTick <
+                  MAX_CONSTRUCTION_SITES_PER_TICK
               ) {
                 constructionSitesPlannedThisTick++
               }
@@ -397,7 +411,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
                       x,
                       y,
                       STRUCTURE_ROAD
-                    ) === OK
+                    ) === OK &&
+                    constructionSitesPlannedThisTick <
+                      MAX_CONSTRUCTION_SITES_PER_TICK
                   ) {
                     constructionSitesPlannedThisTick++
                   }
