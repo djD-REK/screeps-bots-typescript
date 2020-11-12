@@ -139,6 +139,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       // Build roads surrounding each mineablePosition
       for (let x = mineablePosition.x - 1; x <= mineablePosition.x + 1; x++) {
         for (let y = mineablePosition.y - 1; y <= mineablePosition.y + 1; y++) {
+          // TODO: Don't build roads on mineable positions (since miners sit there on top of containers); will have to check here and when building roads between mineable positions
           switch (terrain.get(x, y)) {
             // No action cases
             case TERRAIN_MASK_WALL:
@@ -236,7 +237,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
     // Plan all roads in the last 2 loops before building roads between mineable positions
     for (const mineablePosition of mineablePositions) {
       // TODO: Build roads between mineable positions in other rooms
-      // TODO: Build roads between sources instead of mineable positions to reduce duplication
       for (const mineablePositionTwo of mineablePositions) {
         const pathToMineablePositionTwo = mineablePosition.findPathTo(
           mineablePositionTwo,
