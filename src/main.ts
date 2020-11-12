@@ -68,8 +68,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
   }
 
-  const PLAN_CONSTRUCTION_SITES_EVERY_X_TICKS = 5
-  const MAX_CONSTRUCTION_SITES_PER_TICK = 1
+  const PLAN_CONSTRUCTION_SITES_EVERY_X_TICKS = 10
+  const MAX_CONSTRUCTION_SITES_PER_TICK = 10
   if (Game.time % PLAN_CONSTRUCTION_SITES_EVERY_X_TICKS === 0) {
     let constructionSitesPlannedThisTick = 0 // only plan some sites each tick
     console.log(
