@@ -534,24 +534,20 @@ export const loop = ErrorMapper.wrapLoop(() => {
       Game.spawns.Spawn1.room
     )
 
-    // Generate one creep at a time by looping
-    for (let i = mineablePositionsCount - 1; i >= 0; i--) {
-      if (creepCounts.Miner + i < mineablePositionsCount) {
-        spawnCreep("Miner")
-        break
-      } else if (creepCounts.Fetcher + i < mineablePositionsCount) {
-        spawnCreep("Fetcher")
-        break
-      } else if (
-        creepCounts.Builder + creepCounts.Upgrader + i <
-        Math.floor(mineablePositionsCount * 2)
-      ) {
-        spawnCreep("Worker")
-        break
-      } else if (creepCounts.Eye + i < mineablePositionsCount) {
-        spawnCreep("Eye")
-        break
-      }
+    if (
+      creepCounts.Harvester < mineablePositionsCount &&
+      creepCounts.Miner === 0
+    ) {
+      // Brand new room
+      spawnCreep("Harvester")
+    } else if (creepCounts.Miner < mineablePositionsCount) {
+      spawnCreep("Miner")
+    } else if (creepCounts.Fetcher < mineablePositionsCount) {
+      spawnCreep("Fetcher")
+    } else if (creepCounts.Builder + creepCounts.Upgrader < 0) {
+      spawnCreep("Worker")
+    } else if (creepCounts.Eye < mineablePositionsCount) {
+      spawnCreep("Eye")
     }
 
     // TODO: Defense against creep invasion
