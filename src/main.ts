@@ -534,20 +534,33 @@ export const loop = ErrorMapper.wrapLoop(() => {
       Game.spawns.Spawn1.room
     )
 
-    if (
-      creepCounts.Harvester < mineablePositionsCount &&
-      creepCounts.Miner === 0
-    ) {
-      // Brand new room
-      spawnCreep("Harvester")
+    if (creepCounts.Fetcher < creepCounts.Miner) {
+      // Brand new room, spawn mini creeps instead
+      const role = "Fetcher"
+      const creepName = generateCreepName(`Mini${role}`)
+      console.log(`Spawning new creep: ${creepName}`)
+      // Mini fetcher: 100 energy
+      Game.spawns.Spawn1.spawnCreep([MOVE, CARRY], creepName, {
+        memory: {
+          role,
+          room: Game.spawns.Spawn1.room.name,
+          state: "THINK",
+          destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
+          sourceNumber: 0,
+        },
+      })
     } else if (creepCounts.Miner < mineablePositionsCount) {
       spawnCreep("Miner")
-    } else if (creepCounts.Fetcher < mineablePositionsCount) {
-      spawnCreep("Fetcher")
-    } else if (creepCounts.Builder + creepCounts.Upgrader < 0) {
+    } else if (
+      creepCounts.Builder + creepCounts.Upgrader <
+      mineablePositionsCount
+    ) {
       spawnCreep("Worker")
     } else if (creepCounts.Eye < mineablePositionsCount) {
       spawnCreep("Eye")
+    } else if (creepCounts.Fetcher < mineablePositionsCount * 2) {
+      // normal size fetchers
+      spawnCreep("Fetcher")
     }
 
     // TODO: Defense against creep invasion
