@@ -247,11 +247,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
     for (const mineablePosition of mineablePositions) {
       // TODO: Build roads between mineable positions in other rooms
       for (const mineablePositionTwo of mineablePositions) {
+        // TODO: Only build roads between mineable positions that are close to each other, like for the same source, like range < 5
         const pathToMineablePositionTwo = mineablePosition.findPathTo(
           mineablePositionTwo,
           {
-            ignoreCreeps: true,
-            swampCost: 1, // ignore swamps; we want to build on swamps
+            ignoreCreeps: false, // ignore creeps when pathing between mineable positions
+            //swampCost: 1, // ignore swamps; we want to build on swamps
             maxRooms: 1, // don't path through other rooms
           }
         )
