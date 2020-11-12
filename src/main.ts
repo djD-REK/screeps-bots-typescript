@@ -52,7 +52,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }
 
   // ROAD PLANNING LOGIC
-  const DELETE_CONSTRUCTION_SITES_EVERY_X_TICKS = 10
+  const DELETE_CONSTRUCTION_SITES_EVERY_X_TICKS = 100
   const DELETE_CONSTRUCTION_SITES =
     Game.time % DELETE_CONSTRUCTION_SITES_EVERY_X_TICKS === 0 ? true : false
   if (DELETE_CONSTRUCTION_SITES) {
@@ -68,9 +68,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
   }
 
-  const PLAN_CONSTRUCTION_SITES_EVERY_X_TICKS = 3
+  const PLAN_CONSTRUCTION_SITES_EVERY_X_TICKS = 5
+  const MAX_CONSTRUCTION_SITES_PER_TICK = 1
   if (Game.time % PLAN_CONSTRUCTION_SITES_EVERY_X_TICKS === 0) {
-    const MAX_CONSTRUCTION_SITES_PER_TICK = 5
     let constructionSitesPlannedThisTick = 0 // only plan some sites each tick
     console.log(
       `=== Road planning check (every ${PLAN_CONSTRUCTION_SITES_EVERY_X_TICKS} ticks) ===`
