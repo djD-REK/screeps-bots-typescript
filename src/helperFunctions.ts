@@ -487,7 +487,7 @@ export const assignDestinationSourceForMining = (
     creep.memory.destination.y = closestMineablePosition.y
     creep.memory.destination.roomName = closestMineablePosition.roomName
     console.log(
-      `${creep.name} assigned mission to MINE from Destination ${creep.memory.destination}`
+      `${creep.name} assigned mission to MINE from destination (${creep.memory.destination.x}${creep.memory.destination.y}) in room ${creep.memory.destination.roomName}`
     )
   }
   return unoccupiedMineablePositions.length
