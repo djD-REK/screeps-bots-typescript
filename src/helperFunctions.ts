@@ -459,7 +459,7 @@ export const assignDestinationSourceForMining = (
     // No available mining positions
     // --> Mission: EXPLORE
     // creep.memory.state = "EXPLORE"
-    creep.memory.state = "MEANDER"
+    creep.memory.state = "THINK"
   } else {
     // Found at least 1 available mining position in the target room
     // --> Mission: MINE

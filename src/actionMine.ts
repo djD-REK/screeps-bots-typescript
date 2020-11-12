@@ -44,7 +44,7 @@ export const actionMine = (creep: Creep) => {
           `${creep.memory.destination.x},${creep.memory.destination.y}`
       )
       // There's a creep where we are trying to go, so let's pick a new destination
-      creep.memory.state = "MEANDER"
+      creep.memory.state = "THINK"
     }
 
     // Now let's actually move (to our destination or the random location)

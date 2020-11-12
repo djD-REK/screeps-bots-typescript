@@ -9,7 +9,14 @@ export const roleMiner = {
     if (creep.memory.state === "THINK") {
       creep.say("🚶 MINE")
       creep.memory.state = "MINE"
-      assignDestinationSourceForMining(creep, creep.room)
+      const unoccupiedMineablePositionsInThisRoom = assignDestinationSourceForMining(
+        creep,
+        creep.room
+      )
+      if (unoccupiedMineablePositionsInThisRoom === 0) {
+        // Choose a destination in another room
+        chooseDestination(creep)
+      }
     }
     if (creep.memory.state === "EXPLORE") {
       creep.memory.state = "THINK"
@@ -20,11 +27,7 @@ export const roleMiner = {
       actionMine(creep)
     }
     if (creep.memory.state === "MEANDER") {
-      // My position to mine is occupied
-      creep.say("🚶 MINE")
-      creep.memory.state = "MINE"
-      chooseDestination(creep)
-
+      // We should not reach this right now
       /*
       // In the mean time, let's change our current destination to get out of the way
       if (creep.room.controller) {
