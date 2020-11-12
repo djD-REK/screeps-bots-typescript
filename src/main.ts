@@ -81,6 +81,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
     const mineablePositions = getMineablePositionsIncludingSurroundingRooms(
       Game.spawns.Spawn1.room
     )
+    // Sort mineable positions by range from the creep spawn
+    mineablePositions.sort(
+      (a, b) =>
+        Game.spawns.Spawn1.pos.getRangeTo(a) -
+        Game.spawns.Spawn1.pos.getRangeTo(b)
+    )
     // Create a terrain helper for quick lookups of terrain
     const terrain = new Room.Terrain(Game.spawns.Spawn1.room.name)
     // Count the containers because there's a maximum of 5 containers allowed
