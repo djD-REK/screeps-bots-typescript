@@ -388,7 +388,6 @@ export const chooseDestination = (creep: Creep) => {
   }
 }
 
-// TODO: Fix this logic for miners
 export const assignDestinationSourceForMining = (
   creep: Creep,
   targetRoom: Room
@@ -467,17 +466,26 @@ export const assignDestinationSourceForMining = (
     creep.memory.state = "MINE"
     // Pick a mineable position to mine at randomly
     // TODO: Pick the closest one by path
-    const randomMineablePositionIndex = Math.floor(
-      Math.random() * unoccupiedMineablePositions.length
+    let closestMineablePosition: RoomPosition = new RoomPosition(
+      0,
+      0,
+      creep.room.name
     )
+    let closestMineablePositionRange: number = Infinity
+    for (const unoccupiedMineablePosition of unoccupiedMineablePositions) {
+      if (
+        creep.pos.getRangeTo(unoccupiedMineablePosition) <
+        closestMineablePositionRange
+      ) {
+        closestMineablePosition = unoccupiedMineablePosition
+      }
+    }
     console.log(
-      "Mineable positions: " +
-        [...unoccupiedMineablePositions] +
-        `[${randomMineablePositionIndex}]`
+      `Mineable positions: ${unoccupiedMineablePositions}; closest is ${closestMineablePosition}`
     )
-    creep.memory.destination =
-      unoccupiedMineablePositions[randomMineablePositionIndex]
-    // Assign the creep to its destination
+    creep.memory.destination.x = closestMineablePosition.x
+    creep.memory.destination.y = closestMineablePosition.x
+    creep.memory.destination.roomName = closestMineablePosition.roomName
     console.log(
       `${creep.name} assigned mission to MINE from Destination ${creep.memory.destination}`
     )
