@@ -471,13 +471,12 @@ export const assignDestinationSourceForMining = (
       0,
       creep.room.name
     )
-    let closestMineablePositionRange: number = Infinity
+    let closestRange: number = Infinity
     for (const unoccupiedMineablePosition of unoccupiedMineablePositions) {
-      if (
-        creep.pos.getRangeTo(unoccupiedMineablePosition) <
-        closestMineablePositionRange
-      ) {
+      const currentRange = creep.pos.getRangeTo(unoccupiedMineablePosition)
+      if (currentRange < closestRange) {
         closestMineablePosition = unoccupiedMineablePosition
+        closestRange = currentRange
       }
     }
     console.log(
