@@ -211,7 +211,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       }
     }
 
-    // Road planning logic part 3: Build roads surruonding each mineable position
+    // Road planning logic part 3: Build roads surrounding each mineable position
     for (const mineablePosition of mineablePositions) {
       // Build roads surrounding each mineablePosition
       for (let x = mineablePosition.x - 1; x <= mineablePosition.x + 1; x++) {
@@ -277,7 +277,35 @@ export const loop = ErrorMapper.wrapLoop(() => {
       }
     }
 
-    // Road planning logic part 5: Roads to energy sources in other rooms
+    // Road planning logic part 5: Plan roads from every mineable position to the room's controller (for upgraders)
+    for (const mineablePosition of mineablePositions) {
+      const controller = Game.spawns.Spawn1.room.controller
+      if (controller) {
+        const pathToController = mineablePosition.findPathTo(controller, {
+          ignoreCreeps: true,
+          maxRooms: 1,
+        })
+        for (const [index, pathStep] of pathToController.entries()) {
+          if (index < pathToController.length - 4) {
+            // Don't build construction sites within 3 range of controller
+            // because the upgradeController command has 3 squares range
+            if (
+              constructionSitesPlannedThisTick <
+                MAX_CONSTRUCTION_SITES_PER_TICK &&
+              Game.spawns.Spawn1.room.createConstructionSite(
+                pathStep.x,
+                pathStep.y,
+                STRUCTURE_ROAD
+              ) === OK
+            ) {
+              constructionSitesPlannedThisTick++
+            }
+          }
+        }
+      }
+    }
+
+    // Road planning logic part 6: Roads to energy sources in other rooms
     // Loop through the accessible rooms & plan roads to mineable positions
     for (const accessibleAdjacentRoom of accessibleAdjacentRoomsWithVision) {
       // Find the mineable positions we want to build roads to
