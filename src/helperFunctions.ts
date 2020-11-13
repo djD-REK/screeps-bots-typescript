@@ -409,7 +409,6 @@ export const assignDestinationForMiningIncludingSurroundingRooms = (
     (creepName) =>
       (Game.creeps[creepName].memory.role === "Harvester" ||
         Game.creeps[creepName].memory.role === "Miner") &&
-      Game.creeps[creepName].room === targetRoom &&
       creepName !== creep.name
   )
 
