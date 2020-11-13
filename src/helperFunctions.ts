@@ -418,7 +418,13 @@ export const assignDestinationForMiningIncludingSurroundingRooms = (
   const occupiedMineablePositions: RoomPosition[] = []
   miners.forEach((creepName) => {
     // Actually occupied positions
-    occupiedMineablePositions.push(Game.creeps[creepName].pos)
+    occupiedMineablePositions.push(
+      new RoomPosition(
+        Game.creeps[creepName].pos.x,
+        Game.creeps[creepName].pos.y,
+        Game.creeps[creepName].room.name
+      )
+    )
     // Designated mining positions (miner may be in transit)
     occupiedMineablePositions.push(
       new RoomPosition(
@@ -488,7 +494,7 @@ export const assignDestinationForMiningIncludingSurroundingRooms = (
     creep.memory.destination.y = closestMineablePosition.y
     creep.memory.destination.roomName = closestMineablePosition.roomName
     console.log(
-      `${creep.name} assigned mission to MINE from destination (${creep.memory.destination.x}${creep.memory.destination.y}) in room ${creep.memory.destination.roomName}`
+      `${creep.name} assigned mission to MINE from destination (${creep.memory.destination.x},${creep.memory.destination.y}) in room ${creep.memory.destination.roomName}`
     )
   }
   return unoccupiedMineablePositions.length
