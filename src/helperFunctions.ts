@@ -325,22 +325,11 @@ export const chooseDestination = (creep: Creep) => {
     const accessibleRoomNamesWithVision: Array<string> = getAccessibleRoomNamesWithVision(
       creep.room
     )
-    if (accessibleRoomNamesWithVision.length > 0) {
-      // There are accessible adjacent rooms with vision
-      // For each room
-      // Assess sources for mining
-      // assignDestinationSourceForMining
-      // If there are available mining positions, move there
-      for (const accessibleRoom of accessibleRoomNamesWithVision) {
-        const unoccupiedMineablePositions = assignDestinationSourceForMining(
-          creep,
-          Game.rooms[accessibleRoom]
-        )
-        if (unoccupiedMineablePositions > 0) {
-          break // We found a destination in an adjacent room already
-        }
-      }
-    } else {
+    const unoccupiedMineablePositions = assignDestinationForMiningIncludingSurroundingRooms(
+      creep,
+      creep.room
+    )
+    if (unoccupiedMineablePositions === 0) {
       // All adjacent rooms didn't have anywhere available to mine
       // So just pick one randomly to go to
       const randomRoomIndex = Math.floor(
@@ -394,13 +383,14 @@ export const chooseDestination = (creep: Creep) => {
   }
 }
 
-export const assignDestinationSourceForMining = (
+export const assignDestinationForMiningIncludingSurroundingRooms = (
   creep: Creep,
   targetRoom: Room
 ) => {
   const mineablePositions: RoomPosition[] = getMineablePositionsIncludingSurroundingRooms(
     targetRoom
   )
+  // TODO Count occupied mineable position in each surrounding room
   // Select an array of creeps with assigned destinations in this room:
   const miners = Object.keys(Game.creeps).filter(
     (creepName) =>
@@ -470,21 +460,11 @@ export const assignDestinationSourceForMining = (
     // Found at least 1 available mining position in the target room
     // --> Mission: MINE
     creep.memory.state = "MINE"
-    // Pick a mineable position to mine at randomly
-    // TODO: Pick the closest one by path
-    let closestMineablePosition: RoomPosition = new RoomPosition(
-      0,
-      0,
-      creep.room.name
+    // Pick the closest mineable position by range
+    unoccupiedMineablePositions.sort(
+      (a, b) => creep.pos.getRangeTo(a) - creep.pos.getRangeTo(b)
     )
-    let closestRange: number = Infinity
-    for (const unoccupiedMineablePosition of unoccupiedMineablePositions) {
-      const currentRange = creep.pos.getRangeTo(unoccupiedMineablePosition)
-      if (currentRange < closestRange) {
-        closestMineablePosition = unoccupiedMineablePosition
-        closestRange = currentRange
-      }
-    }
+    const closestMineablePosition = unoccupiedMineablePositions[0]
     console.log(
       `Mineable positions: ${unoccupiedMineablePositions}; closest is (${closestMineablePosition.x},${closestMineablePosition.y})`
     )
