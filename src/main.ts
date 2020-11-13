@@ -216,34 +216,37 @@ export const loop = ErrorMapper.wrapLoop(() => {
       // Build roads surrounding each mineablePosition
       for (let x = mineablePosition.x - 1; x <= mineablePosition.x + 1; x++) {
         for (let y = mineablePosition.y - 1; y <= mineablePosition.y + 1; y++) {
-          // TODO: Don't build roads on mineable positions (since miners sit there on top of containers); will have to check here and when building roads between mineable positions
-          switch (terrain.get(x, y)) {
-            // No action cases
-            case TERRAIN_MASK_WALL:
-              break
-            // Build road cases
-            case 0: // plain
-            case TERRAIN_MASK_SWAMP:
-            default:
-              if (
-                constructionSitesPlannedThisTick <
-                  MAX_CONSTRUCTION_SITES_PER_TICK &&
-                Game.spawns.Spawn1.room.createConstructionSite(
-                  x,
-                  y,
-                  STRUCTURE_ROAD
-                ) === OK
-              ) {
-                constructionSitesPlannedThisTick++
-              }
-              break
+          if (x !== mineablePosition.x && y !== mineablePosition.y) {
+            // Don't build roads on mineable positions,
+            // since miners sit there on top of containers
+            switch (terrain.get(x, y)) {
+              // No action cases
+              case TERRAIN_MASK_WALL:
+                break
+              // Build road cases
+              case 0: // plain
+              case TERRAIN_MASK_SWAMP:
+              default:
+                if (
+                  constructionSitesPlannedThisTick <
+                    MAX_CONSTRUCTION_SITES_PER_TICK &&
+                  Game.spawns.Spawn1.room.createConstructionSite(
+                    x,
+                    y,
+                    STRUCTURE_ROAD
+                  ) === OK
+                ) {
+                  constructionSitesPlannedThisTick++
+                }
+                break
+            }
           }
         }
       }
     }
 
     // Road planning logic part 4: Build roads between each mineable position in the Spawn's room
-    // Plan all roads in the last 2 loops before building roads between mineable positions
+    // Plan all roads in the previous loops before building roads between mineable positions
     for (const mineablePosition of mineablePositions) {
       // TODO: Build roads between mineable positions in other rooms
       for (const mineablePositionTwo of mineablePositions) {
@@ -251,16 +254,16 @@ export const loop = ErrorMapper.wrapLoop(() => {
         const pathToMineablePositionTwo = mineablePosition.findPathTo(
           mineablePositionTwo,
           {
-            ignoreCreeps: false, // ignore creeps when pathing between mineable positions
+            ignoreCreeps: false, // don't ignore creeps when pathing between mineable positions -- this should help traffic flow
             //swampCost: 1, // ignore swamps; we want to build on swamps
             maxRooms: 1, // don't path through other rooms
           }
         )
         for (const [index, pathStep] of pathToMineablePositionTwo.entries()) {
-          if (index < pathToMineablePositionTwo.length - 1) {
-            // Here's the reason it's pathToMineablePositionTwo.length - 1:
-            // Don't build construction sites directly on top of sources and
-            // don't build them within 2 range of sources (mining positions)
+          if (index > 0 && index < pathToMineablePositionTwo.length - 1) {
+            // Here's the reason it's index > 0 and index < pathToMineablePositionTwo.length - 1:
+            // Don't build roads on mineable positions,
+            // since miners sit there on top of containers
             if (
               constructionSitesPlannedThisTick <
                 MAX_CONSTRUCTION_SITES_PER_TICK &&
@@ -286,7 +289,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
           maxRooms: 1,
         })
         for (const [index, pathStep] of pathToController.entries()) {
-          if (index < pathToController.length - 4) {
+          if (index > 0 && index < pathToController.length - 4) {
+            // Here's the reason it's index > 0 and index < pathToMineablePositionTwo.length - 1:
+            // Don't build roads on mineable positions,
+            // since miners sit there on top of containers AND
             // Don't build construction sites within 3 range of controller
             // because the upgradeController command has 3 squares range
             if (
@@ -345,17 +351,18 @@ export const loop = ErrorMapper.wrapLoop(() => {
           mineablePosition,
           {
             ignoreCreeps: true,
-            maxRooms: 1,
+            maxRooms: 1, // Only plan roads in the Spawn's room on this loop
           }
         )
         for (const [
           index,
           pathStep,
         ] of pathFromSpawnToMineablePosition.entries()) {
-          if (index < pathFromSpawnToMineablePosition.length - 1) {
+          if (index > 0 && index < pathFromSpawnToMineablePosition.length - 1) {
             pathStep
-            // Here's the reason it's pathToMineablePosition.length - 1:
-            // Don't build on top of exits
+            // Here's the reason it's index > 0 and index < pathToMineablePosition.length - 1:
+            // Don't build roads on top of Spawns AND
+            // Don't ubild roads on top of exit squares
             if (
               constructionSitesPlannedThisTick <
                 MAX_CONSTRUCTION_SITES_PER_TICK &&
@@ -375,17 +382,18 @@ export const loop = ErrorMapper.wrapLoop(() => {
           Game.spawns.Spawn1.pos,
           {
             ignoreCreeps: true,
-            maxRooms: 1,
+            maxRooms: 1, // Search in the source's room, not the Spawn's room
           }
         )
         for (const [
           index,
           pathStep,
         ] of pathFromMineablePositionToSpawn.entries()) {
-          if (index < pathFromMineablePositionToSpawn.length - 1) {
+          if (index > 0 && index < pathFromMineablePositionToSpawn.length - 1) {
             pathStep
-            // Here's the reason it's pathToMineablePosition.length - 1:
-            // Don't build on top of exits
+            // Here's the reason it's index > 0 and index < pathToMineablePosition.length - 1:
+            // Don't build roads on top of mineable positions AND
+            // Don't build roads on top of exit squares
             if (
               constructionSitesPlannedThisTick <
                 MAX_CONSTRUCTION_SITES_PER_TICK &&
@@ -407,26 +415,30 @@ export const loop = ErrorMapper.wrapLoop(() => {
             y <= mineablePosition.y + 1;
             y++
           ) {
-            switch (terrainAdjacentRoom.get(x, y)) {
-              // No action cases
-              case TERRAIN_MASK_WALL:
-                break
-              // Build road cases
-              case 0: // plain
-              case TERRAIN_MASK_SWAMP:
-              default:
-                if (
-                  constructionSitesPlannedThisTick <
-                    MAX_CONSTRUCTION_SITES_PER_TICK &&
-                  accessibleAdjacentRoom.createConstructionSite(
-                    x,
-                    y,
-                    STRUCTURE_ROAD
-                  ) === OK
-                ) {
-                  constructionSitesPlannedThisTick++
-                }
-                break
+            if (x !== mineablePosition.x && y !== mineablePosition.y) {
+              // Don't build roads on mineable positions,
+              // since miners sit there on top of containers
+              switch (terrainAdjacentRoom.get(x, y)) {
+                // No action cases
+                case TERRAIN_MASK_WALL:
+                  break
+                // Build road cases
+                case 0: // plain
+                case TERRAIN_MASK_SWAMP:
+                default:
+                  if (
+                    constructionSitesPlannedThisTick <
+                      MAX_CONSTRUCTION_SITES_PER_TICK &&
+                    accessibleAdjacentRoom.createConstructionSite(
+                      x,
+                      y,
+                      STRUCTURE_ROAD
+                    ) === OK
+                  ) {
+                    constructionSitesPlannedThisTick++
+                  }
+                  break
+              }
             }
           }
         }
@@ -556,7 +568,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     } else if (creepCounts.Upgrader < 1) {
       spawnCreep("Upgrader")
     } else if (creepCounts.Fetcher < mineablePositionsCount * 2) {
-      // normal size fetchers
+      // normal size fetchers hopefully once roads are being built
       spawnCreep("Fetcher")
     }
 
