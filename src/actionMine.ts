@@ -63,9 +63,13 @@ export const actionMine = (creep: Creep) => {
       case OK: // The operation has been scheduled successfully.
       case ERR_TIRED: // The fatigue indicator of the creep is non-zero.
         break // Do nothing
-      // Unhandled cases
+      // Reset state to THINK cases (MINE --> THINK state transition)
       case ERR_NO_PATH: // No path to the target could be found.
-      // (There are probably creeps in the way)
+        // (There are probably creeps in the way)
+        console.log(`${creep.name} said there was no path to take...`)
+        creep.memory.state = "THINK"
+        break
+      // Unhandled cases
       case ERR_NOT_OWNER: // You are not the owner of this creep.
       case ERR_BUSY: // The power creep is not spawned in the world.
       case ERR_INVALID_TARGET: // The target provided is invalid.
