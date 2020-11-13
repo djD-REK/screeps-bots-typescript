@@ -1,4 +1,4 @@
-export const getMineablePositionsIncludingSurruondingRooms = (room: Room) => {
+export const getMineablePositionsIncludingSurroundingRooms = (room: Room) => {
   const mineablePositions = getMineablePositions(room)
   const accessibleRoomNamesWithVision: string[] = getAccessibleRoomNamesWithVision(
     room
