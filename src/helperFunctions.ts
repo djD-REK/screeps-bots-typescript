@@ -267,12 +267,14 @@ export const getAccessibleRoomNamesWithoutVision = (currentRoom: Room) => {
 }
 
 export const getAccessibleRoomNamesWithVision = (currentRoom: Room) => {
+  const DEBUG = false
   const accessibleAdjacentRoomNames = getAccessibleAdjacentRoomNames(
     currentRoom
   )
-  console.log(
-    `Trying to get accessible adjacent room names for ${currentRoom.name} and found ${accessibleAdjacentRoomNames}`
-  )
+  DEBUG &&
+    console.log(
+      `Trying to get accessible adjacent room names for ${currentRoom.name} and found ${accessibleAdjacentRoomNames}`
+    )
   const accessibleRoomNamesWithVision: Array<string> = []
   for (const roomName of accessibleAdjacentRoomNames) {
     // Game.rooms is an object of all the rooms I have vision in
@@ -286,6 +288,7 @@ export const getAccessibleRoomNamesWithVision = (currentRoom: Room) => {
 
 // Choose an appropriate destination in this room based on creep's role
 export const chooseDestination = (creep: Creep) => {
+  const DEBUG = false
   if (creep.memory.role === "Eye") {
     const accessibleRoomNamesWithoutVision: Array<string> = getAccessibleRoomNamesWithoutVision(
       creep.room
@@ -295,9 +298,10 @@ export const chooseDestination = (creep: Creep) => {
       const randomRoomIndex = Math.floor(
         Math.random() * accessibleRoomNamesWithoutVision.length
       )
-      console.log(
-        `Accessible Room Names without Vision:${creep.name} ${accessibleRoomNamesWithoutVision}; selected random index ${randomRoomIndex}`
-      )
+      DEBUG &&
+        console.log(
+          `Accessible Room Names without Vision:${creep.name} ${accessibleRoomNamesWithoutVision}; selected random index ${randomRoomIndex}`
+        )
       const destinationRoomName =
         accessibleRoomNamesWithoutVision[randomRoomIndex]
       assignDestination(destinationRoomName, creep)
@@ -342,12 +346,13 @@ export const chooseDestination = (creep: Creep) => {
       const randomRoomIndex = Math.floor(
         Math.random() * accessibleRoomNamesWithVision.length
       )
-      console.log(
-        "Accessible Room Names with Vision:",
-        creep.name,
-        ...accessibleRoomNamesWithVision,
-        randomRoomIndex
-      )
+      DEBUG &&
+        console.log(
+          "Accessible Room Names with Vision:",
+          creep.name,
+          ...accessibleRoomNamesWithVision,
+          randomRoomIndex
+        )
       const destinationRoomName = accessibleRoomNamesWithVision[randomRoomIndex]
       assignDestination(destinationRoomName, creep)
     }
@@ -363,12 +368,13 @@ export const chooseDestination = (creep: Creep) => {
       const randomRoomIndex = Math.floor(
         Math.random() * accessibleRoomNamesWithoutVision.length
       )
-      console.log(
-        "Accessible Room Names without Vision:",
-        creep.name,
-        ...accessibleRoomNamesWithoutVision,
-        randomRoomIndex
-      )
+      DEBUG &&
+        console.log(
+          "Accessible Room Names without Vision:",
+          creep.name,
+          ...accessibleRoomNamesWithoutVision,
+          randomRoomIndex
+        )
       const destinationRoomName =
         accessibleRoomNamesWithoutVision[randomRoomIndex]
       assignDestination(destinationRoomName, creep)
