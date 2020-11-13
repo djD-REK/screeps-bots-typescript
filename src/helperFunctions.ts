@@ -1,4 +1,17 @@
-export const getMineablePositionsIncludingSurroundingRooms = (room: Room) => {
+export const getMineablePositionsIncludingSurruondingRooms = (room: Room) => {
+  const mineablePositions = getMineablePositions(room)
+  const accessibleRoomNamesWithVision: string[] = getAccessibleRoomNamesWithVision(
+    room
+  )
+  for (const accessibleRoomNameWithVision of accessibleRoomNamesWithVision) {
+    mineablePositions.push(
+      ...getMineablePositions(new Room(accessibleRoomNameWithVision))
+    )
+  }
+  return mineablePositions
+}
+
+export const getMineablePositions = (room: Room) => {
   // Select all sources from this room:
   const activeSources = room.find(FIND_SOURCES)
   // Make an array of valid destinations to mine sources
@@ -411,7 +424,7 @@ export const assignDestinationForMiningIncludingSurroundingRooms = (
       new RoomPosition(
         Game.creeps[creepName].memory.destination.x,
         Game.creeps[creepName].memory.destination.y,
-        targetRoom.name
+        Game.creeps[creepName].memory.destination.roomName
       )
     )
   })
@@ -421,16 +434,18 @@ export const assignDestinationForMiningIncludingSurroundingRooms = (
   const unoccupiedMineableMap = new Map<string, boolean>()
   mineablePositions.forEach((possiblePosition) => {
     unoccupiedMineableMap.set(
-      `${possiblePosition.x},${possiblePosition.y}`,
+      `${possiblePosition.x},${possiblePosition.y},${possiblePosition.roomName}`,
       true
     )
   })
   occupiedMineablePositions.forEach((occupiedPosition) => {
-    unoccupiedMineableMap.delete(`${occupiedPosition.x},${occupiedPosition.y}`)
+    unoccupiedMineableMap.delete(
+      `${occupiedPosition.x},${occupiedPosition.y},${occupiedPosition.roomName}`
+    )
   })
   const unoccupiedMineablePositions: RoomPosition[] = []
   for (const stringPosition of unoccupiedMineableMap.keys()) {
-    const regExp = /(?<x>\d+),(?<y>\d+)/
+    const regExp = /(?<x>\d+),(?<y>\d+),(?<roomName>\w+)/
     // Board is a 50x50 grid with coordinates ranging from 0 to 49 i.e. 1-2 digits
     const resultOfRegExp = regExp.exec(stringPosition)
 
@@ -438,8 +453,9 @@ export const assignDestinationForMiningIncludingSurroundingRooms = (
       if (resultOfRegExp.groups) {
         const xCoordinate = Number(resultOfRegExp.groups.x) // e.g. 23
         const yCoordinate = Number(resultOfRegExp.groups.y) // e.g. 26
+        const roomName = resultOfRegExp.groups.roomName
         unoccupiedMineablePositions.push(
-          new RoomPosition(xCoordinate, yCoordinate, targetRoom.name)
+          new RoomPosition(xCoordinate, yCoordinate, roomName)
         )
       }
     } else {
