@@ -7,6 +7,8 @@ import {
   moveToDestination,
 } from "helperFunctions"
 
+const DEBUG = false
+
 export const roleEye = {
   run(creep: Creep) {
     // TODO: Add if there's an enemy in this room I need to go home
@@ -23,23 +25,26 @@ export const roleEye = {
 
       // STATE TRANSITION: EXPLORE --> THINK
       // WHEN WE HAVE VISION OF THIS EYE CREEP'S DESTINATION
-      console.log(
-        `Creep ${creep.name} destination in memory (${creep.memory.destination.x},${creep.memory.destination.y}) in ${creep.memory.destination.roomName} and its current room is ${creep.room.name}`
-      )
+      DEBUG &&
+        console.log(
+          `Creep ${creep.name} destination in memory (${creep.memory.destination.x},${creep.memory.destination.y}) in ${creep.memory.destination.roomName} and its current room is ${creep.room.name}`
+        )
       const destinationRoomName = getRoomNameBasedOnExitCoordinates(
         creep.memory.destination.x,
         creep.memory.destination.y,
         new Room(creep.memory.destination.roomName)
       )
-      console.log(
-        `Creep ${creep.name} has destination room name of ${destinationRoomName}`
-      )
+      DEBUG &&
+        console.log(
+          `Creep ${creep.name} has destination room name of ${destinationRoomName}`
+        )
       const accessibleRoomNamesWithoutVision = getAccessibleRoomNamesWithoutVision(
         creep.room
       )
-      console.log(
-        `According to creep ${creep.name}, these are the accessibleRoomNamesWithoutVision: ${accessibleRoomNamesWithoutVision}`
-      )
+      DEBUG &&
+        console.log(
+          `According to creep ${creep.name}, these are the accessibleRoomNamesWithoutVision: ${accessibleRoomNamesWithoutVision}`
+        )
 
       if (
         Game.rooms[destinationRoomName] &&
