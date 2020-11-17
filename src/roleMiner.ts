@@ -7,8 +7,7 @@ export const roleMiner = {
       creep.say("🚶 MINE")
       creep.memory.state = "MINE"
       const unoccupiedMineablePositionsInThisRoom = assignDestinationForMining(
-        creep,
-        creep.room
+        creep
       )
       // TODO change to: getMineablePositionsInAllRoomsWithVision
       // TODO Should this if statement be here? vvv

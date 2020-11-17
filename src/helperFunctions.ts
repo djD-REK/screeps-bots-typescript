@@ -363,10 +363,7 @@ export const chooseDestination = (creep: Creep) => {
     const accessibleRoomNamesWithVision: Array<string> = getAccessibleRoomNamesWithVision(
       creep.room
     )
-    const unoccupiedMineablePositions = assignDestinationForMining(
-      creep,
-      creep.room
-    )
+    const unoccupiedMineablePositions = assignDestinationForMining(creep)
     if (unoccupiedMineablePositions === 0) {
       // All adjacent rooms didn't have anywhere available to mine
       // So just pick one randomly to go to
