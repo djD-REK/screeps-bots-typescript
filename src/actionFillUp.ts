@@ -3,23 +3,26 @@ export const actionFillUp = (creep: Creep) => {
   // Specifically: dropped resources and energy stored in containers
   const allEnergySources: (StructureContainer | Resource)[] = []
 
-  // First we compile a list of all the containers we could withdraw from
-  const allContainers = creep.room.find(FIND_STRUCTURES, {
-    filter: (structure) => {
-      return structure.structureType === STRUCTURE_CONTAINER
-    },
-  })
-  for (const container of allContainers) {
-    if (container.structureType === STRUCTURE_CONTAINER) {
-      allEnergySources.push(container)
+  // Loop through all the romos that we have vision of
+  for (const roomWithVision of Object.values(Game.rooms)) {
+    // First we compile a list of all the containers we could withdraw from
+    const allContainers = roomWithVision.find(FIND_STRUCTURES, {
+      filter: (structure) => {
+        return structure.structureType === STRUCTURE_CONTAINER
+      },
+    })
+    for (const container of allContainers) {
+      if (container.structureType === STRUCTURE_CONTAINER) {
+        allEnergySources.push(container)
+      }
     }
-  }
 
-  // Maybe there are some dropped resources we can go grab
-  const allDroppedResources = creep.room.find(FIND_DROPPED_RESOURCES)
-  for (const resource of allDroppedResources) {
-    if (resource.resourceType === RESOURCE_ENERGY) {
-      allEnergySources.push(resource)
+    // Maybe there are some dropped resources we can go grab
+    const allDroppedResources = roomWithVision.find(FIND_DROPPED_RESOURCES)
+    for (const resource of allDroppedResources) {
+      if (resource.resourceType === RESOURCE_ENERGY) {
+        allEnergySources.push(resource)
+      }
     }
   }
 
@@ -36,8 +39,15 @@ export const actionFillUp = (creep: Creep) => {
       // Dropped resources are more important than stored resources because
       // they decay, so they get a times 2 multiplier in calculations
     }
+    // Calculate the range; for the current room we can use pos.getRangeTo()
+    // but for other rooms we need Game.map.getRoomLinearDistance() * 50
+    const range =
+      source.pos.roomName === creep.room.name
+        ? creep.pos.getRangeTo(source.pos)
+        : 50 *
+          Game.map.getRoomLinearDistance(source.pos.roomName, creep.room.name)
     // Sort order is the amount of energy squared divided by the range plus 1
-    return 0 - storedEnergy ** 2 / (creep.pos.getRangeTo(source.pos) + 1)
+    return 0 - storedEnergy ** 2 / (range + 1)
     // Zero minus is descending sort
   })
 

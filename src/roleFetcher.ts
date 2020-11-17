@@ -8,7 +8,7 @@ export const roleFetcher = {
       creep.memory.state = "FILL UP"
     }
     if (creep.memory.state === "FILL UP") {
-      // Go harvest active resources
+      // Go pick up resources from containers
       actionFillUp(creep)
       if (creep.store.getUsedCapacity() / creep.store.getCapacity() > 0.9) {
         creep.say("🚶 DEPOSIT")
