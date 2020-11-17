@@ -1,3 +1,12 @@
+export const getMineablePositionsInAllRoomsWithVision = () => {
+  const mineablePositions: RoomPosition[] = []
+  for (const room of Object.values(Game.rooms)) {
+    mineablePositions.push(...getMineablePositions(room))
+  }
+
+  return mineablePositions
+}
+
 export const getMineablePositionsIncludingSurroundingRooms = (room: Room) => {
   const mineablePositions = getMineablePositions(room)
   const accessibleRoomNamesWithVision: string[] = getAccessibleRoomNamesWithVision(
@@ -8,6 +17,11 @@ export const getMineablePositionsIncludingSurroundingRooms = (room: Room) => {
       ...getMineablePositions(new Room(accessibleRoomNameWithVision))
     )
   }
+
+  return mineablePositions
+
+  /*
+  // Unused code to check for unique positions (redundant)
   const mineablePositionsSet = new Set()
   const uniqueMineablePositions = []
   for (const mineablePosition of mineablePositions) {
@@ -17,7 +31,9 @@ export const getMineablePositionsIncludingSurroundingRooms = (room: Room) => {
     }
   }
 
-  return uniqueMineablePositions
+  console.log(`Unique mineable positions: ${uniqueMineablePositions}`)
+
+  return uniqueMineablePositions*/
 }
 
 export const getMineablePositions = (room: Room) => {

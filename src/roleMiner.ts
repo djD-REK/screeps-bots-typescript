@@ -13,6 +13,7 @@ export const roleMiner = {
         creep,
         creep.room
       )
+      // TODO change to: getMineablePositionsInAllRoomsWithVision
       // TODO Should this if statement be here? vvv
       if (unoccupiedMineablePositionsInThisRoom === 0) {
         // Choose a destination in another room

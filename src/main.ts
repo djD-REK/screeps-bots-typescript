@@ -7,7 +7,9 @@ import { roleDefender } from "roleDefender"
 import { roleBuilder } from "roleBuilder"
 import { roleEye } from "roleEye"
 import {
+  getMineablePositionsInAllRoomsWithVision,
   getMineablePositionsIncludingSurroundingRooms,
+  getMineablePositions,
   getAccessibleAdjacentRoomNames,
   getRoomsFromRoomNamesIfVision,
   getAccessibleRoomNamesWithVision,
@@ -78,9 +80,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
     // Road planning logic part 1: For mineable positions in the current room
     // Find the mineable positions we want to build roads to
-    const mineablePositions = getMineablePositionsIncludingSurroundingRooms(
-      Game.spawns.Spawn1.room
-    )
+    const mineablePositions = getMineablePositions(Game.spawns.Spawn1.room)
     // Sort mineable positions by range from the creep spawn
     mineablePositions.sort(
       (a, b) =>
@@ -315,7 +315,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     // Loop through the accessible rooms & plan roads to mineable positions
     for (const accessibleAdjacentRoom of accessibleAdjacentRoomsWithVision) {
       // Find the mineable positions we want to build roads to
-      const mineablePositionsAdjacentRoom = getMineablePositionsIncludingSurroundingRooms(
+      const mineablePositionsAdjacentRoom = getMineablePositions(
         accessibleAdjacentRoom
       )
       // Create a terrain helper for quick lookups of terrain
@@ -480,24 +480,15 @@ export const loop = ErrorMapper.wrapLoop(() => {
     Game.spawns.Spawn1.room.energyAvailable >= 100 &&
     Game.spawns.Spawn1.spawning === null
   ) {
-    let mineablePositionsCount = getMineablePositionsIncludingSurroundingRooms(
-      Game.spawns.Spawn1.room
-    ).length
+    // Count mineable positions in all rooms with vision
+    let mineablePositionsCount = getMineablePositionsInAllRoomsWithVision()
+      .length
     const accessibleRoomNamesWithVision: Array<string> = getAccessibleRoomNamesWithVision(
       Game.spawns.Spawn1.room
     )
     console.log(
       `Accessible room names with vision: ${accessibleRoomNamesWithVision}`
     )
-    if (accessibleRoomNamesWithVision.length > 0) {
-      // There are accessible adjacent rooms with vision
-      // So add their mineable positions to the count
-      for (const accessibleRoom of accessibleRoomNamesWithVision) {
-        mineablePositionsCount += getMineablePositionsIncludingSurroundingRooms(
-          Game.rooms[accessibleRoom]
-        ).length
-      }
-    }
 
     // Log current counts to console
     for (const role of creepRoles) {
