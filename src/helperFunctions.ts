@@ -36,6 +36,7 @@ export const getMineablePositionsIncludingSurroundingRooms = (room: Room) => {
   return uniqueMineablePositions*/
 }
 
+// TODO: Don't count mineable positions in rooms with enemies (>2 enemies?)
 export const getMineablePositions = (room: Room) => {
   // Select all sources from this room:
   const activeSources = room.find(FIND_SOURCES)
