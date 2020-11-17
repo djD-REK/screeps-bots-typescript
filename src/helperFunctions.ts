@@ -8,7 +8,16 @@ export const getMineablePositionsIncludingSurroundingRooms = (room: Room) => {
       ...getMineablePositions(new Room(accessibleRoomNameWithVision))
     )
   }
-  return mineablePositions
+  const mineablePositionsSet = new Set()
+  const uniqueMineablePositions = []
+  for (const mineablePosition of mineablePositions) {
+    if (!mineablePositionsSet.has(String(mineablePosition))) {
+      mineablePositionsSet.add(String(mineablePosition))
+      uniqueMineablePositions.push(mineablePosition)
+    }
+  }
+
+  return uniqueMineablePositions
 }
 
 export const getMineablePositions = (room: Room) => {
