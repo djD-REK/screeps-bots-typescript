@@ -363,7 +363,7 @@ export const chooseDestination = (creep: Creep) => {
     const accessibleRoomNamesWithVision: Array<string> = getAccessibleRoomNamesWithVision(
       creep.room
     )
-    const unoccupiedMineablePositions = assignDestinationForMiningIncludingSurroundingRooms(
+    const unoccupiedMineablePositions = assignDestinationForMining(
       creep,
       creep.room
     )
@@ -421,13 +421,8 @@ export const chooseDestination = (creep: Creep) => {
   }
 }
 
-export const assignDestinationForMiningIncludingSurroundingRooms = (
-  creep: Creep,
-  targetRoom: Room
-) => {
-  const mineablePositions: RoomPosition[] = getMineablePositionsIncludingSurroundingRooms(
-    targetRoom
-  )
+export const assignDestinationForMining = (creep: Creep) => {
+  const mineablePositions: RoomPosition[] = getMineablePositionsInAllRoomsWithVision()
   // TODO Count occupied mineable position in each surrounding room
   // Select an array of creeps with assigned destinations in this room:
   const miners = Object.keys(Game.creeps).filter(
@@ -439,6 +434,7 @@ export const assignDestinationForMiningIncludingSurroundingRooms = (
 
   console.log("Found miners:" + miners.length)
 
+  // TODO refactor to Set or Map
   const occupiedMineablePositions: RoomPosition[] = []
   miners.forEach((creepName) => {
     // Actually occupied positions
@@ -507,9 +503,15 @@ export const assignDestinationForMiningIncludingSurroundingRooms = (
     // --> Mission: MINE
     creep.memory.state = "MINE"
     // Pick the closest mineable position by range
-    unoccupiedMineablePositions.sort(
-      (a, b) => creep.pos.getRangeTo(a) - creep.pos.getRangeTo(b)
-    )
+    unoccupiedMineablePositions.sort((a, b) => {
+      // Calculate the range; for the current room we can use pos.getRangeTo()
+      // but for other rooms we need Game.map.getRoomLinearDistance() * 50
+      return a.roomName === b.roomName
+        ? creep.pos.getRangeTo(a) - creep.pos.getRangeTo(b)
+        : 50 *
+            (Game.map.getRoomLinearDistance(creep.room.name, a.roomName) -
+              Game.map.getRoomLinearDistance(creep.room.name, b.roomName))
+    })
     const closestMineablePosition = unoccupiedMineablePositions[0]
     console.log(
       `Mineable positions: ${unoccupiedMineablePositions}; closest is (${closestMineablePosition.x},${closestMineablePosition.y})`
