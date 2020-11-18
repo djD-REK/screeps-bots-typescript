@@ -362,7 +362,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
             pathStep
             // Here's the reason it's index > 0 and index < pathToMineablePosition.length - 1:
             // Don't build roads on top of Spawns AND
-            // Don't ubild roads on top of exit squares
+            // Don't build roads on top of exit squares
             if (
               constructionSitesPlannedThisTick <
                 MAX_CONSTRUCTION_SITES_PER_TICK &&
@@ -549,7 +549,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       })
     } else if (creepCounts.Miner < mineablePositionsCount) {
       spawnCreep("Miner")
-    } else if (creepCounts.Eye < 4) {
+    } else if (creepCounts.Eye < mineablePositionsCount / 3) {
       spawnCreep("Eye")
     } else if (
       creepCounts.Builder < mineablePositionsCount &&
