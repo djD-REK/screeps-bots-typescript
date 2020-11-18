@@ -64,10 +64,13 @@ export const actionMine = (creep: Creep) => {
       case ERR_TIRED: // The fatigue indicator of the creep is non-zero.
         break // Do nothing
       // Reset state to THINK cases (MINE --> THINK state transition)
+      // THINK --> OFF due to novice walls (TODO Fix)
       case ERR_NO_PATH: // No path to the target could be found.
         // (There are probably creeps in the way)
-        console.log(`${creep.name} said there was no path to take...`)
-        creep.memory.state = "THINK"
+        console.log(
+          `${creep.name} said there was no path to take so it turned off`
+        )
+        creep.memory.state = "OFF"
         break
       // Unhandled cases
       case ERR_NOT_OWNER: // You are not the owner of this creep.
