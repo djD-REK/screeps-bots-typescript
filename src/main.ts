@@ -532,7 +532,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       Game.spawns.Spawn1.room
     )
 
-    if (creepCounts.Fetcher < creepCounts.Miner && creepCounts.Fetcher < 4) {
+    if (creepCounts.Fetcher < creepCounts.Miner && creepCounts.Fetcher < mineablePositionsCount/2) {
       // Brand new room, spawn mini creeps instead
       const role = "Fetcher"
       const creepName = generateCreepName(`Mini${role}`)
