@@ -14,7 +14,7 @@ import {
   getRoomsFromRoomNamesIfVision,
   getAccessibleRoomNamesWithVision,
   getAccessibleRoomNamesWithoutVision,
-} from "helper_functions/helperFunctions"
+} from "helper_functions"
 
 const MAX_CONTAINERS = 5
 

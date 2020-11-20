@@ -1,8 +1,5 @@
 import { actionMine } from "actionMine"
-import {
-  assignDestinationForMining,
-  chooseDestination,
-} from "helper_functions/helperFunctions"
+import { assignDestinationForMining, chooseDestination } from "helper_functions"
 
 export const roleMiner = {
   run(creep: Creep) {
