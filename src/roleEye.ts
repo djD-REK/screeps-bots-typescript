@@ -1,10 +1,8 @@
 import {
-  getAccessibleAdjacentRoomNames,
-  assignDestination,
+  moveToDestination,
   getAccessibleRoomNamesWithoutVision,
   getRoomNameBasedOnExitCoordinates,
   chooseDestination,
-  moveToDestination,
 } from "helper_functions"
 
 const DEBUG = false

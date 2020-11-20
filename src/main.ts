@@ -7,13 +7,12 @@ import { roleDefender } from "roleDefender"
 import { roleBuilder } from "roleBuilder"
 import { roleEye } from "roleEye"
 import {
-  getMineablePositionsInAllRoomsWithVision,
-  getMineablePositionsIncludingSurroundingRooms,
-  getMineablePositions,
   getAccessibleAdjacentRoomNames,
   getRoomsFromRoomNamesIfVision,
   getAccessibleRoomNamesWithVision,
   getAccessibleRoomNamesWithoutVision,
+  getMineablePositionsInAllRoomsWithVision,
+  getMineablePositions,
 } from "helper_functions"
 
 const MAX_CONTAINERS = 5
