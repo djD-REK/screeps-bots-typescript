@@ -5,7 +5,7 @@ import {
   getRoomNameBasedOnExitCoordinates,
   chooseDestination,
   moveToDestination,
-} from "helperFunctions"
+} from "helper_functions/helperFunctions"
 
 const DEBUG = false
 

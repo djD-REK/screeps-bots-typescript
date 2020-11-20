@@ -14,7 +14,7 @@ import {
   getRoomsFromRoomNamesIfVision,
   getAccessibleRoomNamesWithVision,
   getAccessibleRoomNamesWithoutVision,
-} from "helperFunctions"
+} from "helper_functions/helperFunctions"
 
 const MAX_CONTAINERS = 5
 
@@ -532,7 +532,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
       Game.spawns.Spawn1.room
     )
 
-    if (creepCounts.Fetcher < creepCounts.Miner && creepCounts.Fetcher < mineablePositionsCount/2) {
+    if (
+      creepCounts.Fetcher < creepCounts.Miner &&
+      creepCounts.Fetcher < mineablePositionsCount / 2
+    ) {
       // Brand new room, spawn mini creeps instead
       const role = "Fetcher"
       const creepName = generateCreepName(`Mini${role}`)

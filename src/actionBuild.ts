@@ -1,7 +1,7 @@
 import {
   getAccessibleAdjacentRoomNames,
   getRoomsFromRoomNamesIfVision,
-} from "helperFunctions"
+} from "helper_functions/helperFunctions"
 
 export const actionBuild = (creep: Creep) => {
   // Build a structure (i.e. a road) if we are close to one
