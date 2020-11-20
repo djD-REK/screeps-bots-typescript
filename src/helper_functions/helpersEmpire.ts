@@ -1,10 +1,9 @@
-import {
-  getMineablePositionsIncludingSurroundingRooms,
-  getAccessibleAdjacentRoomNames,
-} from "helper_functions"
-
 // Return [templates, targetCounts] based on
 // the controller level in the Spawn's room
+
+import { getMineablePositionsIncludingSurroundingRooms } from "./helpersMining"
+import { getAccessibleAdjacentRoomNames } from "./helpersRoomNames"
+
 // (aka RCL, room controller level)
 export const getCreepTemplatesAndTargetCounts = (currentRoom: Room) => {
   // Get the controller level (RCL) for this room

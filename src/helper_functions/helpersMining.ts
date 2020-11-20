@@ -1,4 +1,4 @@
-import { getAccessibleRoomNamesWithVision } from "helper_functions"
+import { getAccessibleRoomNamesWithVision } from "./helpersRoomNames"
 
 export const getMineablePositionsInAllRoomsWithVision = () => {
   const mineablePositions: RoomPosition[] = []

@@ -1,4 +1,4 @@
-import { chooseDestination } from "helper_functions"
+import { chooseDestination } from "./helpersDestinations"
 
 export const moveToDestination = (creep: Creep) => {
   // We have a destination in this room, so move to it

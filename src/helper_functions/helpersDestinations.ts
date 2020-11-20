@@ -1,13 +1,14 @@
-import {
-  getMineablePositionsInAllRoomsWithVision,
-  getAccessibleRoomNamesWithoutVision,
-  getAccessibleAdjacentRoomNames,
-  getAccessibleRoomNamesWithVision,
-} from "helper_functions"
-
 // TODO: Write jsDoc documentation for helper functions for my sanity:)
 // TODO: Move this to a helper function that gets reused in many creeps
 // Because it assigns them a destination in memory that is the closest
+
+import { getMineablePositionsInAllRoomsWithVision } from "./helpersMining"
+import {
+  getAccessibleRoomNamesWithoutVision,
+  getAccessibleAdjacentRoomNames,
+  getAccessibleRoomNamesWithVision,
+} from "./helpersRoomNames"
+
 // exit tile by path to go to the specified destination room
 export const assignDestination = (
   destinationRoomName: string,
