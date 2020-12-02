@@ -50,7 +50,10 @@ export const actionDeposit = (creep: Creep) => {
   if (targetDropOffSite != null) {
     // There is somewhere to drop it off in the current room
     const transferResult = creep.transfer(targetDropOffSite, RESOURCE_ENERGY)
-    if (transferResult === ERR_NOT_IN_RANGE) {
+    if (
+      transferResult === ERR_NOT_IN_RANGE ||
+      transferResult === ERR_NOT_ENOUGH_RESOURCES
+    ) {
       const moveResult = creep.moveTo(targetDropOffSite, {
         visualizePathStyle: VISUALIZE_PATH_STYLE,
         ignoreCreeps: Math.random() < 1 / 10 ? false : true,
