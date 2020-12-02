@@ -553,8 +553,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       // This is the average mineablePositions from rooms that we have vision in
       if (
         creepCounts.MiniFetcher < creepCounts.Miner &&
-        creepCounts.MiniFetcher < creepsPerRoom &&
-        creepCounts.Fetcher === 0
+        creepCounts.MiniFetcher < creepsPerRoom
       ) {
         // Brand new room, spawn mini creeps instead
         spawnResult = spawnCreep("MiniFetcher")
