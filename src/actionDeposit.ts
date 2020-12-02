@@ -1,3 +1,12 @@
+import { dropRight } from "lodash"
+
+export const dropIt = (creep: Creep, why: string = "") => {
+  console.log(`${creep.name} says, "Drop it!${why && " " + why}"`)
+  creep.say("DROP IT!")
+  // There's an issue, so let's drop our resources and mosey on
+  creep.drop(RESOURCE_ENERGY)
+}
+
 export const actionDeposit = (creep: Creep) => {
   // Find a drop off site and move to it
   const targetDropOffSite = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
@@ -23,14 +32,20 @@ export const actionDeposit = (creep: Creep) => {
   }*/
   if (targetDropOffSite != null) {
     // There is somewhere to drop it off in the current room
-    if (
-      creep.transfer(targetDropOffSite, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE
-    ) {
+    const transferResult = creep.transfer(targetDropOffSite, RESOURCE_ENERGY)
+    if (transferResult === ERR_NOT_IN_RANGE) {
       const moveResult = creep.moveTo(targetDropOffSite, {
         visualizePathStyle: { stroke: "#ffffff" },
         ignoreCreeps: false, // don't ignore creeps when depositing
         reusePath: 5, // reuse path for 5 turns
       })
+      if (moveResult === ERR_NO_PATH) {
+        //dropIt(creep, "There was no path. Let's try to leave.")
+      } else if (moveResult !== OK) {
+        console.log(`${creep.name} had move error ${moveResult}`)
+      }
+    } else if (transferResult !== OK) {
+      console.log(`${creep.name} had transfer error ${transferResult}`)
     }
   } else {
     // There is nowhere to drop it off in the current room
@@ -42,10 +57,7 @@ export const actionDeposit = (creep: Creep) => {
       creep.room === Game.spawns.Spawn1.room &&
       creep.pos.getRangeTo(Game.spawns.Spawn1.pos) < 3
     ) {
-      console.log("Drop it! There are 0 available targets in the home room.")
-      creep.say("DROP IT!")
-      // There's an issue, so let's drop our resources and mosey on
-      creep.drop(RESOURCE_ENERGY)
+      dropIt(creep, "There are 0 available targets in the home room.")
     }
   }
 }
