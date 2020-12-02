@@ -44,10 +44,18 @@ export const getMineablePositions = (room: Room) => {
   const activeSources = room.find(FIND_SOURCES)
   // Make an array of valid destinations to mine sources
   const mineablePositions: RoomPosition[] = []
+  const enemiesPresent: boolean =
+    room.find(FIND_HOSTILE_CREEPS).length >= 2 ||
+    room.find(FIND_HOSTILE_STRUCTURES).length >= 1
+  // Don't run lone scout, but run from 2+ enemies or any enemy structures
+  if (enemiesPresent) {
+    return mineablePositions // empty array []
+  }
   activeSources.forEach((source) => {
     const sourceX = source.pos.x
     const sourceY = source.pos.y
-    // Check for source keepers & their lairs
+    // Necessary for simulation mode to avoid source keeper mining:
+    // Check for source keepers & their lairs nearby
     const creepsLookArray = room.lookForAtArea(
       // lookForAtArea(type, top, left, bottom, right, [asArray])
       LOOK_CREEPS,
