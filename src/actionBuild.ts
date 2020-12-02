@@ -53,5 +53,7 @@ export const actionBuild = (creep: Creep) => {
           `Unexpected error in build routine: ${buildResult} by ${creep.name}`
         )
     }
+  } else {
+    console.log(`${creep.name} had no construction site anywhere`)
   }
 }

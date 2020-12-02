@@ -11,7 +11,7 @@ export const moveToDestination = (creep: Creep) => {
     {
       visualizePathStyle: VISUALIZE_PATH_STYLE,
       reusePath: 5,
-      maxRooms: 1,
+      // maxRooms: 1,
     }
   )
   switch (moveResult) {

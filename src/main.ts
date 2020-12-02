@@ -119,8 +119,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
       const pathToMineablePosition = Game.spawns.Spawn1.pos.findPathTo(
         mineablePosition,
         {
-          ignoreCreeps: true,
-          maxRooms: 1, // don't path through other rooms
+          ignoreCreeps: false, // maybe should be true for road planning,
+          // maxRooms: 1, // don't path through other rooms
         }
       )
       for (const [index, pathStep] of pathToMineablePosition.entries()) {
@@ -189,8 +189,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
     const controller = Game.spawns.Spawn1.room.controller
     if (controller) {
       const pathToController = Game.spawns.Spawn1.pos.findPathTo(controller, {
-        ignoreCreeps: true,
-        maxRooms: 1,
+        ignoreCreeps: false, // maybe should be true for road planning,
+        // maxRooms: 1,
       })
       for (const [index, pathStep] of pathToController.entries()) {
         if (index < pathToController.length - 4) {
@@ -256,7 +256,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
           {
             ignoreCreeps: false, // don't ignore creeps when pathing between mineable positions -- this should help traffic flow
             //swampCost: 1, // ignore swamps; we want to build on swamps
-            maxRooms: 1, // don't path through other rooms
+            // maxRooms: 1, // don't path through other rooms
           }
         )
         for (const [index, pathStep] of pathToMineablePositionTwo.entries()) {
@@ -285,8 +285,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
       const controller = Game.spawns.Spawn1.room.controller
       if (controller) {
         const pathToController = mineablePosition.findPathTo(controller, {
-          ignoreCreeps: true,
-          maxRooms: 1,
+          ignoreCreeps: false, // maybe should be true for road planning,
+          // maxRooms: 1,
         })
         for (const [index, pathStep] of pathToController.entries()) {
           if (index > 0 && index < pathToController.length - 4) {
@@ -350,8 +350,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
         const pathFromSpawnToMineablePosition = Game.spawns.Spawn1.pos.findPathTo(
           mineablePosition,
           {
-            ignoreCreeps: true,
-            maxRooms: 1, // Only plan roads in the Spawn's room on this loop
+            ignoreCreeps: false, // maybe should be true for road planning,
+            // maxRooms: 1, // Only plan roads in the Spawn's room on this loop
           }
         )
         for (const [
@@ -381,8 +381,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
         const pathFromMineablePositionToSpawn = mineablePosition.findPathTo(
           Game.spawns.Spawn1.pos,
           {
-            ignoreCreeps: true,
-            maxRooms: 1, // Search in the source's room, not the Spawn's room
+            ignoreCreeps: false, // maybe should be true for road planning,
+            // maxRooms: 1, // Search in the source's room, not the Spawn's room
           }
         )
         for (const [
