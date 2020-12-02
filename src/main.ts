@@ -549,10 +549,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
           sourceNumber: 0,
         },
       })
+    } else if (creepCounts.Upgrader < 1 && creepCounts.Miner > 0) {
+      // Always spawn an Upgrader when we have at least one Miner
+      spawnCreep("Upgrader")
     } else if (creepCounts.Miner < mineablePositionsCount) {
       spawnCreep("Miner")
-    } else if (creepCounts.Upgrader < 1) {
-      spawnCreep("Upgrader")
     } else if (creepCounts.Eye < mineablePositionsCount / 3) {
       spawnCreep("Eye")
     } else if (
@@ -563,6 +564,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
     } else if (creepCounts.Fetcher < mineablePositionsCount) {
       // normal size fetchers hopefully once roads are being built
       spawnCreep("Fetcher")
+    }
+    else if (creepCounts.Upgrader < mineablePositionsCount / 5) {
+      spawnCreep("Upgrader")
+    } else {
+      spawnCreep("Defender")
     }
 
     // TODO: Defense against creep invasion
