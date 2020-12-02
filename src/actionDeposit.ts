@@ -19,8 +19,11 @@ export const actionDeposit = (creep: Creep) => {
   ) // we can repair in a 3 range around us
   if (nearbyStructures.length > 0) {
     nearbyStructures.sort((a, b) => a.structure.hits - b.structure.hits)
-    creep.repair(nearbyStructures[0].structure)
-    // targets.sort((a,b) => a.hits - b.hits);
+    const repairResult = creep.repair(nearbyStructures[0].structure)
+    if (repairResult !== OK) {
+      console.log(`${creep.name} had repair error: ${repairResult}`)
+    }
+    creep.say("🔧Repair!🛠")
   }
   // Find a drop off site and move to it
   const targetDropOffSite = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
