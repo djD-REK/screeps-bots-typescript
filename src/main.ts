@@ -563,7 +563,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
         spawnResult = spawnCreep("Upgrader")
       } else if (
         creepCounts.Miner < creepsPerRoom * 2 &&
-        creepsPerRoom * 2 < mineablePositionsCount
+        creepCounts.Miner < mineablePositionsCount
       ) {
         // spawn twice as many miners as we should per-room
         // until we hit mineable positions (the max miners)
