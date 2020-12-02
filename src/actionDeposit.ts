@@ -51,7 +51,7 @@ export const actionDeposit = (creep: Creep) => {
       })
       if (moveResult === ERR_NO_PATH) {
         dropIt(creep, "There was no path. Let's try to leave.")
-      } else if (moveResult !== OK) {
+      } else if (moveResult !== OK && moveResult !== ERR_TIRED) {
         console.log(`${creep.name} had move error ${moveResult}`)
       }
     } else if (transferResult !== OK) {
