@@ -14,6 +14,7 @@ import {
   getMineablePositionsInAllRoomsWithVision,
   getMineablePositions,
 } from "helper_functions"
+import { getCreepTemplatesAndTargetCounts } from "helper_functions/helpersEmpire"
 
 const MAX_CONTAINERS = 5
 
@@ -560,7 +561,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
       } else if (creepCounts.Upgrader < 1 && creepCounts.Miner > 0) {
         // Always spawn an Upgrader when we have at least one Miner
         spawnResult = spawnCreep("Upgrader")
-      } else if (creepCounts.Miner < creepsPerRoom) {
+      } else if (
+        creepCounts.Miner < creepsPerRoom * 2 &&
+        creepsPerRoom * 2 < mineablePositionsCount
+      ) {
+        // spawn twice as many miners as we should per-room
+        // until we hit mineable positions (the max miners)
         spawnResult = spawnCreep("Miner")
       } else if (creepCounts.Eye < creepsPerRoom / 3) {
         spawnResult = spawnCreep("Eye")
