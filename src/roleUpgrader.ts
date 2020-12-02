@@ -15,23 +15,25 @@ export const roleUpgrader = {
       }
     }
     if (creep.memory.state === "UPGRADE") {
-      if (creep.room.controller === undefined) {
-        // No controller in the current room
-        creep.say("THINK")
-        creep.memory.state = "THINK"
-      } else {
+      const targetController = creep.room.controller
+        ? creep.room.controller
+        : Game.spawns.Spawn1.room.controller
+      if (targetController) {
         if (creep.store.getUsedCapacity() === 0) {
           creep.say("🚶 FILL UP")
           creep.memory.state = "FILL UP"
         } else {
-          if (
-            creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE
-          ) {
-            creep.moveTo(creep.room.controller, {
+          if (creep.upgradeController(targetController) === ERR_NOT_IN_RANGE) {
+            creep.moveTo(targetController, {
               visualizePathStyle: { stroke: "#ffffff" },
             })
           }
         }
+      } else {
+        // No controller in the current room
+        creep.say("THINK")
+        creep.memory.state = "THINK"
+        console.log(`${creep.name} with role ${creep.memory.role} had to THINK`)
       }
     }
   },
