@@ -536,36 +536,44 @@ export const loop = ErrorMapper.wrapLoop(() => {
       Game.spawns.Spawn1.room
     )
 
-    if (
-      creepCounts.MiniFetcher < creepCounts.Miner &&
-      creepCounts.MiniFetcher < mineablePositionsCount &&
-      creepCounts.Fetcher === 0
-    ) {
-      // Brand new room, spawn mini creeps instead
-      spawnCreep("MiniFetcher")
-    } else if (creepCounts.Upgrader < 1 && creepCounts.Miner > 0) {
-      // Always spawn an Upgrader when we have at least one Miner
-      spawnCreep("Upgrader")
-    } else if (creepCounts.Miner < mineablePositionsCount) {
-      spawnCreep("Miner")
-    } else if (creepCounts.Eye < mineablePositionsCount / 3) {
-      spawnCreep("Eye")
-    } else if (creepCounts.Upgrader < mineablePositionsCount / 5) {
-      spawnCreep("Upgrader")
-    } else if (
-      creepCounts.Builder < mineablePositionsCount &&
-      constructionSiteCount > 0
-    ) {
-      spawnCreep("Builder")
-    } else if (creepCounts.Fetcher < mineablePositionsCount) {
-      // normal size fetchers hopefully once roads are being built
-      spawnCreep("Fetcher")
-    } else {
-      spawnCreep("Defender")
-    }
+    // Spawn creeps on a "per-room" basis, 5 at a time
+    const visibleRooms = Array.from(Object.values(Game.rooms))
+    const roomCount = visibleRooms.length
+    let creepsPerRoom = 0
+    while (creepsPerRoom < mineablePositionsCount) {
+      creepsPerRoom += mineablePositionsCount / roomCount
+      // This is the average mineablePositions from rooms that we have vision in
+      if (
+        creepCounts.MiniFetcher < creepCounts.Miner &&
+        creepCounts.MiniFetcher < creepsPerRoom &&
+        creepCounts.Fetcher === 0
+      ) {
+        // Brand new room, spawn mini creeps instead
+        spawnCreep("MiniFetcher")
+      } else if (creepCounts.Upgrader < 1 && creepCounts.Miner > 0) {
+        // Always spawn an Upgrader when we have at least one Miner
+        spawnCreep("Upgrader")
+      } else if (creepCounts.Miner < creepsPerRoom) {
+        spawnCreep("Miner")
+      } else if (creepCounts.Eye < creepsPerRoom / 3) {
+        spawnCreep("Eye")
+      } else if (creepCounts.Upgrader < creepsPerRoom / 5) {
+        spawnCreep("Upgrader")
+      } else if (
+        creepCounts.Builder < creepsPerRoom &&
+        constructionSiteCount > 0
+      ) {
+        spawnCreep("Builder")
+      } else if (creepCounts.Fetcher < creepsPerRoom) {
+        // normal size fetchers hopefully once roads are being built
+        spawnCreep("Fetcher")
+      } else {
+        spawnCreep("Defender")
+      }
 
-    // TODO: Defense against creep invasion
-    // else if (creepCounts.Defender < 3) {      spawnCreep("Defender")    }
+      // TODO: Defense against creep invasion
+      // else if (creepCounts.Defender < 3) {      spawnCreep("Defender")    }
+    }
   }
 
   // Run all creeps
