@@ -9,11 +9,12 @@ export const dropIt = (creep: Creep, why: string = "") => {
 
 export const actionDeposit = (creep: Creep) => {
   // Repair the structure around us with the lowest HP
+  // TODO fix out of bounds errors
   const nearbyStructures = creep.room.lookForAtArea(
     "structure",
     creep.pos.y + 3,
     creep.pos.x - 3,
-    creep.pos.y + 3,
+    creep.pos.y - 3,
     creep.pos.x + 3,
     true
   ) // we can repair in a 3 range around us
