@@ -479,9 +479,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
   // WIP: Check every 10 turns
   const SPAWN_A_CREEP_EVERY_X_TURNS = 10
   if (
-    Game.time % SPAWN_A_CREEP_EVERY_X_TURNS === 0 &&
-    Game.spawns.Spawn1.room.energyAvailable >= 100 &&
-    Game.spawns.Spawn1.spawning === null
+    Game.spawns.Spawn1.spawning === null &&
+    (Game.spawns.Spawn1.room.energyAvailable >= 300 ||
+      (Game.time % SPAWN_A_CREEP_EVERY_X_TURNS === 0 &&
+        Game.spawns.Spawn1.room.energyAvailable >= 100))
   ) {
     // Count mineable positions in all rooms with vision
     let mineablePositionsCount = getMineablePositionsInAllRoomsWithVision()
