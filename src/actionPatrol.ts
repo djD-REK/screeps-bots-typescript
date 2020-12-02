@@ -3,7 +3,7 @@ const randomDestination = (creep: Creep) => {
   const y = Math.floor(Math.random() * 49) + 1
   creep.memory.destination.x = x
   creep.memory.destination.y = y
-  console.log(`${creep.name} assigned new destination: ${x} ${y}`)
+  console.log(`${creep.name} assigned new destination: (${x},${y})`)
 }
 
 export const actionPatrol = (creep: Creep) => {
@@ -30,10 +30,6 @@ export const actionPatrol = (creep: Creep) => {
     ).length > 0
   ) {
     // We either arrived or there's a creep at our destination
-    randomDestination(creep)
-    console.log(
-      `${creep.name} chose new destination: ${creep.memory.destination.x} ${creep.memory.destination.y}`
-    )
   } else {
     // Get to moving
     const moveResult = creep.moveTo(
