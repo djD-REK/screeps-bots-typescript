@@ -3,7 +3,7 @@ import { assignDestinationForMining, chooseDestination } from "helper_functions"
 
 export const roleMiner = {
   run(creep: Creep) {
-    if (creep.memory.state === "THINK" || creep.memory.state === "OFF") {
+    if (creep.memory.state === "THINK") {
       creep.say("🚶 MINE")
       creep.memory.state = "MINE"
       const unoccupiedMineablePositionsInThisRoom = assignDestinationForMining(
