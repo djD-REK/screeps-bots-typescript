@@ -8,7 +8,9 @@ export const actionFillUp = (creep: Creep) => {
   )[0]
   if (resourceAtCurrentPosition) {
     const pickupResult = creep.pickup(resourceAtCurrentPosition)
-    if (pickupResult !== OK) {
+    if (pickupResult === ERR_FULL) {
+      // ignore this error, happens occasionally for unknown reason
+    } else if (pickupResult !== OK) {
       console.log(`Creep ${creep.name} had pickup error ${pickupResult}`)
     }
   } else {
