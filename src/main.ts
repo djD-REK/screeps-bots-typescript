@@ -449,7 +449,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   // Constants and initializations
   // Define roles
   const creepRoles = [
-    "Harvester",
+    "MiniFetcher",
     "Miner",
     "Fetcher",
     "Upgrader",
@@ -458,6 +458,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     "Eye",
   ]
   const creepTemplates: { [role: string]: BodyPartConstant[] } = {
+    MiniFetcher: [MOVE, CARRY], // 100
     Miner: [WORK, WORK, MOVE], // 250
     Fetcher: [MOVE, CARRY, CARRY, CARRY, CARRY], // 250
     Upgrader: [WORK, MOVE, CARRY, CARRY, CARRY], // 300
@@ -532,23 +533,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
     )
 
     if (
-      creepCounts.Fetcher < creepCounts.Miner &&
-      creepCounts.Fetcher < mineablePositionsCount / 2
+      creepCounts.MiniFetcher < creepCounts.Miner &&
+      creepCounts.MiniFetcher < mineablePositionsCount / 2
     ) {
       // Brand new room, spawn mini creeps instead
-      const role = "Fetcher"
-      const creepName = generateCreepName(`Mini${role}`)
-      console.log(`Spawning new creep: ${creepName}`)
-      // Mini fetcher: 100 energy
-      Game.spawns.Spawn1.spawnCreep([MOVE, CARRY], creepName, {
-        memory: {
-          role,
-          room: Game.spawns.Spawn1.room.name,
-          state: "THINK",
-          destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
-          sourceNumber: 0,
-        },
-      })
+      spawnCreep("MiniFetcher")
     } else if (creepCounts.Upgrader < 1 && creepCounts.Miner > 0) {
       // Always spawn an Upgrader when we have at least one Miner
       spawnCreep("Upgrader")
@@ -588,6 +577,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
             roleMiner.run(creep)
             break
           case "Fetcher":
+          // no break
+          case "MiniFetcher":
             roleFetcher.run(creep)
             break
           case "Upgrader":
