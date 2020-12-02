@@ -475,8 +475,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }
 
   // Generate some creeps
-  // TODO : Smarter energy check (300)
+  // TODO: Smarter energy check (300)
+  // WIP: Check every 10 turns
+  const SPAWN_A_CREEP_EVERY_X_TURNS = 10
   if (
+    Game.time % SPAWN_A_CREEP_EVERY_X_TURNS === 0 &&
     Game.spawns.Spawn1.room.energyAvailable >= 100 &&
     Game.spawns.Spawn1.spawning === null
   ) {
