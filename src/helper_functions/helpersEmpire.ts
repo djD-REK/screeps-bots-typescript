@@ -47,6 +47,8 @@ export const getCreepTemplatesAndTargetCounts = (currentRoom: Room) => {
   --> 5 extensions = 550 capacity total for a creep
   RCL 3 (45,000 energy): Roads, 5 Containers, 1 Spawn, 10 Extensions (50 capacity), Ramparts (1M max hits), Walls, 1 Tower
   --> 10 extensions = 800 capacity total for a creep */
+  // TODO
+  // CLAIM parts cost 600, so at RCL 3 can build claim creeps
   /* EMPIRE PLANNING
   RCL 1: Build "mini creeps"; upgrade to RCL 2
   RCL 2: Build containers & extensions, then roads; upgrade to RCL 3
