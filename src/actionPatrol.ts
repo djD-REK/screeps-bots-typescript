@@ -33,8 +33,11 @@ export const actionPatrol = (creep: Creep) => {
   } else {
     // Get to moving
     const moveResult = creep.moveTo(
-      creep.memory.destination.x,
-      creep.memory.destination.y,
+      new RoomPosition(
+        creep.memory.destination.x,
+        creep.memory.destination.y,
+        creep.memory.destination.roomName
+      ),
       {
         visualizePathStyle: { stroke: "#ffaa00" },
         reusePath: 5, // Disable path reuse; TODO This uses a lot of CPU
