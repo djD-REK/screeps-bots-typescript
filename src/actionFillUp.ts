@@ -1,17 +1,46 @@
 import { lookup } from "dns"
 
 export const actionFillUp = (creep: Creep) => {
-  const resourceAtCurrentPosition = creep.room.lookForAt(
+  // Look for tombstones around current position
+  const tombstonesAtCurrentPosition = creep.room.lookForAtArea(
+    "tombstone",
+    creep.pos.y + 1,
+    creep.pos.x - 1,
+    creep.pos.y - 1,
+    creep.pos.x + 1,
+    true
+  )
+  if (tombstonesAtCurrentPosition.length > 0) {
+    for (const aTombstone of tombstonesAtCurrentPosition) {
+      const { tombstone } = aTombstone
+      if (tombstone.store.energy > 0) {
+        const withdrawResult = creep.withdraw(tombstone, RESOURCE_ENERGY)
+        if (withdrawResult !== OK) {
+          console.log(
+            `Creep ${creep.name} had tombstone withdrawal error ${withdrawResult}`
+          )
+        }
+      }
+    }
+  }
+
+  // Look for resources dropped around current position
+  const resourcesAtCurrentPosition = creep.room.lookForAtArea(
     "resource",
-    creep.pos.x,
-    creep.pos.y
-  )[0]
-  if (resourceAtCurrentPosition) {
-    const pickupResult = creep.pickup(resourceAtCurrentPosition)
-    if (pickupResult === ERR_FULL) {
-      // ignore this error, happens occasionally for unknown reason
-    } else if (pickupResult !== OK) {
-      console.log(`Creep ${creep.name} had pickup error ${pickupResult}`)
+    creep.pos.y + 1,
+    creep.pos.x - 1,
+    creep.pos.y - 1,
+    creep.pos.x + 1,
+    true
+  )
+  if (resourcesAtCurrentPosition.length > 0) {
+    for (const aResource of resourcesAtCurrentPosition) {
+      const pickupResult = creep.pickup(aResource.resource)
+      if (pickupResult === ERR_FULL) {
+        // ignore this error, happens occasionally for unknown reason
+      } else if (pickupResult !== OK) {
+        console.log(`Creep ${creep.name} had pickup error ${pickupResult}`)
+      }
     }
   }
   // no else, always do the following
@@ -89,6 +118,8 @@ export const actionFillUp = (creep: Creep) => {
           creep.moveTo(targetFillUpSite, {
             visualizePathStyle: { stroke: "#ffaa00" },
           })
+        } else if (pickupResult === ERR_FULL) {
+          // ignore this error
         } else if (pickupResult !== OK) {
           console.log(`Creep ${creep.name} had pickup error ${pickupResult}`)
         }
