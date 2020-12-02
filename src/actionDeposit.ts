@@ -76,13 +76,16 @@ export const actionDeposit = (creep: Creep) => {
     }
   } else {
     // There is nowhere to drop it off in the current room
-    // Move to within 5 tiles of the spawn. Then we drop it if everything is full
+    // Move to within MAX_RANGE_TO_DROP_IT of the spawn.
+    // Then we drop it if everything is full
     creep.moveTo(Game.spawns.Spawn1.pos, {
       visualizePathStyle: { stroke: "#ffffff" },
     })
+    const MAX_RANGE_TO_DROP_IT = 2
+    // a small number concentrates drops around the spawn
     if (
       creep.room === Game.spawns.Spawn1.room &&
-      creep.pos.getRangeTo(Game.spawns.Spawn1.pos) < 3
+      creep.pos.getRangeTo(Game.spawns.Spawn1.pos) < MAX_RANGE_TO_DROP_IT
     ) {
       dropIt(creep, "There are 0 available targets in the home room.")
     }
