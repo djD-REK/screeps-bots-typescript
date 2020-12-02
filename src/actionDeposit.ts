@@ -11,10 +11,10 @@ export const actionDeposit = (creep: Creep) => {
   // Repair the structure around us with the lowest HP
   // TODO fix out of bounds errors (map is 0-49)
   const nearbyStructures = creep.room.lookForAtArea(
-    "structure",
-    creep.pos.y + 3,
-    creep.pos.x - 3,
+    LOOK_STRUCTURES,
     creep.pos.y - 3,
+    creep.pos.x - 3,
+    creep.pos.y + 3,
     creep.pos.x + 3,
     true
   ) // we can repair in a 3 range around us
