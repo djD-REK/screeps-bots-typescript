@@ -27,6 +27,10 @@ export const roleDefender = {
         }
       }
       if (creep.memory.state === "TRANSIT") {
+        if (!Game.rooms[creep.memory.destination.roomName]) {
+          // we don't have vision of the destination
+          creep.memory.state = "THINK"
+        }
         moveToDestination(creep)
         if (creep.room.name === creep.memory.destination.roomName) {
           creep.memory.state = "GUARD"
