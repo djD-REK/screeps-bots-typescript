@@ -14,6 +14,10 @@ export const actionMine = (creep: Creep) => {
         case OK: // The operation has been scheduled successfully.
         case ERR_NOT_ENOUGH_RESOURCES: // The target does not contain any harvestable energy or mineral.
           break
+        // Suicide cases
+        case ERR_NO_BODYPART: // There are no WORK body parts in this creep’s body.
+          creep.suicide() // Got damaged by a creep and lost my WORK part
+          break
         // Unhandled cases
         case ERR_NOT_IN_RANGE: // The target is too far away.
         case ERR_NOT_OWNER: // You are not the owner of this creep, or the room controller is owned or reserved by another player.
@@ -21,7 +25,6 @@ export const actionMine = (creep: Creep) => {
         case ERR_NOT_FOUND: // Extractor not found. You must build an extractor structure to harvest minerals.
         case ERR_INVALID_TARGET: // The target is not a valid source or mineral object.
         case ERR_TIRED: // The extractor or the deposit is still cooling down.
-        case ERR_NO_BODYPART: // There are no WORK body parts in this creep’s body.
         default:
           console.log(
             `${creep.name} had an unexpected error in harvest routine: ${harvestResult}`
@@ -66,9 +69,7 @@ export const actionMine = (creep: Creep) => {
       // Reset state to THINK cases (MINE --> THINK state transition)
       case ERR_NO_PATH: // No path to the target could be found.
         // (There are probably creeps in the way)
-        console.log(
-          `${creep.name} ERR_NO_PATH in move routine; MINE --> THINK`
-        )
+        console.log(`${creep.name} ERR_NO_PATH in move routine; MINE --> THINK`)
         creep.memory.state = "THINK"
         break
       // Unhandled cases
