@@ -30,6 +30,7 @@ export const actionPatrol = (creep: Creep) => {
     ).length > 0
   ) {
     // We either arrived or there's a creep at our destination
+    randomDestination(creep)
   } else {
     // Get to moving
     const moveResult = creep.moveTo(

@@ -24,6 +24,9 @@ export const roleDefender = {
           creep.memory.destination.y = myMiner.pos.y
           creep.memory.destination.roomName = myMiner.pos.roomName
           creep.memory.state = "TRANSIT"
+          console.log(
+            `${creep.name} assigned to destination creep ${myMiner.name} at ${myMiner.pos.x},${myMiner.pos.y} in ${myMiner.room.name}`
+          )
         }
       }
       if (creep.memory.state === "TRANSIT") {
