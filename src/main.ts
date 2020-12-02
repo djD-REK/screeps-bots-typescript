@@ -574,7 +574,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       } else if (creepCounts.Fetcher < creepsPerRoom) {
         // normal size fetchers hopefully once roads are being built
         spawnResult = spawnCreep("Fetcher")
-      } else {
+      } else if (creepCounts.Defender < creepsPerRoom) {
         spawnResult = spawnCreep("Defender")
       }
 
