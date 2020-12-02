@@ -36,8 +36,10 @@ export const actionDeposit = (creep: Creep) => {
     if (transferResult === ERR_NOT_IN_RANGE) {
       const moveResult = creep.moveTo(targetDropOffSite, {
         visualizePathStyle: { stroke: "#ffffff" },
-        ignoreCreeps: false, // don't ignore creeps when depositing
-        reusePath: 5, // reuse path for 5 turns
+        ignoreCreeps: false,
+        // don't ignore creeps when depositing (default is false)
+        reusePath: 5,
+        // reuse path for 5 turns (default is 5)
       })
       if (moveResult === ERR_NO_PATH) {
         dropIt(creep, "There was no path. Let's try to leave.")
