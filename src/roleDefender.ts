@@ -6,6 +6,7 @@ export const roleDefender = {
     const target = creep.pos.findClosestByRange(FIND_HOSTILE_CREEPS)
     if (target) {
       creep.say("⚔️ attacking")
+      console.log(`⚔️ attacking ⚔️ ${creep.name} ⚔️ ${target}`)
       if (creep.attack(target) === ERR_NOT_IN_RANGE) {
         creep.moveTo(target)
       }
