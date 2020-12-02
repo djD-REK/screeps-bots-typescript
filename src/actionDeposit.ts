@@ -40,7 +40,7 @@ export const actionDeposit = (creep: Creep) => {
         reusePath: 5, // reuse path for 5 turns
       })
       if (moveResult === ERR_NO_PATH) {
-        //dropIt(creep, "There was no path. Let's try to leave.")
+        dropIt(creep, "There was no path. Let's try to leave.")
       } else if (moveResult !== OK) {
         console.log(`${creep.name} had move error ${moveResult}`)
       }
