@@ -130,6 +130,8 @@ export const chooseDestination = (creep: Creep) => {
 }
 
 export const assignDestinationForMining = (creep: Creep) => {
+  const DEBUG = false
+
   const mineablePositions: RoomPosition[] = getMineablePositionsInAllRoomsWithVision()
   // TODO Count occupied mineable position in each surrounding room
   // Select an array of creeps with assigned destinations in this room:
@@ -140,7 +142,7 @@ export const assignDestinationForMining = (creep: Creep) => {
       creepName !== creep.name
   )
 
-  console.log("Found miners:" + miners.length)
+  DEBUG && console.log("Found miners:" + miners.length)
 
   // TODO refactor to Set or Map
   const occupiedMineablePositions: RoomPosition[] = []
@@ -162,7 +164,7 @@ export const assignDestinationForMining = (creep: Creep) => {
       )
     )
   })
-  console.log(`Mineable: ${mineablePositions.length}`)
+  DEBUG && console.log(`Mineable: ${mineablePositions.length}`)
 
   // Use a Map object to filter out all the occupied positions
   const unoccupiedMineableMap = new Map<string, boolean>()
@@ -197,8 +199,8 @@ export const assignDestinationForMining = (creep: Creep) => {
     }
   }
 
-  console.log(`Occupied: ${occupiedMineablePositions.length}`)
-  console.log(`Unoccupied: ${unoccupiedMineablePositions.length}`)
+  DEBUG && console.log(`Occupied: ${occupiedMineablePositions.length}`)
+  DEBUG && console.log(`Unoccupied: ${unoccupiedMineablePositions.length}`)
 
   // The array mineablePositions now only includes available positions
   if (unoccupiedMineablePositions.length === 0) {
