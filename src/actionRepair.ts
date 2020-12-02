@@ -7,7 +7,7 @@ export const actionRepair = (creep: Creep) => {
     creep,
     REPAIR_OFFSET,
     LOOK_STRUCTURES
-  )
+  ).filter((result) => result.structure.hits < result.structure.hitsMax)
   if (nearbyStructures.length > 0) {
     nearbyStructures.sort((a, b) => a.structure.hits - b.structure.hits)
     const repairResult = creep.repair(nearbyStructures[0].structure)
