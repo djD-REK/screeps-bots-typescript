@@ -13,7 +13,10 @@ export const actionFillUp = (creep: Creep) => {
     } else if (pickupResult !== OK) {
       console.log(`Creep ${creep.name} had pickup error ${pickupResult}`)
     }
-  } else {
+  }
+  // no else, always do the following
+  // without else: creeps will pick up at their location & try to move
+  {
     // We should compare the amount of all energy sources in the room
     // Specifically: dropped resources and energy stored in containers
     const allEnergySources: (StructureContainer | Resource)[] = []
