@@ -15,9 +15,13 @@ export const roleUpgrader = {
       }
     }
     if (creep.memory.state === "UPGRADE") {
-      const targetController = creep.room.controller
-        ? creep.room.controller
-        : Game.spawns.Spawn1.room.controller
+      const targetController =
+        creep.room.controller &&
+        creep.room.controller.owner &&
+        creep.room.controller.owner.username === "djD-REK"
+          ? creep.room.controller
+          : Game.spawns.Spawn1.room.controller
+      // Only target my controllers
       if (targetController) {
         if (creep.store.getUsedCapacity() === 0) {
           creep.say("🚶 FILL UP")
