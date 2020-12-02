@@ -1,21 +1,4 @@
-export const RANDOM_COLOR = () => {
-  const COLORS_ARRAY = ["blue", "orange", "red", "green", "black", "white"]
-  return COLORS_ARRAY[Math.floor(Math.random() * COLORS_ARRAY.length)]
-}
-
-/*
- *https://docs.screeps.com/api/#RoomVisual.poly
- */
-export const VISUALIZE_PATH_STYLE: PolyStyle = {
-  fill: RANDOM_COLOR(),
-  stroke: RANDOM_COLOR(),
-  // These lineStyle properties don't work:
-  // lineStyle: undefined, // the default
-  // lineStyle: "dashed",
-  // lineStyle: "dotted",
-  strokeWidth: 0.15,
-  opacity: 0.1,
-}
+import { VISUALIZE_PATH_STYLE } from "./helper_functions/RANDOM_COLOR"
 
 export const dropIt = (creep: Creep, why: string = "") => {
   console.log(`${creep.name} says, "Drop it!${why && " " + why}"`)

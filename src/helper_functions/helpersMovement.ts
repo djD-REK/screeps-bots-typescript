@@ -1,23 +1,15 @@
 import { chooseDestination } from "./helpersDestinations"
+import { VISUALIZE_PATH_STYLE } from "./RANDOM_COLOR"
 
 export const moveToDestination = (creep: Creep) => {
-  // We have a destination in this room, so move to it
-  const COLORS_ARRAY = [
-    "red",
-    "orange",
-    "yellow",
-    "green",
-    "blue",
-    "purple",
-    "white",
-  ]
-  const randomColor =
-    COLORS_ARRAY[Math.floor(Math.random() * COLORS_ARRAY.length)]
   const moveResult = creep.moveTo(
-    creep.memory.destination.x,
-    creep.memory.destination.y,
+    new RoomPosition(
+      creep.memory.destination.x,
+      creep.memory.destination.y,
+      creep.memory.destination.roomName
+    ),
     {
-      visualizePathStyle: { stroke: randomColor },
+      visualizePathStyle: VISUALIZE_PATH_STYLE,
       reusePath: 5,
       maxRooms: 1,
     }
