@@ -8,6 +8,20 @@ export const dropIt = (creep: Creep, why: string = "") => {
 }
 
 export const actionDeposit = (creep: Creep) => {
+  // Repair the structure around us with the lowest HP
+  const nearbyStructures = creep.room.lookForAtArea(
+    "structure",
+    creep.pos.y + 3,
+    creep.pos.x - 3,
+    creep.pos.y + 3,
+    creep.pos.x + 3,
+    true
+  ) // we can repair in a 3 range around us
+  if (nearbyStructures.length > 0) {
+    nearbyStructures.sort((a, b) => a.structure.hits - b.structure.hits)
+    creep.repair(nearbyStructures[0].structure)
+    // targets.sort((a,b) => a.hits - b.hits);
+  }
   // Find a drop off site and move to it
   const targetDropOffSite = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
     filter: (structure) => {
