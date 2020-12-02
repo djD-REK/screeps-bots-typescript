@@ -1,14 +1,12 @@
-import { lookup } from "dns"
+import { lookForAtAreaWithOffset } from "helper_functions"
 
 export const actionFillUp = (creep: Creep) => {
   // Look for tombstones around current position
-  const tombstonesAtCurrentPosition = creep.room.lookForAtArea(
-    "tombstone",
-    creep.pos.y - 1,
-    creep.pos.x - 1,
-    creep.pos.y + 1,
-    creep.pos.x + 1,
-    true
+  const TOMBSTONE_OFFSET = 1 // we can withdraw from adjacent tombstones
+  const tombstonesAtCurrentPosition = lookForAtAreaWithOffset(
+    creep,
+    TOMBSTONE_OFFSET,
+    LOOK_TOMBSTONES
   )
   if (tombstonesAtCurrentPosition.length > 0) {
     for (const aTombstone of tombstonesAtCurrentPosition) {
@@ -24,13 +22,11 @@ export const actionFillUp = (creep: Creep) => {
     }
   } else {
     // Look for resources dropped around current position
-    const resourcesAtCurrentPosition = creep.room.lookForAtArea(
-      "resource",
-      creep.pos.y - 1,
-      creep.pos.x - 1,
-      creep.pos.y + 1,
-      creep.pos.x + 1,
-      true
+    const RESOURCE_OFFSET = 1 // we can pickup adjacent resources
+    const resourcesAtCurrentPosition = lookForAtAreaWithOffset(
+      creep,
+      RESOURCE_OFFSET,
+      LOOK_RESOURCES
     )
     if (resourcesAtCurrentPosition.length > 0) {
       for (const aResource of resourcesAtCurrentPosition) {
