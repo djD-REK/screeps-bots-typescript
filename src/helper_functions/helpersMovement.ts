@@ -23,6 +23,7 @@ export const moveToDestination = (creep: Creep) => {
     // Change source case (There are probably creeps in the way)
     case ERR_NO_PATH: // No path to the target could be found.
       chooseDestination(creep)
+      console.log(`${creep.name} had ERR_NO_PATH in move routine`)
       break
     // Unhandled cases
     case ERR_NOT_OWNER: // You are not the owner of this creep.
