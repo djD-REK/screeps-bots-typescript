@@ -4,9 +4,9 @@ export const actionFillUp = (creep: Creep) => {
   // Look for tombstones around current position
   const tombstonesAtCurrentPosition = creep.room.lookForAtArea(
     "tombstone",
-    creep.pos.y + 1,
-    creep.pos.x - 1,
     creep.pos.y - 1,
+    creep.pos.x - 1,
+    creep.pos.y + 1,
     creep.pos.x + 1,
     true
   )
@@ -26,9 +26,9 @@ export const actionFillUp = (creep: Creep) => {
     // Look for resources dropped around current position
     const resourcesAtCurrentPosition = creep.room.lookForAtArea(
       "resource",
-      creep.pos.y + 1,
-      creep.pos.x - 1,
       creep.pos.y - 1,
+      creep.pos.x - 1,
+      creep.pos.y + 1,
       creep.pos.x + 1,
       true
     )
