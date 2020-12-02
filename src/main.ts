@@ -551,6 +551,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
       })
     } else if (creepCounts.Miner < mineablePositionsCount) {
       spawnCreep("Miner")
+    } else if (creepCounts.Upgrader < 1) {
+      spawnCreep("Upgrader")
     } else if (creepCounts.Eye < mineablePositionsCount / 3) {
       spawnCreep("Eye")
     } else if (
@@ -558,8 +560,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
       constructionSiteCount > 0
     ) {
       spawnCreep("Builder")
-    } else if (creepCounts.Upgrader < 1) {
-      spawnCreep("Upgrader")
     } else if (creepCounts.Fetcher < mineablePositionsCount) {
       // normal size fetchers hopefully once roads are being built
       spawnCreep("Fetcher")
