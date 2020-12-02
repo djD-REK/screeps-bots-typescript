@@ -23,10 +23,13 @@ export const roleUpgrader = {
           creep.say("🚶 FILL UP")
           creep.memory.state = "FILL UP"
         } else {
-          if (creep.upgradeController(targetController) === ERR_NOT_IN_RANGE) {
+          const upgradeResult = creep.upgradeController(targetController)
+          if (upgradeResult === ERR_NOT_IN_RANGE) {
             creep.moveTo(targetController, {
               visualizePathStyle: { stroke: "#ffffff" },
             })
+          } else if (upgradeResult !== OK) {
+            console.log(`${creep.name} had upgrade error ${upgradeResult}`)
           }
         }
       } else {
