@@ -583,13 +583,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
       } else if (creepCounts.Defender < creepsPerRoom) {
         spawnResult = spawnCreep("Defender")
       }
-      console.log(
-        `creepsPerRoom is ${creepsPerRoom} of ${mineablePositionsCount} mineable positions`
-      )
-
       // TODO: Defense against creep invasion
       // else if (creepCounts.Defender < 3) {      spawnCreep("Defender")    }
     }
+    console.log(
+      `creepsPerRoom is ${creepsPerRoom} of ${mineablePositionsCount} mineable positions`
+    )
   }
 
   // Run all creeps
