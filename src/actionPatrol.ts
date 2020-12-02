@@ -1,4 +1,4 @@
-const changeDestination = (creep: Creep) => {
+const randomDestination = (creep: Creep) => {
   const x = Math.floor(Math.random() * 49) + 1
   const y = Math.floor(Math.random() * 49) + 1
   creep.memory.destination.x = x
@@ -17,17 +17,23 @@ export const actionPatrol = (creep: Creep) => {
     case TERRAIN_MASK_WALL:
     case TERRAIN_MASK_SWAMP:
     default:
-      changeDestination(creep)
+      randomDestination(creep)
   }
 
   if (
-    creep.memory.destination.x === creep.pos.x &&
-    creep.memory.destination.y === creep.pos.y
+    (creep.memory.destination.x === creep.pos.x &&
+      creep.memory.destination.y === creep.pos.y) ||
+    creep.room.lookForAt(
+      "creep",
+      creep.memory.destination.x,
+      creep.memory.destination.y
+    ).length > 0
   ) {
+    // We either arrived or there's a creep at our destination
+    randomDestination(creep)
     console.log(
-      `${creep.name} arrived at destination: {creep.pos.x} {creep.pos.y}`
+      `${creep.name} chose new destination: ${creep.memory.destination.x} ${creep.memory.destination.y}`
     )
-    changeDestination(creep)
   } else {
     // Get to moving
     const moveResult = creep.moveTo(
@@ -45,7 +51,7 @@ export const actionPatrol = (creep: Creep) => {
         break // Do nothing
       // Change source case (There are probably creeps in the way)
       case ERR_NO_PATH: // No path to the target could be found.
-        changeDestination(creep)
+        randomDestination(creep)
         break
       // Unhandled cases
       case ERR_NOT_OWNER: // You are not the owner of this creep.
