@@ -39,7 +39,7 @@ export const actionDeposit = (creep: Creep) => {
     ) {
       const moveResult = creep.moveTo(targetDropOffSite, {
         visualizePathStyle: VISUALIZE_PATH_STYLE,
-        ignoreCreeps: Math.random() < 1 / 10 ? false : true,
+        ignoreCreeps: Math.random() < 1 / 2 ? false : true,
         // don't ignore creeps when depositing (default is false)
         // this behavior makes creeps stick to the roads
         // which we want, since fetchers benefit from roads

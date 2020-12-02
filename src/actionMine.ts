@@ -18,9 +18,15 @@ export const actionMine = (creep: Creep) => {
         case ERR_NO_BODYPART: // There are no WORK body parts in this creep’s body.
           creep.suicide() // Got damaged by a creep and lost my WORK part
           break
+        case ERR_NOT_OWNER: // You are not the owner of this creep, or the room controller is owned or reserved by another player.
+          console.log(
+            `${creep.name} tried to mine in ${source.room.controller?.owner?.username}'s room ${source.room.name}`
+          )
+          // State transition: MINE --> THINK
+          creep.memory.state = "THINK"
+          break
         // Unhandled cases
         case ERR_NOT_IN_RANGE: // The target is too far away.
-        case ERR_NOT_OWNER: // You are not the owner of this creep, or the room controller is owned or reserved by another player.
         case ERR_BUSY: // The creep is still being spawned.
         case ERR_NOT_FOUND: // Extractor not found. You must build an extractor structure to harvest minerals.
         case ERR_INVALID_TARGET: // The target is not a valid source or mineral object.
