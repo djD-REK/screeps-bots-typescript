@@ -1,4 +1,21 @@
-import { dropRight } from "lodash"
+export const RANDOM_COLOR = () => {
+  const COLORS_ARRAY = ["blue", "orange", "red", "green", "black", "white"]
+  return COLORS_ARRAY[Math.floor(Math.random() * COLORS_ARRAY.length)]
+}
+
+/*
+ *https://docs.screeps.com/api/#RoomVisual.poly
+ */
+export const VISUALIZE_PATH_STYLE: PolyStyle = {
+  fill: RANDOM_COLOR(),
+  stroke: RANDOM_COLOR(),
+  // These lineStyle properties don't work:
+  // lineStyle: undefined, // the default
+  // lineStyle: "dashed",
+  // lineStyle: "dotted",
+  strokeWidth: 0.15,
+  opacity: 0.1,
+}
 
 export const dropIt = (creep: Creep, why: string = "") => {
   console.log(`${creep.name} says, "Drop it!${why && " " + why}"`)
@@ -35,7 +52,7 @@ export const actionDeposit = (creep: Creep) => {
     const transferResult = creep.transfer(targetDropOffSite, RESOURCE_ENERGY)
     if (transferResult === ERR_NOT_IN_RANGE) {
       const moveResult = creep.moveTo(targetDropOffSite, {
-        visualizePathStyle: { stroke: "#ffffff" },
+        visualizePathStyle: VISUALIZE_PATH_STYLE,
         ignoreCreeps: true,
         // ignore creeps when depositing (default is false)
         // this behavior makes creeps stick to the roads
