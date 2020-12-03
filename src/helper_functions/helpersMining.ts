@@ -37,13 +37,33 @@ export const getMineablePositionsIncludingSurroundingRooms = (room: Room) => {
 
   return uniqueMineablePositions*/
 }
-// TODO: Don't count mineable positions in rooms with enemies (>2 enemies?)
 
+export const MAX_MINEABLE_POSITIONS_CLAIMED_ROOMS = 3
+export const MAX_MINEABLE_POSITIONS_UNCLAIMED_ROOMS = 1
+// 3 miners with 2 WORK parts each max out a 3000 energy source
+// --> claimed rooms / reserved rooms: 3000 energy per source
+// 1 miner with 2 WORK parts nearly max out a 1500 energy source
+// --> unclaimed rooms: 1500 energy per source
+// Every 1 WORK part mines 2 energy / tick, and energy sources
+// regenerate every 300 game ticks, so every 1 WORK part can
+// mine a total of 600 energy before the source regenerates.
 export const getMineablePositions = (room: Room) => {
-  // Select all sources from this room:
-  const activeSources = room.find(FIND_SOURCES)
   // Make an array of valid destinations to mine sources
   const mineablePositions: RoomPosition[] = []
+  let maxMineablePositionsPerSource: number = MAX_MINEABLE_POSITIONS_UNCLAIMED_ROOMS
+  if (room.controller) {
+    if (room.controller.owner) {
+      if (room.controller.owner.username !== "djD-REK") {
+        // not our claimed room
+        return mineablePositions // empty array []
+      } else {
+        maxMineablePositionsPerSource = MAX_MINEABLE_POSITIONS_CLAIMED_ROOMS
+      }
+    }
+  }
+
+  // Select all sources from this room:
+  const activeSources = room.find(FIND_SOURCES)
   const enemiesPresent: boolean =
     room.find(FIND_HOSTILE_CREEPS).length >= 2 ||
     room.find(FIND_HOSTILE_STRUCTURES).length >= 1
@@ -116,10 +136,14 @@ export const getMineablePositions = (room: Room) => {
       terrainLookArray
         .filter((positionAsJSON) => positionAsJSON.terrain !== "wall")
         .forEach((mineablePositionAsJSON) => {
-          // Each item returned by lookForAtArea looks like:
-          // {"type":"terrain","terrain":"plain","x":24,"y":42}
-          const { x, y } = mineablePositionAsJSON
-          mineablePositions.push(new RoomPosition(x, y, room.name))
+          let mineablePositionsAdded = 0
+          if (mineablePositionsAdded < maxMineablePositionsPerSource) {
+            // Each item returned by lookForAtArea looks like:
+            // {"type":"terrain","terrain":"plain","x":24,"y":42}
+            const { x, y } = mineablePositionAsJSON
+            mineablePositions.push(new RoomPosition(x, y, room.name))
+          }
+          mineablePositionsAdded += 1
         })
     }
   })
