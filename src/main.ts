@@ -588,7 +588,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
     console.log(
       `🧠 creepsPerRoom is ${Math.ceil(
         creepsPerRoom
-      )} of ${mineablePositionsCount} mineable positions`
+      )} of ${mineablePositionsCount} mineable positions in ${
+        Array.from(Object.entries(Game.rooms)).length
+      } visible rooms`
     )
   }
 
