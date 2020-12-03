@@ -72,19 +72,20 @@ export const getMineablePositions = (room: Room) => {
     return mineablePositions // empty array []
   }
   activeSources.forEach((source) => {
+    let mineablePositionsForThisSource = 0
     const sourceX = source.pos.x
     const sourceY = source.pos.y
     // Necessary for simulation mode to avoid source keeper mining:
     // Check for source keepers & their lairs nearby
-    const rangeToLookForSourceKeepers = 1
+    const RANGE_TO_LOOK_FOR_SOURCE_KEEPERS = 3
     const creepsLookArray = room.lookForAtArea(
       // lookForAtArea(type, top, left, bottom, right, [asArray])
       LOOK_CREEPS,
-      sourceY - rangeToLookForSourceKeepers,
-      sourceX - rangeToLookForSourceKeepers,
-      sourceY + rangeToLookForSourceKeepers,
-      sourceX + rangeToLookForSourceKeepers,
-      true
+      sourceY - RANGE_TO_LOOK_FOR_SOURCE_KEEPERS,
+      sourceX - RANGE_TO_LOOK_FOR_SOURCE_KEEPERS,
+      sourceY + RANGE_TO_LOOK_FOR_SOURCE_KEEPERS,
+      sourceX + RANGE_TO_LOOK_FOR_SOURCE_KEEPERS,
+      true // asArray
     )
 
     const actualSourceKeepers = []
@@ -136,14 +137,13 @@ export const getMineablePositions = (room: Room) => {
       terrainLookArray
         .filter((positionAsJSON) => positionAsJSON.terrain !== "wall")
         .forEach((mineablePositionAsJSON) => {
-          let mineablePositionsAdded = 0
-          if (mineablePositionsAdded < maxMineablePositionsPerSource) {
+          if (mineablePositionsForThisSource < maxMineablePositionsPerSource) {
             // Each item returned by lookForAtArea looks like:
             // {"type":"terrain","terrain":"plain","x":24,"y":42}
             const { x, y } = mineablePositionAsJSON
             mineablePositions.push(new RoomPosition(x, y, room.name))
           }
-          mineablePositionsAdded += 1
+          mineablePositionsForThisSource += 1
         })
     }
   })
