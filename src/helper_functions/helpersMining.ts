@@ -72,7 +72,6 @@ export const getMineablePositions = (room: Room) => {
     return mineablePositions // empty array []
   }
   activeSources.forEach((source) => {
-    let mineablePositionsForThisSource = 0
     const sourceX = source.pos.x
     const sourceY = source.pos.y
     // Necessary for simulation mode to avoid source keeper mining:
@@ -134,6 +133,7 @@ export const getMineablePositions = (room: Room) => {
         sourceX + 1,
         true
       )
+      let mineablePositionsForThisSource = 0
       terrainLookArray
         .filter((positionAsJSON) => positionAsJSON.terrain !== "wall")
         .forEach((mineablePositionAsJSON) => {
