@@ -1,7 +1,7 @@
 export const roleTaxi = {
   run(taxi: Creep) {
     // For each taxi: Find all creeps (in all rooms) who need a tow
-    const DEBUG = true
+    const DEBUG = false
     // find closest creep who needs a tow (no MOVE parts)
     const creepsNeedingTow = Array.from(Object.values(Game.creeps)).filter(
       (target: Creep) =>
