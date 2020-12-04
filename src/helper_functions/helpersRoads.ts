@@ -93,6 +93,7 @@ export const planRoads = () => {
             y = y % 2 === 0 ? y + 1 : y // build on odd y's only (checkerboard)
 
             // Only build extensions if all adjacent squares are plains
+            let noSurroundingWalls = true
             for (
               let surroundingX = x - 1;
               surroundingX <= x + 1;
@@ -107,32 +108,35 @@ export const planRoads = () => {
                   terrain.get(surroundingX, surroundingY) === TERRAIN_MASK_WALL
                 ) {
                   // some surrounding terrain was a wall; invalid spot
-                  continue
+                  noSurroundingWalls = false
                 }
               }
             }
 
-            // Don't build extensions on walls
-            switch (terrain.get(x, y)) {
-              // No action cases
-              case TERRAIN_MASK_WALL:
-                continue
-              // Build road cases
-              case 0: // plain
-              case TERRAIN_MASK_SWAMP:
-              default:
-                if (
-                  constructionSitesPlannedThisTick <
-                    MAX_CONSTRUCTION_SITES_PER_TICK &&
-                  Game.spawns.Spawn1.room.createConstructionSite(
-                    x,
-                    y,
-                    STRUCTURE_EXTENSION
-                  ) === OK
-                ) {
-                  extensionsCount++
-                  constructionSitesPlannedThisTick++
-                }
+            if (noSurroundingWalls) {
+              // Don't build extensions on walls
+              switch (terrain.get(x, y)) {
+                // No action cases
+                case TERRAIN_MASK_WALL:
+                  continue
+                // Build road cases
+                case 0: // plain
+                case TERRAIN_MASK_SWAMP:
+                default:
+                  if (
+                    constructionSitesPlannedThisTick <
+                      MAX_CONSTRUCTION_SITES_PER_TICK &&
+                    Game.spawns.Spawn1.room.createConstructionSite(
+                      x,
+                      y,
+                      STRUCTURE_EXTENSION
+                    ) === OK
+                  ) {
+                    extensionsCount++
+                    constructionSitesPlannedThisTick++
+                  }
+                  break
+              }
             }
           }
         }
