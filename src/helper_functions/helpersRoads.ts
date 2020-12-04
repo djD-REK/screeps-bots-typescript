@@ -113,7 +113,11 @@ export const planRoads = () => {
               }
             }
 
-            if (noSurroundingWalls) {
+            // don't build directly adjacent to the spawn for traffic flow
+            const notAdjacentToSpawn =
+              Math.abs(x - spawnX) > 1 && Math.abs(y - spawnY) > 1
+
+            if (noSurroundingWalls && notAdjacentToSpawn) {
               // Don't build extensions on walls
               switch (terrain.get(x, y)) {
                 // No action cases
