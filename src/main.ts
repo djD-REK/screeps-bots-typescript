@@ -43,6 +43,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     "Builder",
     "Defender",
     "Eye",
+    "Taxi",
   ]
   const creepTemplates: { [role: string]: BodyPartConstant[] } = {
     MiniFetcher: [MOVE, CARRY], // 100
@@ -52,6 +53,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     Builder: [WORK, MOVE, CARRY, CARRY, CARRY], // 300
     Defender: [MOVE, MOVE, ATTACK, ATTACK], // 260
     Eye: [MOVE], // 50
+    Taxi: [MOVE], // 50 // TODO increase move parts
   }
   const creepCounts: { [role: string]: number } = {}
   for (const role of creepRoles) {
@@ -143,6 +145,20 @@ export const loop = ErrorMapper.wrapLoop(() => {
       }
       creepsPerRoom += mineablePositionsCount / roomCount
       // This is the average mineablePositions from rooms that we have vision in
+
+      // start TAXI testing
+      // TODO: initial Taxi / Miner (1st miner vs. 2nd miners)
+      // Taxi: MOVE -> MOVE / CARRY
+      // Miner: WORK WORK -> WORK / WORK / WORK
+      if (creepCounts.Taxi < creepCounts.Miner) {
+        // Brand new room, spawn mini creeps instead
+        spawnResult = spawnCreep("Taxi")
+      } else {
+        // Always spawn an Upgrader when we have at least one Miner
+        spawnResult = spawnCreep("Miner")
+      }
+      // end TAXI testing
+      /*
       if (
         creepCounts.MiniFetcher < creepCounts.Miner &&
         creepCounts.MiniFetcher < creepsPerRoom
@@ -152,7 +168,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
       } else if (creepCounts.Upgrader < 1 && creepCounts.Miner > 0) {
         // Always spawn an Upgrader when we have at least one Miner
         spawnResult = spawnCreep("Upgrader")
-      } else if (
+      }
+      else if (
         creepCounts.Miner < creepsPerRoom * 2 &&
         creepCounts.Miner < mineablePositionsCount
       ) {
@@ -176,6 +193,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       }
       // TODO: Defense against creep invasion
       // else if (creepCounts.Defender < 3) {      spawnCreep("Defender")    }
+      */
     }
     console.log(
       `🧠 creepsPerRoom is ${Math.ceil(
