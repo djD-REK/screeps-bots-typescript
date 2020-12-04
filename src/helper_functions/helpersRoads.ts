@@ -83,50 +83,58 @@ export const planRoads = () => {
         // offset increases until we've planned all extensions
         offset += 1
         console.log(`Planning extensions with offset ${offset}`)
-        let x = Math.floor(
-          controllerX + Math.random() * offset - Math.random() * offset
-        )
-        x = x > 48 ? 48 : x // boundary check (1 away from 0,49 board)
-        x = x < 1 ? 1 : x
-        x = x % 2 === 0 ? x : x + 1 // build on even x's only (checkerboard)
-        let y = Math.floor(
-          controllerY + Math.random() * offset - Math.random() * offset
-        )
-        y = y > 48 ? 49 : y // boundary check (1 away from 0,49 board)
-        y = y < 1 ? 1 : y
-        y = y % 2 === 0 ? y + 1 : y // build on odd y's only (checkerboard)
+        for (let x = controllerX - offset; x <= controllerX + offset; x++) {
+          for (let y = controllerY - offset; y <= controllerY + offset; y++) {
+            x = x > 48 ? 48 : x // boundary check (1 away from 0,49 board)
+            x = x < 1 ? 1 : x
+            x = x % 2 === 0 ? x : x + 1 // build on even x's only (checkerboard)
+            y = y > 48 ? 49 : y // boundary check (1 away from 0,49 board)
+            y = y < 1 ? 1 : y
+            y = y % 2 === 0 ? y + 1 : y // build on odd y's only (checkerboard)
 
-        // Only build extensions if all adjacent squares are plains
-        for (let surroundingX = x - 1; surroundingX < x + 1; surroundingX++) {
-          for (let surroundingY = y - 1; surroundingY < y + 1; surroundingY++) {
-            if (terrain.get(surroundingX, surroundingY) === TERRAIN_MASK_WALL) {
-              // some surrounding terrain was a wall; invalid spot
-              continue
+            // Only build extensions if all adjacent squares are plains
+            for (
+              let surroundingX = x - 1;
+              surroundingX <= x + 1;
+              surroundingX++
+            ) {
+              for (
+                let surroundingY = y - 1;
+                surroundingY <= y + 1;
+                surroundingY++
+              ) {
+                if (
+                  terrain.get(surroundingX, surroundingY) === TERRAIN_MASK_WALL
+                ) {
+                  // some surrounding terrain was a wall; invalid spot
+                  continue
+                }
+              }
+            }
+
+            // Don't build extensions on walls
+            switch (terrain.get(x, y)) {
+              // No action cases
+              case TERRAIN_MASK_WALL:
+                continue
+              // Build road cases
+              case 0: // plain
+              case TERRAIN_MASK_SWAMP:
+              default:
+                if (
+                  constructionSitesPlannedThisTick <
+                    MAX_CONSTRUCTION_SITES_PER_TICK &&
+                  Game.spawns.Spawn1.room.createConstructionSite(
+                    x,
+                    y,
+                    STRUCTURE_EXTENSION
+                  ) === OK
+                ) {
+                  extensionsCount++
+                  constructionSitesPlannedThisTick++
+                }
             }
           }
-        }
-
-        // Don't build extensions on walls
-        switch (terrain.get(x, y)) {
-          // No action cases
-          case TERRAIN_MASK_WALL:
-            continue
-          // Build road cases
-          case 0: // plain
-          case TERRAIN_MASK_SWAMP:
-          default:
-            if (
-              constructionSitesPlannedThisTick <
-                MAX_CONSTRUCTION_SITES_PER_TICK &&
-              Game.spawns.Spawn1.room.createConstructionSite(
-                x,
-                y,
-                STRUCTURE_EXTENSION
-              ) === OK
-            ) {
-              extensionsCount++
-              constructionSitesPlannedThisTick++
-            }
         }
       }
     }
