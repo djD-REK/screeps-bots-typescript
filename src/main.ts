@@ -31,28 +31,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
   }
 
-  // Find the active sources in this room
-  // const sources = Game.spawns.Spawn1.room.find(FIND_SOURCES_ACTIVE)
-  // Find all potential sources in this room
-  // const sources = Game.spawns.Spawn1.room.find(FIND_SOURCES)
-
   // ROAD PLANNING CHECK: Plan some roads every so often
-  // First, count the construction sites in this & surrounding rooms
-  let constructionSiteCount = Game.spawns.Spawn1.room.find(
-    FIND_CONSTRUCTION_SITES // not FIND_MY_CONSTRUCTION_SITES
-  ).length
-  // FIND_MY_CONSTRUCTION_SITES won't work on roads (neutral structures)
-  // Find the rooms accessible from this one (this room exits there)
-  const accessibleAdjacentRoomsWithVision: Array<Room> = getRoomsFromRoomNamesIfVision(
-    getAccessibleAdjacentRoomNames(Game.spawns.Spawn1.room)
-  )
-  // Add the under-construction roads and containers in adjacent rooms
-  for (const accessibleAdjacentRoom of accessibleAdjacentRoomsWithVision) {
-    constructionSiteCount += accessibleAdjacentRoom.find(
-      FIND_CONSTRUCTION_SITES // not FIND_MY_CONSTRUCTION_SITES
-    ).length
-  }
-
   // ROAD PLANNING LOGIC
   const DELETE_CONSTRUCTION_SITES_EVERY_X_TICKS = 100
   const DELETE_CONSTRUCTION_SITES =
@@ -76,6 +55,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
     let constructionSitesPlannedThisTick = 0 // only plan some sites each tick
     console.log(
       `=== Road planning check (every ${PLAN_CONSTRUCTION_SITES_EVERY_X_TICKS} ticks) ===`
+    )
+    // Find the rooms accessible from this one (this room exits there)
+    const accessibleAdjacentRoomsWithVision: Array<Room> = getRoomsFromRoomNamesIfVision(
+      getAccessibleAdjacentRoomNames(Game.spawns.Spawn1.room)
     )
 
     // Road planning logic part 1: For mineable positions in the current room
@@ -495,6 +478,22 @@ export const loop = ErrorMapper.wrapLoop(() => {
       `Accessible room names with vision: ${accessibleRoomNamesWithVision}`
     )
 
+    // First, count the construction sites in this & surrounding rooms
+    let constructionSiteCount = Game.spawns.Spawn1.room.find(
+      FIND_CONSTRUCTION_SITES // not FIND_MY_CONSTRUCTION_SITES
+    ).length
+    // FIND_MY_CONSTRUCTION_SITES won't work on roads (neutral structures)
+    // Find the rooms accessible from this one (this room exits there)
+    const accessibleAdjacentRoomsWithVision: Array<Room> = getRoomsFromRoomNamesIfVision(
+      getAccessibleAdjacentRoomNames(Game.spawns.Spawn1.room)
+    )
+    // Add the under-construction roads and containers in adjacent rooms
+    for (const accessibleAdjacentRoom of accessibleAdjacentRoomsWithVision) {
+      constructionSiteCount += accessibleAdjacentRoom.find(
+        FIND_CONSTRUCTION_SITES // not FIND_MY_CONSTRUCTION_SITES
+      ).length
+    }
+
     // Log current counts to console
     for (const role of creepRoles) {
       const outputMessage = `${role}s: ${creepCounts[role]}`
@@ -533,10 +532,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
 
     // Spawn a creep
-    const accessibleRoomNamesWithoutVision = getAccessibleRoomNamesWithoutVision(
-      Game.spawns.Spawn1.room
-    )
-
     // Spawn creeps on a "per-room" basis, 5 at a time
     const visibleRooms = Array.from(Object.values(Game.rooms))
     const roomCount = visibleRooms.length
