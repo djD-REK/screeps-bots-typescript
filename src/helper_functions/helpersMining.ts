@@ -38,7 +38,8 @@ export const getMineablePositionsIncludingSurroundingRooms = (room: Room) => {
   return uniqueMineablePositions*/
 }
 
-export const MAX_MINEABLE_POSITIONS_CLAIMED_ROOMS = 3
+export const MAX_MINEABLE_POSITIONS_CLAIMED_ROOMS = 2
+// 2 miners with 3 WORK parts max out a 3000 energy source
 export const MAX_MINEABLE_POSITIONS_UNCLAIMED_ROOMS = 1
 // 3 miners with 2 WORK parts each max out a 3000 energy source
 // --> claimed rooms / reserved rooms: 3000 energy per source
