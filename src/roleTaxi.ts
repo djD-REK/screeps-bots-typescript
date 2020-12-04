@@ -14,8 +14,8 @@ export const roleTaxi = {
           )
         return (
           target.getActiveBodyparts(MOVE) === 0 &&
-          ((target.pos.x !== target.memory.destination.x &&
-            target.pos.y !== target.memory.destination.y) ||
+          (target.pos.x !== target.memory.destination.x ||
+            target.pos.y !== target.memory.destination.y ||
             target.pos.roomName !== target.memory.destination.roomName)
         )
       },
