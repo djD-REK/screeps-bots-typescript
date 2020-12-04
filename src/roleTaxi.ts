@@ -5,7 +5,6 @@ export const roleTaxi = {
       filter: function (target: Creep) {
         return (
           target.getActiveBodyparts(MOVE) === 0 &&
-          target.memory.destination &&
           target.pos.x !== target.memory.destination.x &&
           target.pos.y !== target.memory.destination.y &&
           target.pos.roomName !== target.memory.destination.roomName
@@ -13,6 +12,7 @@ export const roleTaxi = {
       },
     })
     if (target) {
+      console.log(`${creep.name} is trying to tow ${target.name}`)
       if (creep.pull(target) === ERR_NOT_IN_RANGE) {
         creep.moveTo(target) // pickup ride
       } else {
