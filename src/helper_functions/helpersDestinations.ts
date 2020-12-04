@@ -135,18 +135,17 @@ export const assignDestinationForMining = (creep: Creep) => {
   const mineablePositions: RoomPosition[] = getMineablePositionsInAllRoomsWithVision()
   // TODO Count occupied mineable position in each surrounding room
   // Select an array of creeps with assigned destinations in this room:
-  const miners = Object.keys(Game.creeps).filter(
-    (creepName) =>
-      (Game.creeps[creepName].memory.role === "Harvester" ||
-        Game.creeps[creepName].memory.role === "Miner") &&
-      creepName !== creep.name
+  const creeps = Object.keys(Game.creeps).filter(
+    (creepName) => creepName !== creep.name
   )
+  /* removed: (Game.creeps[creepName].memory.role === "Harvester" ||
+        Game.creeps[creepName].memory.role === "Miner") && */
 
-  DEBUG && console.log("Found miners:" + miners.length)
+  DEBUG && console.log("Found creeps:" + creeps.length)
 
   // TODO refactor to Set or Map
   const occupiedMineablePositions: RoomPosition[] = []
-  miners.forEach((creepName) => {
+  creeps.forEach((creepName) => {
     // Actually occupied positions
     occupiedMineablePositions.push(
       new RoomPosition(
