@@ -10,22 +10,20 @@ export const roleTaxi = {
           target.pos.y !== target.memory.destination.y ||
           target.pos.roomName !== target.memory.destination.roomName)
     )
-    // Sort those creeps by closest creep to this taxi
-    // Sort by closest creep across multiple rooms
-    creepsNeedingTow.sort((a, b) => {
-      // Calculate the range; for the current room we can use pos.getRangeTo()
-      // but for other rooms we need Game.map.getRoomLinearDistance() * 50
-      return a.room.name === b.room.name
-        ? taxi.pos.getRangeTo(a) - taxi.pos.getRangeTo(b)
-        : 50 *
-            (Game.map.getRoomLinearDistance(taxi.room.name, a.room.name) -
-              Game.map.getRoomLinearDistance(taxi.room.name, b.room.name))
-    })
 
+    // Calculate the range; for the current room we can use pos.getRangeTo()
+    // but for other rooms we need Game.map.getRoomLinearDistance() * 50
     const rangeBetweenCreepsMultiRoom = (a: Creep, b: Creep) =>
       a.room.name === b.room.name
         ? a.pos.getRangeTo(b)
         : 50 * Game.map.getRoomLinearDistance(a.room.name, b.room.name)
+    // Sort those creeps by closest creep to this taxi
+    // Sort by closest creep across multiple rooms
+    creepsNeedingTow.sort(
+      (a, b) =>
+        rangeBetweenCreepsMultiRoom(taxi, a) -
+        rangeBetweenCreepsMultiRoom(taxi, b)
+    )
 
     // For each creep that needs a tow:
     for (const creepNeedingTow of creepsNeedingTow) {
