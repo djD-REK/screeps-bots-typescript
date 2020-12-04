@@ -19,7 +19,7 @@ export const roleFetcher = {
       // Go deposit current load
       actionDeposit(creep)
       if (creep.store.getUsedCapacity() === 0) {
-        creep.memory.destination = new RoomPosition(0, 0, creep.memory.room)
+        creep.memory.destination = new RoomPosition(25, 25, creep.room.name)
         creep.say("🚶 FILL UP")
         creep.memory.state = "FILL UP"
       }
