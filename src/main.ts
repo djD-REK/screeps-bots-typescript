@@ -17,6 +17,7 @@ import {
   planRoads,
 } from "helper_functions"
 import {} from "helper_functions/helpersEmpire"
+import { roleTaxi } from "roleTaxi"
 
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
@@ -236,8 +237,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
           case "Eye":
             roleEye.run(creep)
             break
+          case "Taxi":
+            roleTaxi.run(creep)
+            break
           default:
-            console.log(`Unknown creep role${creep.memory.role}`)
+            console.log(`Unknown creep role: ${creep.memory.role}`)
             break
         }
       }
