@@ -7,7 +7,6 @@
 // memory extension
 interface CreepMemory {
   role: string
-  room: string
   state: string
   destination: RoomPosition
 }
