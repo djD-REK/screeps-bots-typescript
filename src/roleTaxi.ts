@@ -1,8 +1,10 @@
 export const roleTaxi = {
   run(creep: Creep) {
+    const DEBUG = true
     // find closest creep who needs a tow (no MOVE parts)
     const target = creep.pos.findClosestByRange(FIND_MY_CREEPS, {
       filter: function (target: Creep) {
+        DEBUG && console.log(`${creep.name} found ${target.name}`)
         return (
           target.getActiveBodyparts(MOVE) === 0 &&
           target.pos.x !== target.memory.destination.x &&
@@ -12,11 +14,15 @@ export const roleTaxi = {
       },
     })
     if (target) {
-      console.log(`${creep.name} is trying to tow ${target.name}`)
+      DEBUG && console.log(`${creep.name} is trying to tow ${target.name}`)
       if (creep.pull(target) === ERR_NOT_IN_RANGE) {
         creep.moveTo(target) // pickup ride
+        DEBUG &&
+          console.log(`creep.moveTo(target) returned ${creep.moveTo(target)}`)
       } else {
         target.move(creep) // get towed
+        DEBUG &&
+          console.log(`target.move(creep) returned ${target.move(creep)}`)
         if (
           target.pos.x !== target.memory.destination.x &&
           target.pos.y !== target.memory.destination.y &&
