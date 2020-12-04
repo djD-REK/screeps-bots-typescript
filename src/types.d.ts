@@ -9,6 +9,7 @@ interface CreepMemory {
   role: string
   state: string
   destination: RoomPosition
+  taxiDriver: string
 }
 
 // memory extension (samples, cont.)

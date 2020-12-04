@@ -1,19 +1,6 @@
-/*
-For each taxi:
-Find all creeps (in all rooms) who need a tow
-Sort those creeps by closest creep to this taxi
-
-For each creep that needs a tow:
-Assign this taxi to that creep if it has no assigned taxi
-If this taxi is closer than the assigned taxi,
-  then assign this taxi and unassign the other
-
-Assignments will live in creep memory for creeps needing tows:
-
-*/
-
 export const roleTaxi = {
-  run(creep: Creep) {
+  run(taxi: Creep) {
+    // For each taxi: Find all creeps (in all rooms) who need a tow
     const DEBUG = true
     // find closest creep who needs a tow (no MOVE parts)
     const creepsNeedingTow = Array.from(Object.values(Game.creeps)).filter(
@@ -23,20 +10,49 @@ export const roleTaxi = {
           target.pos.y !== target.memory.destination.y ||
           target.pos.roomName !== target.memory.destination.roomName)
     )
+    // Sort those creeps by closest creep to this taxi
     // Sort by closest creep across multiple rooms
     creepsNeedingTow.sort((a, b) => {
       // Calculate the range; for the current room we can use pos.getRangeTo()
       // but for other rooms we need Game.map.getRoomLinearDistance() * 50
       return a.room.name === b.room.name
-        ? creep.pos.getRangeTo(a) - creep.pos.getRangeTo(b)
+        ? taxi.pos.getRangeTo(a) - taxi.pos.getRangeTo(b)
         : 50 *
-            (Game.map.getRoomLinearDistance(creep.room.name, a.room.name) -
-              Game.map.getRoomLinearDistance(creep.room.name, b.room.name))
+            (Game.map.getRoomLinearDistance(taxi.room.name, a.room.name) -
+              Game.map.getRoomLinearDistance(taxi.room.name, b.room.name))
     })
 
-    const target = creep.pos.findClosestByRange(FIND_MY_CREEPS, {
+    const rangeBetweenCreepsMultiRoom = (a: Creep, b: Creep) =>
+      a.room.name === b.room.name
+        ? a.pos.getRangeTo(b)
+        : 50 * Game.map.getRoomLinearDistance(a.room.name, b.room.name)
+
+    // For each creep that needs a tow:
+    for (const creepNeedingTow of creepsNeedingTow) {
+      if (creepNeedingTow.memory.taxiDriver) {
+        const otherTaxi = Game.creeps[creepNeedingTow.memory.taxiDriver]
+        const rangeFromThisTaxi = rangeBetweenCreepsMultiRoom(
+          taxi,
+          creepNeedingTow
+        )
+        const rangeFromThatTaxi = rangeBetweenCreepsMultiRoom(
+          otherTaxi,
+          creepNeedingTow
+        )
+        if (rangeFromThisTaxi < rangeFromThatTaxi) {
+          // If this taxi is closer than the assigned taxi,
+          // then assign this taxi and unassign the other
+          creepNeedingTow.memory.taxiDriver = taxi.name
+        }
+      } else {
+        creepNeedingTow.memory.taxiDriver = taxi.name
+        // Assign this taxi to that creep if it has no assigned taxi
+      }
+    }
+
+    const target = taxi.pos.findClosestByRange(FIND_MY_CREEPS, {
       filter: function (target: Creep) {
-        DEBUG && console.log(`${creep.name} found ${target.name}`)
+        DEBUG && console.log(`${taxi.name} found ${target.name}`)
         DEBUG &&
           console.log(
             `${target.getActiveBodyparts(MOVE)} &&
@@ -52,25 +68,25 @@ export const roleTaxi = {
         )
       },
     })
-    if (target) {
-      DEBUG && console.log(`${creep.name} is trying to tow ${target.name}`)
-      if (creep.pull(target) === ERR_NOT_IN_RANGE) {
-        creep.moveTo(target) // pickup ride
+    if (target && target.memory.taxiDriver === taxi.name) {
+      // This taxi is the assigned driver for that creep, let's go tow
+      DEBUG && console.log(`${taxi.name} is trying to tow ${target.name}`)
+      if (taxi.pull(target) === ERR_NOT_IN_RANGE) {
+        taxi.moveTo(target) // pickup ride
         DEBUG &&
-          console.log(`creep.moveTo(target) returned ${creep.moveTo(target)}`)
+          console.log(`creep.moveTo(target) returned ${taxi.moveTo(target)}`)
       } else {
-        target.move(creep) // get towed
-        DEBUG &&
-          console.log(`target.move(creep) returned ${target.move(creep)}`)
+        target.move(taxi) // get towed
+        DEBUG && console.log(`target.move(creep) returned ${target.move(taxi)}`)
         if (
-          creep.pos.x === target.memory.destination.x &&
-          creep.pos.y === target.memory.destination.y &&
-          creep.pos.roomName === target.memory.destination.roomName
+          taxi.pos.x === target.memory.destination.x &&
+          taxi.pos.y === target.memory.destination.y &&
+          taxi.pos.roomName === target.memory.destination.roomName
         ) {
           // switch places because we arrived
-          creep.move(creep.pos.getDirectionTo(target))
+          taxi.move(taxi.pos.getDirectionTo(target))
         } else {
-          creep.moveTo(
+          taxi.moveTo(
             new RoomPosition(
               target.memory.destination.x,
               target.memory.destination.y,
@@ -81,7 +97,7 @@ export const roleTaxi = {
       }
     } else {
       // retreat to the home spawn
-      creep.moveTo(Game.spawns.Spawn1.pos)
+      taxi.moveTo(Game.spawns.Spawn1.pos)
     }
   },
 }

@@ -49,13 +49,14 @@ export const loop = ErrorMapper.wrapLoop(() => {
   const creepTemplates: { [role: string]: BodyPartConstant[] } = {
     MiniFetcher: [MOVE, CARRY], // 100
     // Miner: [WORK, WORK, MOVE], // 250
-    Miner: [WORK, WORK, WORK], // 300
+    // Miner: [WORK, WORK, WORK], // 300
+    Miner: [WORK], // 100 // TODO increase WORK parts
     Fetcher: [MOVE, CARRY, CARRY, CARRY, CARRY], // 250
     Upgrader: [WORK, MOVE, CARRY, CARRY, CARRY], // 300
     Builder: [WORK, MOVE, CARRY, CARRY, CARRY], // 300
     Defender: [MOVE, MOVE, ATTACK, ATTACK], // 260
     Eye: [MOVE], // 50
-    Taxi: [MOVE], // 50 // TODO increase move parts
+    Taxi: [MOVE], // 50 // TODO increase MOVE parts
   }
   const creepCounts: { [role: string]: number } = {}
   for (const role of creepRoles) {
@@ -71,7 +72,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   const SPAWN_A_CREEP_EVERY_X_TURNS = 10
   if (
     Game.spawns.Spawn1.spawning === null &&
-    (Game.spawns.Spawn1.room.energyAvailable >= 300 ||
+    (Game.spawns.Spawn1.room.energyAvailable >= 0 ||
       (Game.time % SPAWN_A_CREEP_EVERY_X_TURNS === 0 &&
         Game.spawns.Spawn1.room.energyAvailable >= 100))
   ) {
@@ -124,10 +125,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
       return Game.spawns.Spawn1.spawnCreep(creepTemplates[role], creepName, {
         memory: {
           role,
-          room: Game.spawns.Spawn1.room.name,
           state: "THINK",
           destination: new RoomPosition(0, 0, Game.spawns.Spawn1.room.name),
-          sourceNumber: 0,
+          taxiDriver: "",
         },
       })
     }
