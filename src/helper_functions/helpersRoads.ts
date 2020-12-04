@@ -78,9 +78,9 @@ export const planRoads = () => {
         console.log(
           `RCL is ${RCL} so we can build ${MAX_EXTENSIONS[RCL]} extensions`
         )
+      let offset = 0 // how far to search out from the room's controller
       while (RCL && extensionsCount < MAX_EXTENSIONS[RCL]) {
-        let offset = 0 // how far to search out from the room's controller
-        // This offset number increases until we've planned all extensions
+        // offset increases until we've planned all extensions
         offset += 1
         console.log(`Planning extensions with offset ${offset}`)
         let x = Math.floor(
