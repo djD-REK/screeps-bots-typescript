@@ -56,36 +56,44 @@ export const actionMine = (creep: Creep) => {
       creep.memory.state = "THINK"
     }
 
-    // Now let's actually move (to our destination or the random location)
-    const moveResult = creep.moveTo(
-      new RoomPosition(
-        creep.memory.destination.x,
-        creep.memory.destination.y,
-        creep.memory.destination.roomName
-      ),
-      {
-        visualizePathStyle: { stroke: "#ffaa00" },
+    // If we have MOVE parts, we're going to move ourselves; otherwise
+    // we're going wait around for a tow from a Taxi creep
+    if (creep.getActiveBodyparts(MOVE) > 0) {
+      // Now let's actually move (to our destination or the random location)
+      const moveResult = creep.moveTo(
+        new RoomPosition(
+          creep.memory.destination.x,
+          creep.memory.destination.y,
+          creep.memory.destination.roomName
+        ),
+        {
+          visualizePathStyle: { stroke: "#ffaa00" },
+        }
+      )
+      switch (moveResult) {
+        // Do nothing cases
+        case OK: // The operation has been scheduled successfully.
+        case ERR_TIRED: // The fatigue indicator of the creep is non-zero.
+          break // Do nothing
+        // Reset state to THINK cases (MINE --> THINK state transition)
+        case ERR_NO_PATH: // No path to the target could be found.
+          // (There are probably creeps in the way)
+          console.log(
+            `${creep.name} ERR_NO_PATH in move routine; MINE --> THINK`
+          )
+          creep.memory.state = "THINK"
+          break
+        // Unhandled cases
+        case ERR_NOT_OWNER: // You are not the owner of this creep.
+        case ERR_BUSY: // The power creep is not spawned in the world.
+        case ERR_INVALID_TARGET: // The target provided is invalid.
+        default:
+          console.log(
+            `${creep.name} had an unexpected error in move routine: ${moveResult}`
+          )
       }
-    )
-    switch (moveResult) {
-      // Do nothing cases
-      case OK: // The operation has been scheduled successfully.
-      case ERR_TIRED: // The fatigue indicator of the creep is non-zero.
-        break // Do nothing
-      // Reset state to THINK cases (MINE --> THINK state transition)
-      case ERR_NO_PATH: // No path to the target could be found.
-        // (There are probably creeps in the way)
-        console.log(`${creep.name} ERR_NO_PATH in move routine; MINE --> THINK`)
-        creep.memory.state = "THINK"
-        break
-      // Unhandled cases
-      case ERR_NOT_OWNER: // You are not the owner of this creep.
-      case ERR_BUSY: // The power creep is not spawned in the world.
-      case ERR_INVALID_TARGET: // The target provided is invalid.
-      default:
-        console.log(
-          `${creep.name} had an unexpected error in move routine: ${moveResult}`
-        )
+    } else {
+      console.log(`${creep.name} is waiting for a tow`)
     }
   }
 }
