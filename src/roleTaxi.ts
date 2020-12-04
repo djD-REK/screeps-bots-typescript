@@ -1,7 +1,35 @@
+/*
+For each taxi:
+Find all creeps (in all rooms) who need a tow
+Sort those creeps by closest creep to this taxi
+For each creep:
+Assign this taxi to that creep if it has no assigned taxi
+If this taxi is closer than the assigned taxi, assign this taxi
+
+*/
+
 export const roleTaxi = {
   run(creep: Creep) {
     const DEBUG = true
     // find closest creep who needs a tow (no MOVE parts)
+    const creepsNeedingTow = Array.from(Object.values(Game.creeps)).filter(
+      (target: Creep) =>
+        target.getActiveBodyparts(MOVE) === 0 &&
+        (target.pos.x !== target.memory.destination.x ||
+          target.pos.y !== target.memory.destination.y ||
+          target.pos.roomName !== target.memory.destination.roomName)
+    )
+    // Sort by closest creep across multiple rooms
+    creepsNeedingTow.sort((a, b) => {
+      // Calculate the range; for the current room we can use pos.getRangeTo()
+      // but for other rooms we need Game.map.getRoomLinearDistance() * 50
+      return a.room.name === b.room.name
+        ? creep.pos.getRangeTo(a) - creep.pos.getRangeTo(b)
+        : 50 *
+            (Game.map.getRoomLinearDistance(creep.room.name, a.room.name) -
+              Game.map.getRoomLinearDistance(creep.room.name, b.room.name))
+    })
+
     const target = creep.pos.findClosestByRange(FIND_MY_CREEPS, {
       filter: function (target: Creep) {
         DEBUG && console.log(`${creep.name} found ${target.name}`)
