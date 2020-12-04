@@ -27,8 +27,19 @@ export const roleTaxi = {
 
     // For each creep that needs a tow:
     for (const creepNeedingTow of creepsNeedingTow) {
-      if (creepNeedingTow.memory.taxiDriver) {
+      if (
+        creepNeedingTow.memory.taxiDriver &&
+        Game.creeps[creepNeedingTow.memory.taxiDriver]
+      ) {
         const otherTaxi = Game.creeps[creepNeedingTow.memory.taxiDriver]
+        DEBUG &&
+          console.log(
+            `taxi: ${taxi.name}, otherTaxi: ${
+              otherTaxi && otherTaxi.name
+            }, creepNeedingTow.memory.taxiDriver: ${
+              creepNeedingTow.memory.taxiDriver
+            } `
+          )
         const rangeFromThisTaxi = rangeBetweenCreepsMultiRoom(
           taxi,
           creepNeedingTow
@@ -83,6 +94,8 @@ export const roleTaxi = {
         ) {
           // switch places because we arrived
           taxi.move(taxi.pos.getDirectionTo(target))
+          // remove this taxi driver from target's memory
+          target.memory.taxiDriver = ""
         } else {
           taxi.moveTo(
             new RoomPosition(
