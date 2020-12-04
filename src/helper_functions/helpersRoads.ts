@@ -67,24 +67,24 @@ export const planRoads = () => {
     let extensionsCount = countStructures("extension")
 
     // Road planning logic part 0: Plan extensions (if available)
-    // around the room's controller as a layer of protection.
-    const controllerPosition = Game.spawns.Spawn1.room.controller?.pos
+    // around the room's spawn (for ease of road access)
+    const spawnPosition = Game.spawns.Spawn1.pos
     const RCL = Game.spawns.Spawn1.room.controller?.level
-    if (controllerPosition) {
-      const controllerX = controllerPosition.x
-      const controllerY = controllerPosition.y
+    if (spawnPosition) {
+      const spawnX = spawnPosition.x
+      const spawnY = spawnPosition.y
 
       RCL &&
         console.log(
           `RCL is ${RCL} so we can build ${MAX_EXTENSIONS[RCL]} extensions`
         )
-      let offset = 0 // how far to search out from the room's controller
+      let offset = 0 // how far to search out from the room's spawn
       while (RCL && extensionsCount < MAX_EXTENSIONS[RCL]) {
         // offset increases until we've planned all extensions
         offset += 1
         console.log(`Planning extensions with offset ${offset}`)
-        for (let x = controllerX - offset; x <= controllerX + offset; x++) {
-          for (let y = controllerY - offset; y <= controllerY + offset; y++) {
+        for (let x = spawnX - offset; x <= spawnX + offset; x++) {
+          for (let y = spawnY - offset; y <= spawnY + offset; y++) {
             x = x > 48 ? 48 : x // boundary check (1 away from 0,49 board)
             x = x < 1 ? 1 : x
             x = x % 2 === 0 ? x : x + 1 // build on even x's only (checkerboard)
