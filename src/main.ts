@@ -47,7 +47,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
   ]
   const creepTemplates: { [role: string]: BodyPartConstant[] } = {
     MiniFetcher: [MOVE, CARRY], // 100
-    Miner: [WORK, WORK, MOVE], // 250
+    // Miner: [WORK, WORK, MOVE], // 250
+    Miner: [WORK, WORK, WORK], // 300
     Fetcher: [MOVE, CARRY, CARRY, CARRY, CARRY], // 250
     Upgrader: [WORK, MOVE, CARRY, CARRY, CARRY], // 300
     Builder: [WORK, MOVE, CARRY, CARRY, CARRY], // 300
