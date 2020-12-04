@@ -31,9 +31,9 @@ export const roleTaxi = {
         DEBUG &&
           console.log(`target.move(creep) returned ${target.move(creep)}`)
         if (
-          target.pos.x !== target.memory.destination.x &&
-          target.pos.y !== target.memory.destination.y &&
-          target.pos.roomName !== target.memory.destination.roomName
+          creep.pos.x === target.memory.destination.x &&
+          creep.pos.y === target.memory.destination.y &&
+          creep.pos.roomName === target.memory.destination.roomName
         ) {
           // switch places because we arrived
           creep.move(creep.pos.getDirectionTo(target))
