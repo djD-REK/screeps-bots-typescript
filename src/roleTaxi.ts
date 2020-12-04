@@ -2,9 +2,13 @@
 For each taxi:
 Find all creeps (in all rooms) who need a tow
 Sort those creeps by closest creep to this taxi
-For each creep:
+
+For each creep that needs a tow:
 Assign this taxi to that creep if it has no assigned taxi
-If this taxi is closer than the assigned taxi, assign this taxi
+If this taxi is closer than the assigned taxi,
+  then assign this taxi and unassign the other
+
+Assignments will live in creep memory for creeps needing tows:
 
 */
 
