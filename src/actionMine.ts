@@ -40,20 +40,24 @@ export const actionMine = (creep: Creep) => {
   } else {
     // We need to move to the assigned destination
 
-    if (
-      Game.rooms[destinationRoomName] &&
-      Game.rooms[destinationRoomName].lookForAt(
+    // Look at the assigned destination
+    if (Game.rooms[destinationRoomName]) {
+      const creepsAtDestination = Game.rooms[destinationRoomName].lookForAt(
         LOOK_CREEPS,
         creep.memory.destination.x,
         creep.memory.destination.y
-      ).length > 0
-    ) {
-      console.log(
-        `${creep.name} says there is a creep at ` +
-          `${creep.memory.destination.x},${creep.memory.destination.y}`
       )
-      // There's a creep where we are trying to go, so let's pick a new destination
-      creep.memory.state = "THINK"
+      if (
+        creepsAtDestination.length > 0 &&
+        creepsAtDestination[0].name !== creep.memory.taxiDriver
+      ) {
+        console.log(
+          `${creep.name} says there is a creep at ` +
+            `${creep.memory.destination.x},${creep.memory.destination.y}`
+        )
+        // There's a creep where we are trying to go, so let's pick a new destination
+        creep.memory.state = "THINK"
+      }
     }
 
     // If we have MOVE parts, we're going to move ourselves; otherwise
