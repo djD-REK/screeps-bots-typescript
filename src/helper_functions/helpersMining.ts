@@ -66,8 +66,8 @@ export const getMineablePositions = (room: Room) => {
   const activeSources = room.find(FIND_SOURCES)
   const enemiesPresent: boolean =
     room.find(FIND_HOSTILE_CREEPS).length >= 2 ||
-    room.find(FIND_HOSTILE_STRUCTURES).length >= 1
-  // Don't run lone scout, but run from 2+ enemies or any enemy structures
+    room.find(FIND_HOSTILE_STRUCTURES).length >= 2
+  // Don't run lone scout, but run from 2+ enemies or any 2 enemy structures
   if (enemiesPresent) {
     return mineablePositions // empty array []
   }
