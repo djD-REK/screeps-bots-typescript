@@ -1,5 +1,4 @@
 import { ErrorMapper } from "utils/ErrorMapper"
-import { roleHarvester } from "roleHarvester"
 import { roleMiner } from "roleMiner"
 import { roleFetcher } from "roleFetcher"
 import { roleUpgrader } from "roleUpgrader"
@@ -16,7 +15,6 @@ import {
   getCreepTemplatesAndTargetCounts,
   planRoads,
 } from "helper_functions"
-import {} from "helper_functions/helpersEmpire"
 import { roleTaxi } from "roleTaxi"
 
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
@@ -214,9 +212,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
     try {
       if (creep.spawning === false) {
         switch (creepRole) {
-          case "Harvester":
-            roleHarvester.run(creep)
-            break
           case "Miner":
             roleMiner.run(creep)
             break
