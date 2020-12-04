@@ -64,7 +64,7 @@ export const planRoads = () => {
     const terrain = new Room.Terrain(Game.spawns.Spawn1.room.name)
 
     // Count the extensions because there's a maximum allowed depending on RCL
-    let extensionsCount = countStructures("container")
+    let extensionsCount = countStructures("extension")
 
     // Road planning logic part 0: Plan extensions (if available)
     // around the room's controller as a layer of protection.
