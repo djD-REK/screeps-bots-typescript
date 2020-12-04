@@ -4,11 +4,34 @@ import {
   getAccessibleAdjacentRoomNames,
 } from "./helpersRoomNames"
 
-export const MAX_CONTAINERS = 5
+export const MAX_CONTAINERS = 5 // hard max in any room
+export const MAX_EXTENSIONS = [
+  // depends on room RCL, which is the index of this array
+  0,
+  0,
+  5,
+  10,
+  20,
+  30,
+  40,
+  100,
+  200,
+]
+
+export const countStructures = (type: "container" | "extension") => {
+  // Count the containers because there's a maximum of 5 containers allowed
+  let containersCount = Game.spawns.Spawn1.room.find(FIND_STRUCTURES, {
+    filter: (structure) => structure.structureType === type,
+  }).length
+  containersCount += Game.spawns.Spawn1.room.find(FIND_CONSTRUCTION_SITES, {
+    filter: (constructionSite) => constructionSite.structureType === type,
+  }).length
+  return containersCount
+}
 
 export const planRoads = () => {
-  // ROAD PLANNING CHECK: Plan some roads every so often
   // ROAD PLANNING LOGIC
+  // ROAD PLANNING CHECK: Delete some roads every so often
   const DELETE_CONSTRUCTION_SITES_EVERY_X_TICKS = 100
   const DELETE_CONSTRUCTION_SITES =
     Game.time % DELETE_CONSTRUCTION_SITES_EVERY_X_TICKS === 0 ? true : false
@@ -25,6 +48,7 @@ export const planRoads = () => {
     }
   }
 
+  // ROAD PLANNING CHECK: Plan some roads every so often
   const PLAN_CONSTRUCTION_SITES_EVERY_X_TICKS = 10
   const MAX_CONSTRUCTION_SITES_PER_TICK = 10
   if (Game.time % PLAN_CONSTRUCTION_SITES_EVERY_X_TICKS === 0) {
@@ -36,6 +60,71 @@ export const planRoads = () => {
     const accessibleAdjacentRoomsWithVision: Array<Room> = getRoomsFromRoomNamesIfVision(
       getAccessibleAdjacentRoomNames(Game.spawns.Spawn1.room)
     )
+    // Create a terrain helper for quick lookups of terrain
+    const terrain = new Room.Terrain(Game.spawns.Spawn1.room.name)
+
+    // Count the extensions because there's a maximum allowed depending on RCL
+    let extensionsCount = countStructures("container")
+
+    // Road planning logic part 0: Plan extensions (if available)
+    // around the room's controller as a layer of protection.
+    const controllerPosition = Game.spawns.Spawn1.room.controller?.pos
+    const RCL = Game.spawns.Spawn1.room.controller?.level
+    if (controllerPosition) {
+      const controllerX = controllerPosition.x
+      const controllerY = controllerPosition.y
+
+      while (RCL && extensionsCount < MAX_EXTENSIONS[RCL]) {
+        let offset = 0 // how far to search out from the room's controller
+        // This offset number increases until we've planned all extensions
+        offset += 1
+        let x = Math.floor(
+          controllerX + Math.random() * offset - Math.random() * offset
+        )
+        x = x > 48 ? 48 : x // boundary check (1 away from 0,49 board)
+        x = x < 1 ? 1 : x
+        x = x % 2 === 0 ? x : x + 1 // build on even x's only (checkerboard)
+        let y = Math.floor(
+          controllerY + Math.random() * offset - Math.random() * offset
+        )
+        y = y > 48 ? 49 : y // boundary check (1 away from 0,49 board)
+        y = y < 1 ? 1 : y
+        y = y % 2 === 0 ? y + 1 : y // build on odd y's only (checkerboard)
+
+        // Only build extensions if all adjacent squares are plains
+        for (let surroundingX = x - 1; surroundingX < x + 1; surroundingX++) {
+          for (let surroundingY = y - 1; surroundingY < y + 1; surroundingY++) {
+            if (terrain.get(surroundingX, surroundingY) === TERRAIN_MASK_WALL) {
+              // some surrounding terrain was a wall; invalid spot
+              continue
+            }
+          }
+        }
+
+        // Don't build extensions on walls
+        switch (terrain.get(x, y)) {
+          // No action cases
+          case TERRAIN_MASK_WALL:
+            continue
+          // Build road cases
+          case 0: // plain
+          case TERRAIN_MASK_SWAMP:
+          default:
+            if (
+              constructionSitesPlannedThisTick <
+                MAX_CONSTRUCTION_SITES_PER_TICK &&
+              Game.spawns.Spawn1.room.createConstructionSite(
+                x,
+                y,
+                STRUCTURE_EXTENSION
+              ) === OK
+            ) {
+              extensionsCount++
+              constructionSitesPlannedThisTick++
+            }
+        }
+      }
+    }
 
     // Road planning logic part 1: For mineable positions in the current room
     // Find the mineable positions we want to build roads to
@@ -46,16 +135,9 @@ export const planRoads = () => {
         Game.spawns.Spawn1.pos.getRangeTo(a) -
         Game.spawns.Spawn1.pos.getRangeTo(b)
     )
-    // Create a terrain helper for quick lookups of terrain
-    const terrain = new Room.Terrain(Game.spawns.Spawn1.room.name)
+
     // Count the containers because there's a maximum of 5 containers allowed
-    let containersCount = Game.spawns.Spawn1.room.find(FIND_STRUCTURES, {
-      filter: (structure) => structure.structureType === "container",
-    }).length
-    containersCount += Game.spawns.Spawn1.room.find(FIND_CONSTRUCTION_SITES, {
-      filter: (constructionSite) =>
-        constructionSite.structureType === "container",
-    }).length
+    let containersCount = countStructures("container")
 
     // Plan containers at each mineable position as well as
     // roads to and around each mineable position
