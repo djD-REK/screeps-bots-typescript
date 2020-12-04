@@ -5,11 +5,18 @@ export const roleTaxi = {
     const target = creep.pos.findClosestByRange(FIND_MY_CREEPS, {
       filter: function (target: Creep) {
         DEBUG && console.log(`${creep.name} found ${target.name}`)
+        DEBUG &&
+          console.log(
+            `${target.getActiveBodyparts(MOVE)} &&
+            ((${target.pos.x} !== ${target.memory.destination.x} &&
+            ${target.pos.y} !== ${target.memory.destination.y}) ||
+            ${target.pos.roomName} !== ${target.memory.destination.roomName})`
+          )
         return (
           target.getActiveBodyparts(MOVE) === 0 &&
-          target.pos.x !== target.memory.destination.x &&
-          target.pos.y !== target.memory.destination.y &&
-          target.pos.roomName !== target.memory.destination.roomName
+          ((target.pos.x !== target.memory.destination.x &&
+            target.pos.y !== target.memory.destination.y) ||
+            target.pos.roomName !== target.memory.destination.roomName)
         )
       },
     })
