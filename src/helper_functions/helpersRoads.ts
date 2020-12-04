@@ -32,7 +32,7 @@ export const countStructures = (type: "container" | "extension") => {
 export const planRoads = () => {
   // ROAD PLANNING LOGIC
   // ROAD PLANNING CHECK: Delete some roads every so often
-  const DELETE_CONSTRUCTION_SITES_EVERY_X_TICKS = 10
+  const DELETE_CONSTRUCTION_SITES_EVERY_X_TICKS = 100
   const DELETE_CONSTRUCTION_SITES =
     Game.time % DELETE_CONSTRUCTION_SITES_EVERY_X_TICKS === 0 ? true : false
   if (DELETE_CONSTRUCTION_SITES) {
@@ -49,7 +49,7 @@ export const planRoads = () => {
   }
 
   // ROAD PLANNING CHECK: Plan some roads every so often
-  const PLAN_CONSTRUCTION_SITES_EVERY_X_TICKS = 2
+  const PLAN_CONSTRUCTION_SITES_EVERY_X_TICKS = 10
   const MAX_CONSTRUCTION_SITES_PER_TICK = 10
   if (Game.time % PLAN_CONSTRUCTION_SITES_EVERY_X_TICKS === 0) {
     let constructionSitesPlannedThisTick = 0 // only plan some sites each tick
