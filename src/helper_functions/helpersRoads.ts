@@ -87,10 +87,16 @@ export const planRoads = () => {
           for (let y = spawnY - offset; y <= spawnY + offset; y++) {
             x = x > 48 ? 48 : x // boundary check (1 away from 0,49 board)
             x = x < 1 ? 1 : x
-            x = x % 2 === 0 ? x : x + 1 // build on even x's only (checkerboard)
             y = y > 48 ? 49 : y // boundary check (1 away from 0,49 board)
             y = y < 1 ? 1 : y
-            y = y % 2 === 0 ? y + 1 : y // build on odd y's only (checkerboard)
+            if (x % 2 === 0 && y % 2 === 1) {
+              // build on even x & even y's only (checkerboard)
+              y += 1 // make y even
+            }
+            if (x % 2 === 1 && y % 2 === 0) {
+              // build on odd x & odd y's only (checkerboard)
+              y += 1 // make y odd
+            }
 
             // Only build extensions if all adjacent squares are plains
             let noSurroundingWalls = true
