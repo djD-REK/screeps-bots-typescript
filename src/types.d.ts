@@ -10,7 +10,6 @@ interface CreepMemory {
   room: string
   state: string
   destination: RoomPosition
-  sourceNumber: number
 }
 
 // memory extension (samples, cont.)
